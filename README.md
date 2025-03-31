@@ -5,7 +5,7 @@ This project is frontend of **Room Management System**, built using **React + Vi
 ## 🚀 Technologies Used
 - **React** + **Vite**
 - **TypeScript**
-- **Tailwind CSS** 
+- **Tailwind CSS (v3.4.17)** 
 
 
 ## 📦 How to use
