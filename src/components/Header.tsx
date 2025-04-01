@@ -1,4 +1,3 @@
-import {PiBuildingApartmentBold} from "react-icons/pi";
 import Menu from "./Menu.tsx";
 import {IoMenu} from "react-icons/io5";
 import {IoIosClose} from "react-icons/io";
@@ -10,7 +9,7 @@ export default function Header() {
 
 
     return (
-        <div className="flex items-center justify-between select-none">
+        <div className="flex items-center justify-between select-none h-[120px] p-8 md:p-12">
             <Logo textColor={"text-black"}/>
 
             {/*mobile show sidebar, desktop hide*/}
