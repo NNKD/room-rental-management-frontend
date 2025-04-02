@@ -15,6 +15,7 @@ export default {
         hover: "#6E8AE9",
         lightBlue: "#F3F3FA",
         lightGreen: "#17c2b1",
+        lightGreenHover: "#129e91",
       },
       keyframes: {
         slideRightToLeft: {
