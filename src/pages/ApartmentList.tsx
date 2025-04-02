@@ -20,7 +20,7 @@ export default function ApartmentList() {
             <Header/>
 
             <div className="flex-grow p-8 md:p-12">
-                <Search setName={setName} setType={setType} setBedroom={setBedroom} setBathroom={setBathroom}/>
+                <Search setName={setName} setType={setType} setBedroom={setBedroom} setBathroom={setBathroom} showName={true}/>
             </div>
 
             <Footer/>
