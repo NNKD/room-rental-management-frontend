@@ -1,4 +1,4 @@
-export interface ApartmentListType {
+export interface ApartmentListItem {
     id: number;
     name: string;
     slug: string;

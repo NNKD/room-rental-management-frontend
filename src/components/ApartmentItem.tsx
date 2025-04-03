@@ -1,8 +1,8 @@
-import {ApartmentListType} from "../type.ts";
+import {ApartmentListItem} from "../type.ts";
 import {formatCurrency} from "../utils/NumberFormat.ts";
 import {Link} from "react-router-dom";
 
-export default function ApartmentItem({apartment}: {apartment: ApartmentListType}) {
+export default function ApartmentItem({apartment}: {apartment: ApartmentListItem}) {
     return (
         <Link to={`/apartment/${apartment.slug}`}
               className="w-fit mx-auto rounded shadow-[0_0_4px_2px_#ddd]
