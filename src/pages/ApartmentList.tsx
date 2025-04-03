@@ -3,7 +3,8 @@ import Footer from "../components/Footer.tsx";
 import {useEffect, useState} from "react";
 import Search from "../components/Search.tsx";
 import ApartmentItem from "../components/ApartmentItem.tsx";
-
+import {apartmentList} from "../data.ts";
+import {ApartmentListType} from "../type.ts";
 
 export default function ApartmentList() {
 
@@ -23,12 +24,12 @@ export default function ApartmentList() {
             <div className="flex-grow p-8 md:p-12">
                 <Search setName={setName} setType={setType} setBedroom={setBedroom} setBathroom={setBathroom} showName={true}/>
 
-                <div className="grid grid-rows-1 md:grid-cols-2 lg:grid-cols-3 gap-6 gap-y-12 mt-20 justify-between">
-                    <ApartmentItem />
-                    <ApartmentItem />
-                    <ApartmentItem />
-                    <ApartmentItem />
-                    <ApartmentItem />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 gap-y-12 mt-20 justify-between">
+
+                    {apartmentList.map((apartment: ApartmentListType) => (
+                        <ApartmentItem key={apartment.id} apartment={apartment} />
+                    ))}
+
                 </div>
             </div>
 

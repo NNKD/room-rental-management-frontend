@@ -2,7 +2,7 @@ import {searchBathroomOption, searchBedroomOption, searchTypeOption} from "../da
 import {CiSearch} from "react-icons/ci";
 
 /*
-    setName, setType, setBedroom, setBathroom => set in useState
+    setName, setType, setBedroom, setBathroom => set in useState, setName is not required
     showName: show or hide input search by name. Value: true | false
  */
 
