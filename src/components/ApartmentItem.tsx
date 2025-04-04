@@ -8,7 +8,7 @@ export default function ApartmentItem({apartment}: {apartment: ApartmentListItem
               className="w-full mx-auto rounded shadow-[0_0_4px_2px_#ddd]
                         hover:shadow-[0_0_6px_4px_#bbb] transition-all duration-300 ease-in-out flex flex-col h-full">
             <div className="overflow-hidden rounded-t aspect-[4/3] flex-shrink-0">
-                <img src={apartment.image} className="w-full h-full object-cover rounded-t hover:scale-125 transition-all duration-300 ease-in-out" alt={`${apartment.name}-image`}/>
+                <img loading="lazy" src={apartment.image} className="w-full h-full object-cover rounded-t hover:scale-125 transition-all duration-300 ease-in-out" alt={`${apartment.name}-image`}/>
             </div>
             <div className="p-4 flex-grow ">
                 <h2 className="font-bold text-xl leading-[1]">{apartment.brief}</h2>
