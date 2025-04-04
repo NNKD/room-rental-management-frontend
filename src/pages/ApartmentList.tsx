@@ -21,7 +21,6 @@ export default function ApartmentList() {
 
     useEffect(() => {
         if (sort != "") {
-            console.log(sort)
             handleSortByPrice()
         }
     }, [sort]);
