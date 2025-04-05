@@ -97,15 +97,15 @@ export default function ApartmentList() {
                     <div className="border outline-none border-darkGray rounded py-4 lg:py-2 px-4">
                         <select className="outline-none pr-2 text-darkGray select-none cursor-pointer" defaultValue="" onChange={(e) => setSort(e.target.value)}>
                             <option value="" disabled>Sắp xếp</option>
-                            <option value="asc">Giá tăng dần</option>
-                            <option value="desc">Giá giảm dần</option>
+                            <option value="asc" className="text-black">Giá tăng dần</option>
+                            <option value="desc" className="text-black">Giá giảm dần</option>
                         </select>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 gap-y-12 mt-6 justify-between">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 gap-y-12 mt-6 justify-between">
 
-                    {apartmentPages.content.map((apartment: ApartmentListItem) => (
+                    {apartments.map((apartment: ApartmentListItem) => (
                         <ApartmentItem key={apartment.id} apartment={apartment} />
                     ))}
 
