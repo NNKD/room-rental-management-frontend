@@ -25,8 +25,8 @@ export default function ApartmentDetail() {
 
     const handleCarousel = (type: number) => {
         if (type === 1) {
-            // Check max = length - 1 (last img)
-            setIndexCarousel(Math.min(indexCarousel + 1, images.length - 1))
+            // Check max = length - 3 (last img). if max = lengh - 1 => after length - 3 not show 3 images
+            setIndexCarousel(Math.min(indexCarousel + 1, images.length - 3))
         }else if (type === -1) {
             // Check min = 0 (first img)
             setIndexCarousel(Math.max(0, indexCarousel - 1))
@@ -46,7 +46,7 @@ export default function ApartmentDetail() {
                         </div>
                         <div className="mt-4 mb-8 flex items-center justify-center gap-3 select-none">
                             <div className={`w-[56px] h-[56px] flex items-center justify-center rounded-full flex-shrink-0 text-white
-                                            ${indexCarousel == 0 ? "bg-lightBlue pointer-events-none" : " bg-lightGreen"}`}
+                                            ${indexCarousel == 0 ? "bg-lightBlue pointer-events-none" : " bg-lightGreen cursor-pointer hover:bg-lightGreenHover transition-all duration-300 ease-in-out"}`}
                                  onClick={() => handleCarousel(-1)}>
                                 <IoIosArrowBack className="w-[24px] h-[24px]"/>
                             </div>
@@ -59,7 +59,7 @@ export default function ApartmentDetail() {
                             ))}
 
                             <div className={`w-[56px] h-[56px] flex items-center justify-center text-white  rounded-full flex-shrink-0
-                                            ${indexCarousel == (images.length - 1) ? "bg-lightBlue pointer-events-none" : " bg-lightGreen"}`}
+                                            ${indexCarousel == (images.length - 3) ? "bg-lightBlue pointer-events-none" : " bg-lightGreen cursor-pointer hover:bg-lightGreenHover transition-all duration-300 ease-in-out"}`}
                                  onClick={() => handleCarousel(1)}>
                                 <IoIosArrowForward className="w-[24px] h-[24px]"/>
                             </div>
