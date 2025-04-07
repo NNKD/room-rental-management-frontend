@@ -13,7 +13,7 @@ export default function Header() {
             <Logo textColor={"text-black"}/>
 
             {/*mobile show sidebar, desktop hide*/}
-            <div className="p-2 cursor-pointer" onClick={() => setShowSideBar(!showSideBar)}>
+            <div className="p-2 pr-0 cursor-pointer" onClick={() => setShowSideBar(!showSideBar)}>
                 <IoMenu className="lg:hidden text-3xl md:text-4xl" />
             </div>
 

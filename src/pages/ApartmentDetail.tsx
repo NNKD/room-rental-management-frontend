@@ -44,34 +44,34 @@ export default function ApartmentDetail() {
             <Header/>
 
             <div className="flex-grow p-8 md:p-12">
-                <h2 className="font-bold text-4xl">Exclusive 5-room residence with a rooftop terrace {slug}</h2>
+                <h2 className="font-bold text-2xl md:text-3xl lg:text-4xl">Exclusive 5-room residence with a rooftop terrace {slug}</h2>
                 <div className="flex flex-col lg:flex-row gap-10 mt-6">
-                    <div className="w-[70%]">
+                    <div className="lg:w-[70%]">
                         <div className="aspect-[16/9] overflow-hidden rounded select-none">
                             <img src="https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp" className="w-full h-full object-cover rounded"/>
                         </div>
                         <div className="mt-4 mb-8 flex items-center justify-center gap-3 select-none">
-                            <div className={`w-[56px] h-[56px] flex items-center justify-center rounded-full flex-shrink-0 text-white
+                            <div className={`w-[40px] h-[40px] md:w-[56px] md:h-[56px] flex items-center justify-center rounded-full flex-shrink-0 text-white
                                             ${indexCarousel == 0 ? "bg-lightBlue pointer-events-none" : " bg-lightGreen cursor-pointer hover:bg-lightGreenHover transition-all duration-300 ease-in-out"}`}
                                  onClick={() => handleCarousel(-1)}>
                                 <IoIosArrowBack className="w-[24px] h-[24px]"/>
                             </div>
 
                             {/* show 3 images */}
-                            {images.slice(indexCarousel, indexCarousel + 3).map((image, index) => (
-                                <div className="aspect-[16/9] overflow-hidden rounded">
-                                    <img src={image} key={index} className="w-full h-full object-cover rounded"/>
+                            {images.slice(indexCarousel, indexCarousel + (window.innerWidth < 760 ? 2 : 3)).map((image, index) => (
+                                <div key={index} className="aspect-[16/9] overflow-hidden rounded">
+                                    <img src={image}  className="w-full h-full object-cover rounded"/>
                                 </div>
                             ))}
 
-                            <div className={`w-[56px] h-[56px] flex items-center justify-center text-white  rounded-full flex-shrink-0
+                            <div className={`w-[40px] h-[40px] md:w-[56px] md:h-[56px] flex items-center justify-center text-white  rounded-full flex-shrink-0
                                             ${indexCarousel == (images.length - 3) ? "bg-lightBlue pointer-events-none" : " bg-lightGreen cursor-pointer hover:bg-lightGreenHover transition-all duration-300 ease-in-out"}`}
                                  onClick={() => handleCarousel(1)}>
                                 <IoIosArrowForward className="w-[24px] h-[24px]"/>
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-around">
+                        <div className="flex flex-col gap-4 md:flex-row justify-around">
                             <div className="flex gap-2 items-center">
                                 <HiOutlineBuildingOffice2 className="text-5xl text-lightGreen"/>
                                 <span className="font-bold text-xl">a Flat</span>
@@ -86,13 +86,13 @@ export default function ApartmentDetail() {
                             </div>
                         </div>
 
-                        <div className="px-16 mx-auto">
-                            <div className="my-8 bg-lightBlue flex items-center justify-between px-6 py-8 rounded">
+                        <div className="md:px-16 mx-auto">
+                            <div className="my-8 bg-lightBlue flex flex-col md:flex-row gap-4 justify-between p-4 md:px-6 md:py-8 rounded">
                                 <div className="flex flex-col justify-center">
                                     <span className="text-base">Mortgage since:</span>
                                     <span className="text-xl font-bold text-lightGreen">807.57 €/ month</span>
                                 </div>
-                                <div className="bg-lightGreen text-center text-white font-bold rounded px-8 py-3 cursor-pointer hover:bg-lightGreenHover duration-300 transition-all ease-in-out">
+                                <div className="bg-lightGreen text-center w-fit text-white font-bold rounded px-8 md:px-12 py-3 cursor-pointer hover:bg-lightGreenHover duration-300 transition-all ease-in-out">
                                     Get a mortage
                                 </div>
                             </div>
@@ -169,8 +169,8 @@ export default function ApartmentDetail() {
 
 
                     </div>
-                    <div className="w-[30%]">
-                        <div className="p-10 bg-lightBlue">
+                    <div className="lg:w-[30%]">
+                        <div className="p-4 md:p-10 rounded bg-lightBlue">
                             <h2 className="font-bold text-xl">Contact us</h2>
                             <div className="flex items-center my-2 gap-2">
                                 <img
@@ -204,7 +204,7 @@ export default function ApartmentDetail() {
                                 Send Message
                             </div>
                         </div>
-                        <div className="p-10 mt-10 bg-lightBlue">
+                        <div className="p-4 md:p-10 rounded mt-10 bg-lightBlue">
                             <div className="flex flex-col gap-4">
                                 <h2 className="font-bold text-xl">Brief characteristics</h2>
                                 <div>
@@ -254,9 +254,9 @@ export default function ApartmentDetail() {
 
                 <div className="mt-20 text-center">
                     <h2 className="font-bold text-xl">You might be interested in</h2>
-                    <div className="flex items-center mt-6 justify-evenly">
+                    <div className="flex flex-col gap-6 md:flex-row items-center mt-6 justify-evenly">
                         {relationApartment.map((apartment: ApartmentListItem) => (
-                            <div className="w-1/3">
+                            <div className="md:w-1/3">
                                 <ApartmentItem key={apartment.id} apartment={apartment} />
                             </div>
                         ))}
