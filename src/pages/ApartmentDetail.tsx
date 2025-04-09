@@ -31,8 +31,9 @@ export default function ApartmentDetail() {
 
     const handleCarousel = (type: number) => {
         if (type === 1) {
-            // Check max = length - 3. if max = lengh - 1 => > length - 3 not show enough 3 images
-            setIndexCarousel(Math.min(indexCarousel + 1, images.length - 3))
+            // Check max = length - 3 (tablet, desktop)| length - 2 (mobile). if max = lengh - 1 => > length - 3 not show enough 3 images
+            const visibleAmount = window.innerWidth < 760 ? 2 : 3
+            setIndexCarousel(Math.min(indexCarousel + 1, images.length - visibleAmount))
         }else if (type === -1) {
             // Check min = 0 (first img)
             setIndexCarousel(Math.max(0, indexCarousel - 1))
@@ -57,7 +58,7 @@ export default function ApartmentDetail() {
                                 <IoIosArrowBack className="w-[24px] h-[24px]"/>
                             </div>
 
-                            {/* show 3 images */}
+                            {/* show 3 images. Check if mobile (< 760) show 2 images */}
                             {images.slice(indexCarousel, indexCarousel + (window.innerWidth < 760 ? 2 : 3)).map((image, index) => (
                                 <div key={index} className="aspect-[16/9] overflow-hidden rounded">
                                     <img src={image}  className="w-full h-full object-cover rounded"/>
