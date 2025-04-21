@@ -3,6 +3,7 @@ import App from "../App.tsx";
 import Home from "../pages/Home.tsx";
 import ApartmentList from "../pages/ApartmentList.tsx";
 import ApartmentDetail from "../pages/ApartmentDetail.tsx";
+import Login from "../pages/Login.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -12,6 +13,10 @@ export const router = createBrowserRouter([
             {
                 index: true,
                 element: <Home/>
+            },
+            {
+                path: "login",
+                element: <Login/>
             },
             {
                 path: "apartments",
