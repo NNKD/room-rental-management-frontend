@@ -9,7 +9,7 @@ import {Link} from "react-router-dom";
 export default function Menu({showLogin, textColor, underlineColor} : {showLogin: boolean, textColor: string, underlineColor: string}) {
     return (
         <div className={`flex flex-col md:flex-row md:items-center md:gap-8 lg:gap-12`}>
-            <Link to=""
+            <Link to="/"
                   className={` relative
                      lg:before:absolute lg:before:bottom-0 lg:before:left-1/2 lg:before:-translate-x-1/2
                      lg:before:w-0 lg:before:h-0.5 lg:hover:before:w-full
@@ -19,7 +19,7 @@ export default function Menu({showLogin, textColor, underlineColor} : {showLogin
                      py-2`}>
                 Trang chủ
             </Link>
-            <Link to=""
+            <Link to="/apartments"
                   className={` relative
                      lg:before:absolute lg:before:bottom-0 lg:before:left-1/2 lg:before:-translate-x-1/2
                      lg:before:w-0 lg:before:h-0.5 lg:hover:before:w-full
@@ -51,7 +51,7 @@ export default function Menu({showLogin, textColor, underlineColor} : {showLogin
             </Link>
 
             {showLogin ? (
-                <Link to=""
+                <Link to="/login"
                       className={` relative
                         lg:before:absolute lg:before:bottom-0 lg:before:left-1/2 lg:before:-translate-x-1/2
                         lg:before:w-0 lg:before:h-0.5 lg:hover:before:w-full
