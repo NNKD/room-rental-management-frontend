@@ -44,7 +44,7 @@ export default function Home() {
 
             {/* Hero Section */}
             {/*<div className="bg-white py-6 md:py-12">*/}
-            <div className="bg-[#CCFFCC]">
+            <div className="bg-mincream">
 
             <div className="container mx-auto px-6 md:px-12" >
                     <div className="flex flex-col md:flex-row items-start justify-between">
