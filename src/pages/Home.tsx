@@ -1,41 +1,16 @@
-import { Link } from "react-router-dom";
 import { useState } from "react";
 import Header from "../components/Header.tsx";
 import Footer from "../components/Footer.tsx";
+import {ApartmentListItem} from "../type.ts";
+import ApartmentItem from "../components/ApartmentItem.tsx";
+import {apartmentPages} from "../data.ts";
+import {PiArrowLeftBold, PiArrowRightBold} from "react-icons/pi";
 
 export default function Home() {
     const [searchLocation, setSearchLocation] = useState("");
+    const [apartments] = useState(apartmentPages.content)
 
-    const topOffers = [
-        {
-            id: 1,
-            title: "Large 4-room apartment with a beautiful terrace",
-            price: "320.000€",
-            location: "Barcelona IV",
-            image: "https://static.vecteezy.com/system/resources/previews/053/649/515/non_2x/isolated-office-building-symbol-on-for-architectural-designs-and-business-concepts-free-png.png"
-        },
-        {
-            id: 2,
-            title: "Magnificent duplex in a private villa",
-            price: "315.000€",
-            location: "Barcelona II",
-            image: "https://static.vecteezy.com/system/resources/previews/053/649/515/non_2x/isolated-office-building-symbol-on-for-architectural-designs-and-business-concepts-free-png.png"
-        },
-        {
-            id: 3,
-            title: "El large design apartment with terrace",
-            price: "280.000€",
-            location: "Madrid VI",
-            image: "https://static.vecteezy.com/system/resources/previews/053/649/515/non_2x/isolated-office-building-symbol-on-for-architectural-designs-and-business-concepts-free-png.png"
-        },
-        {
-            id: 4,
-            title: "Elegant apartment with private terrace",
-            price: "325.000€",
-            location: "Madrid V",
-            image: "https://static.vecteezy.com/system/resources/previews/053/649/515/non_2x/isolated-office-building-symbol-on-for-architectural-designs-and-business-concepts-free-png.png"
-        }
-    ];
+
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -89,47 +64,39 @@ export default function Home() {
                 </div>
             </div>
 
-            {/* Top Offers Section */}
-            <div className="bg-blue-50 py-12">
-                <div className="container mx-auto px-6 md:px-12">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-2">Top offers</h2>
-                            <p className="text-gray-700">
-                                Fulfill your career dreams, enjoy all the achievements of the city center and luxury housing to the fullest.
-                            </p>
-                        </div>
-                        <div className="flex items-center mt-4 md:mt-0">
-                            <button className="p-2 rounded-full border border-gray-300 mr-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </button>
-                            <button className="p-2 rounded-full bg-teal-500 text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                </svg>
-                            </button>
-                            <Link to="/all-offers" className="ml-4 text-teal-500 hover:underline">
-                                Show all offers
-                            </Link>
-                        </div>
+            <div className="mt-10 bg-mincream m-6">
+                {/* Tiêu đề + mô tả + nút */}
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+                    <div>
+                        <h2 className="text-3xl font-bold text-gray-800 mb-2">Top offers</h2>
+                        <p className="text-gray-500 max-w-md">
+                            Fulfill your career dreams, enjoy all the achievements of the city center and luxury housing to the fullest.
+                        </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {topOffers.map((offer) => (
-                            <div key={offer.id} className="bg-white rounded-lg overflow-hidden shadow-sm">
-                                <img src={offer.image} alt={offer.title} className="w-full h-48 object-cover" />
-                                <div className="p-4">
-                                    <h3 className="font-medium text-gray-800 mb-2">{offer.title}</h3>
-                                    <p className="text-teal-500 font-bold">{offer.price}</p>
-                                    <p className="text-gray-500 text-sm">{offer.location}</p>
-                                </div>
-                            </div>
-                        ))}
+                    <div className="flex items-center gap-4 mt-4 md:mt-0">
+                        <button className="w-10 h-10 flex hover:bg-teal-500 items-center justify-center rounded-full border border-gray-300 hover:bg-gray-100">
+                            <PiArrowLeftBold className="w-6 h-6 text-gray-700" />
+                        </button>
+
+                        <button className="w-10 h-10 flex hover:bg-teal-400 items-center justify-center rounded-full border border-gray-300 hover:bg-gray-100">
+                            <PiArrowRightBold className="w-6 h-6 text-gray-700" />
+                        </button>
+
+                        <button className="px-5 py-2 rounded-full border border-teal-500 text-teal-500 hover:bg-teal-500 hover:text-white transition">
+                            Show all offers
+                        </button>
                     </div>
                 </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 gap-y-12 mt-6 justify-between mb-10">
+                    {apartments.slice(0, 3).map((apartment: ApartmentListItem) => (
+                        <ApartmentItem key={apartment.id} apartment={apartment} />
+                    ))}
+                </div>
             </div>
+
+
 
             <Footer />
         </div>
