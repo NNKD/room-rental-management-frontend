@@ -1,12 +1,20 @@
 import Header from "../components/Header.tsx";
 import Footer from "../components/Footer.tsx";
-import {PiLifebuoyFill, PiTowel} from "react-icons/pi";
+import {PiBuildings, PiLifebuoyFill, PiTowel} from "react-icons/pi";
 import {IoFastFoodOutline} from "react-icons/io5";
 import {GrHostMaintenance} from "react-icons/gr";
 import {BsCarFront} from "react-icons/bs";
-import {FaSpa, FaStore, FaWifi} from "react-icons/fa6";
+import {FaChargingStation, FaSpa, FaStore, FaWifi} from "react-icons/fa6";
 import {FaSwimmingPool} from "react-icons/fa";
 import {LuCctv} from "react-icons/lu";
+import {TbBulb, TbHorseToy, TbMonkeybar} from "react-icons/tb";
+import {
+    MdOutlineBedroomParent, MdOutlineDeck,
+    MdOutlineDesignServices,
+    MdOutlineLocalLaundryService,
+    MdOutlineWorkspacePremium
+} from "react-icons/md";
+import {GiKidSlide, GiTreeSwing} from "react-icons/gi";
 
 export default function Amenities() {
     return (
@@ -50,32 +58,32 @@ export default function Amenities() {
                 <div className="flex items-center justify-center gap-10 my-20">
                     <div className="w-3/5 flex items-center gap-4">
                         <div>
-                            <img src="https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//sp1.png"/>
+                            <img src="https://res.cloudinary.com/dtahzcvaf/image/upload/f_webp/v1745998143/bi1_zoiemo.png"/>
                         </div>
                         <div>
-                            <img src="https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//sp2.png"/>
+                            <img src="https://res.cloudinary.com/dtahzcvaf/image/upload/f_webp/v1745998141/bi2_qymoys.png"/>
                         </div>
                     </div>
 
                     <div className="w-2/5">
-                        <h3 className="text-4xl font-bold">Swimming Pool</h3>
+                        <h3 className="text-4xl font-bold">Best Interiors</h3>
                         <p className="text-base mt-4 mb-10">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A accusantium aperiam autem corporis cum, esse fugit molestiae mollitia necessitatibus nesciunt nihil odit officiis quo recusandae repudiandae sunt temporibus totam voluptatem.</p>
                         <div className="grid grid-cols-2 grid-rows-2 gap-8">
                             <div className="flex items-center gap-3">
-                                <PiTowel className="text-xl"/>
-                                <span className="text-base font-bold">Fresh Towels Daily</span>
+                                <PiBuildings className="text-xl"/>
+                                <span className="text-base font-bold">Elegant Design</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <IoFastFoodOutline className="text-xl"/>
-                                <span className="text-base font-bold">Snack At The Pool</span>
+                                <TbBulb className="text-xl"/>
+                                <span className="text-base font-bold">Hi-Tech Design</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <PiLifebuoyFill className="text-xl"/>
-                                <span className="text-base font-bold">Lifeguard On Duty</span>
+                                <MdOutlineDesignServices  className="text-xl"/>
+                                <span className="text-base font-bold">Smart Architecture</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <GrHostMaintenance className="text-xl"/>
-                                <span className="text-base font-bold">Proper Maintenance</span>
+                                <MdOutlineWorkspacePremium className="text-xl"/>
+                                <span className="text-base font-bold">Premium Materials</span>
                             </div>
                         </div>
                     </div>
@@ -83,33 +91,33 @@ export default function Amenities() {
 
                 <div className="flex items-center justify-center gap-10">
                     <div className="w-2/5">
-                        <h3 className="text-4xl font-bold">Swimming Pool</h3>
+                        <h3 className="text-4xl font-bold">Modern Loft</h3>
                         <p className="text-base mt-4 mb-10">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A accusantium aperiam autem corporis cum, esse fugit molestiae mollitia necessitatibus nesciunt nihil odit officiis quo recusandae repudiandae sunt temporibus totam voluptatem.</p>
                         <div className="grid grid-cols-2 grid-rows-2 gap-8">
                             <div className="flex items-center gap-3">
-                                <PiTowel className="text-xl"/>
-                                <span className="text-base font-bold">Fresh Towels Daily</span>
+                                <MdOutlineLocalLaundryService className="text-xl"/>
+                                <span className="text-base font-bold">Laundry Facilities</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <IoFastFoodOutline className="text-xl"/>
-                                <span className="text-base font-bold">Snack At The Pool</span>
+                                <MdOutlineDeck className="text-xl"/>
+                                <span className="text-base font-bold">Rooftop Deck</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <PiLifebuoyFill className="text-xl"/>
-                                <span className="text-base font-bold">Lifeguard On Duty</span>
+                                <MdOutlineBedroomParent className="text-xl"/>
+                                <span className="text-base font-bold">Family Rooms</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <GrHostMaintenance className="text-xl"/>
-                                <span className="text-base font-bold">Proper Maintenance</span>
+                                <FaChargingStation className="text-xl"/>
+                                <span className="text-base font-bold">Charging Stations</span>
                             </div>
                         </div>
                     </div>
                     <div className="w-3/5 flex items-center gap-4">
                         <div>
-                            <img src="https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//sp1.png"/>
+                            <img src="https://res.cloudinary.com/dtahzcvaf/image/upload/f_webp/v1745998162/ml1_kzqoxm.png"/>
                         </div>
                         <div>
-                            <img src="https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//sp2.png"/>
+                            <img src="https://res.cloudinary.com/dtahzcvaf/image/upload/f_webp/v1745998153/ml2_kg5zvn.png"/>
                         </div>
                     </div>
                 </div>
@@ -117,32 +125,32 @@ export default function Amenities() {
                 <div className="flex items-center justify-center gap-10 my-20">
                     <div className="w-3/5 flex items-center gap-4">
                         <div>
-                            <img src="https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//sp1.png"/>
+                            <img src="https://res.cloudinary.com/dtahzcvaf/image/upload/f_webp/v1745998142/k1_mhnewb.png"/>
                         </div>
                         <div>
-                            <img src="https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//sp2.png"/>
+                            <img src="https://res.cloudinary.com/dtahzcvaf/image/upload/f_webp/v1745998173/k2_uyjsya.png"/>
                         </div>
                     </div>
 
                     <div className="w-2/5">
-                        <h3 className="text-4xl font-bold">Swimming Pool</h3>
+                        <h3 className="text-4xl font-bold">Kids Play Area</h3>
                         <p className="text-base mt-4 mb-10">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A accusantium aperiam autem corporis cum, esse fugit molestiae mollitia necessitatibus nesciunt nihil odit officiis quo recusandae repudiandae sunt temporibus totam voluptatem.</p>
                         <div className="grid grid-cols-2 grid-rows-2 gap-8">
                             <div className="flex items-center gap-3">
-                                <PiTowel className="text-xl"/>
-                                <span className="text-base font-bold">Fresh Towels Daily</span>
+                                <GiTreeSwing className="text-xl"/>
+                                <span className="text-base font-bold">Merry-Go-Round</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <IoFastFoodOutline className="text-xl"/>
-                                <span className="text-base font-bold">Snack At The Pool</span>
+                                <GiKidSlide className="text-xl"/>
+                                <span className="text-base font-bold">Teeter - Totter</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <PiLifebuoyFill className="text-xl"/>
-                                <span className="text-base font-bold">Lifeguard On Duty</span>
+                                <TbMonkeybar className="text-xl"/>
+                                <span className="text-base font-bold">Monkey Bar</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <GrHostMaintenance className="text-xl"/>
-                                <span className="text-base font-bold">Proper Maintenance</span>
+                                <TbHorseToy className="text-xl"/>
+                                <span className="text-base font-bold">Spring Riders</span>
                             </div>
                         </div>
                     </div>
