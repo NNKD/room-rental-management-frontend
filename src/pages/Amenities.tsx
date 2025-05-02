@@ -15,6 +15,7 @@ import {
     MdOutlineWorkspacePremium
 } from "react-icons/md";
 import {GiKidSlide, GiTreeSwing} from "react-icons/gi";
+import {formatCurrency} from "../utils/NumberFormat.ts";
 
 export default function Amenities() {
     return (
@@ -156,7 +157,7 @@ export default function Amenities() {
                     </div>
                 </div>
 
-                <div className="flex justify-around items-center flex-wrap gap-y-20 mb-16">
+                <div className="flex justify-around items-center flex-wrap gap-y-20">
 
                     <div className="flex justify-center items-center gap-4 p-6
                                  hover:cursor-pointer hover:shadow-[0_0_4px_3px_#ccc] transition-all duration-300 ease-in-out">
@@ -212,6 +213,42 @@ export default function Amenities() {
                         </div>
                     </div>
 
+                </div>
+
+                <div className="my-20">
+                    <h3 className="text-2xl font-bold text-center">Bảng giá</h3>
+
+                    <table className="border mx-auto text-center mt-6">
+                        <thead>
+                        <tr>
+                            <th className="border px-4 py-2">Tên</th>
+                            <th className="border px-4 py-2">Giá</th>
+                            <th className="border px-4 py-2">Đơn vị</th>
+                            <th className="border px-4 py-2">Ghi chú</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td className="border px-4 py-2">Điện</td>
+                            <td className="border px-4 py-2">{formatCurrency(2000)}</td>
+                            <td className="border px-4 py-2">kwh</td>
+                            <td className="border px-4 py-2"></td>
+                        </tr>
+                        <tr>
+                            <td className="border px-4 py-2">Nước</td>
+                            <td className="border px-4 py-2">{formatCurrency(3000)}</td>
+                            <td className="border px-4 py-2">kg</td>
+                            <td className="border px-4 py-2"></td>
+                        </tr>
+                        <tr>
+                            <td className="border px-4 py-2">Wifi</td>
+                            <td className="border px-4 py-2">{formatCurrency(120000)}</td>
+                            <td className="border px-4 py-2"></td>
+                            <td className="border px-4 py-2"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    
                 </div>
 
             </div>
