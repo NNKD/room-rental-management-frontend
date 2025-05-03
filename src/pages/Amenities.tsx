@@ -14,7 +14,7 @@ import {
     MdOutlineLocalLaundryService,
     MdOutlineWorkspacePremium
 } from "react-icons/md";
-import {GiKidSlide, GiTreeSwing} from "react-icons/gi";
+import {GiTreeSwing, GiUnbalanced} from "react-icons/gi";
 import {formatCurrency} from "../utils/NumberFormat.ts";
 
 export default function Amenities() {
@@ -23,30 +23,30 @@ export default function Amenities() {
             <Header/>
 
             <div className="flex-grow mx-auto my-10 px-6 md:px-12">
-                <div className="flex items-center justify-center gap-10">
-                    <div className="w-2/5">
-                        <h3 className="text-4xl font-bold">Swimming Pool</h3>
-                        <p className="text-base mt-4 mb-10">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A accusantium aperiam autem corporis cum, esse fugit molestiae mollitia necessitatibus nesciunt nihil odit officiis quo recusandae repudiandae sunt temporibus totam voluptatem.</p>
-                        <div className="grid grid-cols-2 grid-rows-2 gap-8">
+                <div className="flex flex-col lg:flex-row items-center justify-center gap-10">
+                    <div className="w-full lg:w-2/5">
+                        <h3 className="text-2xl md:text-4xl font-bold">Hồ Bơi</h3>
+                        <p className="text-sm md:text-base mt-4 mb-10">Thư giãn tại hồ bơi sạch sẽ, được bảo trì thường xuyên. Cư dân có thể tận hưởng những giờ phút thư giãn thoải mái giữa không gian trong lành và tiện nghi.</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 items-center gap-8">
                             <div className="flex items-center gap-3">
                                 <PiTowel className="text-xl"/>
-                                <span className="text-base font-bold">Fresh Towels Daily</span>
+                                <span className="text-base font-bold">Khăn tắm mỗi ngày</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <IoFastFoodOutline className="text-xl"/>
-                                <span className="text-base font-bold">Snack At The Pool</span>
+                                <span className="text-base font-bold">Đồ ăn nhẹ</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <PiLifebuoyFill className="text-xl"/>
-                                <span className="text-base font-bold">Lifeguard On Duty</span>
+                                <span className="text-base font-bold">Cứu hộ túc trực</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <GrHostMaintenance className="text-xl"/>
-                                <span className="text-base font-bold">Proper Maintenance</span>
+                                <span className="text-base font-bold">Bảo trì định kỳ</span>
                             </div>
                         </div>
                     </div>
-                    <div className="w-3/5 flex items-center gap-4">
+                    <div className="w-full lg:w-3/5 flex items-center justify-between gap-4">
                         <div>
                             <img src="https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//sp1.png"/>
                         </div>
@@ -56,8 +56,31 @@ export default function Amenities() {
                     </div>
                 </div>
 
-                <div className="flex items-center justify-center gap-10 my-20">
-                    <div className="w-3/5 flex items-center gap-4">
+                <div className="flex flex-col lg:flex-row-reverse items-center justify-center gap-10 my-20">
+                    <div className="w-full lg:w-2/5">
+                        <h3 className="text-2xl md:text-4xl font-bold">Nội Thất Cao Cấp</h3>
+                        <p className="text-sm md:text-base mt-4 mb-10">Căn hộ được thiết kế với nội thất hiện đại, tinh tế đến từng chi tiết, mang đến không gian sống sang trọng và tiện nghi vượt trội.</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 gap-8">
+                            <div className="flex items-center gap-3">
+                                <PiBuildings className="text-xl"/>
+                                <span className="text-base font-bold">Thiết kế thanh lịch</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <TbBulb className="text-xl"/>
+                                <span className="text-base font-bold">Công nghệ hiện đại</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <MdOutlineDesignServices  className="text-xl"/>
+                                <span className="text-base font-bold">Kiến trúc thông minh</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <MdOutlineWorkspacePremium className="text-xl"/>
+                                <span className="text-base font-bold">Vật liệu cao cấp</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="w-full lg:w-3/5 flex items-center justify-between gap-4">
                         <div>
                             <img src="https://res.cloudinary.com/dtahzcvaf/image/upload/f_webp/v1745998143/bi1_zoiemo.png"/>
                         </div>
@@ -65,55 +88,33 @@ export default function Amenities() {
                             <img src="https://res.cloudinary.com/dtahzcvaf/image/upload/f_webp/v1745998141/bi2_qymoys.png"/>
                         </div>
                     </div>
-
-                    <div className="w-2/5">
-                        <h3 className="text-4xl font-bold">Best Interiors</h3>
-                        <p className="text-base mt-4 mb-10">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A accusantium aperiam autem corporis cum, esse fugit molestiae mollitia necessitatibus nesciunt nihil odit officiis quo recusandae repudiandae sunt temporibus totam voluptatem.</p>
-                        <div className="grid grid-cols-2 grid-rows-2 gap-8">
-                            <div className="flex items-center gap-3">
-                                <PiBuildings className="text-xl"/>
-                                <span className="text-base font-bold">Elegant Design</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <TbBulb className="text-xl"/>
-                                <span className="text-base font-bold">Hi-Tech Design</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <MdOutlineDesignServices  className="text-xl"/>
-                                <span className="text-base font-bold">Smart Architecture</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <MdOutlineWorkspacePremium className="text-xl"/>
-                                <span className="text-base font-bold">Premium Materials</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
-                <div className="flex items-center justify-center gap-10">
-                    <div className="w-2/5">
-                        <h3 className="text-4xl font-bold">Modern Loft</h3>
-                        <p className="text-base mt-4 mb-10">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A accusantium aperiam autem corporis cum, esse fugit molestiae mollitia necessitatibus nesciunt nihil odit officiis quo recusandae repudiandae sunt temporibus totam voluptatem.</p>
-                        <div className="grid grid-cols-2 grid-rows-2 gap-8">
+                <div className="flex flex-col lg:flex-row items-center justify-center gap-10">
+                    <div className="w-full lg:w-2/5">
+                        <h3 className="text-2xl md:text-4xl font-bold">Căn Hộ Loft Hiện Đại</h3>
+                        <p className="text-sm md:text-base mt-4 mb-10">Thiết kế theo phong cách loft với không gian mở, trần cao và ánh sáng tự nhiên, mang lại cảm giác rộng rãi và năng động cho cuộc sống hiện đại.</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 gap-8">
                             <div className="flex items-center gap-3">
                                 <MdOutlineLocalLaundryService className="text-xl"/>
-                                <span className="text-base font-bold">Laundry Facilities</span>
+                                <span className="text-base font-bold">Phòng giặt tiện lợi</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <MdOutlineDeck className="text-xl"/>
-                                <span className="text-base font-bold">Rooftop Deck</span>
+                                <span className="text-base font-bold">Sân thượng thư giãn</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <MdOutlineBedroomParent className="text-xl"/>
-                                <span className="text-base font-bold">Family Rooms</span>
+                                <span className="text-base font-bold">Phòng gia đình</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <FaChargingStation className="text-xl"/>
-                                <span className="text-base font-bold">Charging Stations</span>
+                                <span className="text-base font-bold">Trạm sạc thiết bị</span>
                             </div>
                         </div>
                     </div>
-                    <div className="w-3/5 flex items-center gap-4">
+
+                    <div className="w-full lg:w-3/5 flex items-center justify-between gap-4">
                         <div>
                             <img src="https://res.cloudinary.com/dtahzcvaf/image/upload/f_webp/v1745998162/ml1_kzqoxm.png"/>
                         </div>
@@ -123,8 +124,31 @@ export default function Amenities() {
                     </div>
                 </div>
 
-                <div className="flex items-center justify-center gap-10 my-20">
-                    <div className="w-3/5 flex items-center gap-4">
+                <div className="flex flex-col lg:flex-row-reverse items-center justify-center gap-10 my-20">
+                    <div className="w-full lg:w-2/5">
+                        <h3 className="text-2xl md:text-4xl font-bold">Khu Vui Chơi Trẻ Em</h3>
+                        <p className="text-sm md:text-base mt-4 mb-10">Không gian lý tưởng để trẻ em phát triển và vui chơi an toàn với các trò chơi vận động và sáng tạo.</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 gap-8">
+                            <div className="flex items-center gap-3">
+                                <GiTreeSwing className="text-xl"/>
+                                <span className="text-base font-bold">Xích đu</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <GiUnbalanced className="text-xl"/>
+                                <span className="text-base font-bold">Bập bênh</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <TbMonkeybar className="text-xl"/>
+                                <span className="text-base font-bold">Cầu trượt</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <TbHorseToy className="text-xl"/>
+                                <span className="text-base font-bold">Thú nhún</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="w-full lg:w-3/5 flex items-center justify-between gap-4">
                         <div>
                             <img src="https://res.cloudinary.com/dtahzcvaf/image/upload/f_webp/v1745998142/k1_mhnewb.png"/>
                         </div>
@@ -132,93 +156,71 @@ export default function Amenities() {
                             <img src="https://res.cloudinary.com/dtahzcvaf/image/upload/f_webp/v1745998173/k2_uyjsya.png"/>
                         </div>
                     </div>
-
-                    <div className="w-2/5">
-                        <h3 className="text-4xl font-bold">Kids Play Area</h3>
-                        <p className="text-base mt-4 mb-10">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A accusantium aperiam autem corporis cum, esse fugit molestiae mollitia necessitatibus nesciunt nihil odit officiis quo recusandae repudiandae sunt temporibus totam voluptatem.</p>
-                        <div className="grid grid-cols-2 grid-rows-2 gap-8">
-                            <div className="flex items-center gap-3">
-                                <GiTreeSwing className="text-xl"/>
-                                <span className="text-base font-bold">Merry-Go-Round</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <GiKidSlide className="text-xl"/>
-                                <span className="text-base font-bold">Teeter - Totter</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <TbMonkeybar className="text-xl"/>
-                                <span className="text-base font-bold">Monkey Bar</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <TbHorseToy className="text-xl"/>
-                                <span className="text-base font-bold">Spring Riders</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
-                <div className="flex justify-around items-center flex-wrap gap-y-20">
 
-                    <div className="flex justify-center items-center gap-4 p-6
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-20">
+
+                    <div className="flex justify-center items-center gap-4 p-2 md:p-6
                                  hover:cursor-pointer hover:shadow-[0_0_4px_3px_#ccc] transition-all duration-300 ease-in-out">
-                        <BsCarFront className="text-5xl"/>
-                        <div>
-                            <h4 className="text-xl font-bold mb-2">Car Parking</h4>
-                            <p className="text-sm">Aldus Corporation, which later merged <br/>Adobe Systems, ushered lorem</p>
+                        <BsCarFront className="text-5xl w-1/5"/>
+                        <div className="w-4/5">
+                            <h4 className="text-xl font-bold mb-2 capitalize">Bãi đỗ xe</h4>
+                            <p className="text-sm">Khu vực đỗ xe rộng rãi an toàn và thuận tiện cho cư dân và khách hàng.</p>
                         </div>
                     </div>
 
-                    <div className="flex justify-center items-center gap-4 p-6
+                    <div className="flex justify-center items-center gap-4 p-2 md:p-6
                                  hover:cursor-pointer hover:shadow-[0_0_4px_3px_#ccc] transition-all duration-300 ease-in-out">
-                        <FaSpa className="text-5xl"/>
-                        <div>
-                            <h4 className="text-xl font-bold mb-2">Spa & Massage</h4>
-                            <p className="text-sm">Aldus Corporation, which later merged <br/>Adobe Systems, ushered lorem</p>
+                        <FaSpa className="text-5xl w-1/5"/>
+                        <div className="w-4/5">
+                            <h4 className="text-xl font-bold mb-2 capitalize">Spa & Massage</h4>
+                            <p className="text-sm">Thư giãn và tái tạo năng lượng với liệu trình chăm sóc sức khỏe chuyên nghiệp.</p>
                         </div>
                     </div>
 
-                    <div className="flex justify-center items-center gap-4 p-6
+                    <div className="flex justify-center items-center gap-4 p-2 md:p-6
                                  hover:cursor-pointer hover:shadow-[0_0_4px_3px_#ccc] transition-all duration-300 ease-in-out">
-                        <FaWifi className="text-5xl"/>
-                        <div>
-                            <h4 className="text-xl font-bold mb-2">Free Wifi</h4>
-                            <p className="text-sm">Aldus Corporation, which later merged <br/>Adobe Systems, ushered lorem</p>
+                        <FaWifi className="text-5xl w-1/5"/>
+                        <div className="w-4/5">
+                            <h4 className="text-xl font-bold mb-2 capitalize">Wifi miễn phí</h4>
+                            <p className="text-sm">Kết nối internet nhanh chóng và ổn định, miễn phí cho cư dân và khách hàng.</p>
                         </div>
                     </div>
 
-                    <div className="flex justify-center items-center gap-4 p-6
+                    <div className="flex justify-center items-center gap-4 p-2 md:p-6
                                  hover:cursor-pointer hover:shadow-[0_0_4px_3px_#ccc] transition-all duration-300 ease-in-out">
-                        <FaStore  className="text-5xl"/>
-                        <div>
-                            <h4 className="text-xl font-bold mb-2">Supermarket</h4>
-                            <p className="text-sm">Aldus Corporation, which later merged <br/>Adobe Systems, ushered lorem</p>
+                        <FaStore  className="text-5xl w-1/5"/>
+                        <div className="w-4/5">
+                            <h4 className="text-xl font-bold mb-2 capitalize">Siêu thị</h4>
+                            <p className="text-sm">Siêu thị tiện lợi, cung cấp đầy đủ hàng hóa cho cư dân và khách hàng.</p>
                         </div>
                     </div>
 
-                    <div className="flex justify-center items-center gap-4 p-6
+                    <div className="flex justify-center items-center gap-4 p-2 md:p-6
                                  hover:cursor-pointer hover:shadow-[0_0_4px_3px_#ccc] transition-all duration-300 ease-in-out">
-                        <FaSwimmingPool  className="text-5xl"/>
-                        <div>
-                            <h4 className="text-xl font-bold mb-2">Outdoor Pool</h4>
-                            <p className="text-sm">Aldus Corporation, which later merged <br/>Adobe Systems, ushered lorem</p>
+                        <FaSwimmingPool  className="text-5xl w-1/5"/>
+                        <div className="w-4/5">
+                            <h4 className="text-xl font-bold mb-2 capitalize">Hồ bơi ngoài trời</h4>
+                            <p className="text-sm">Thư giãn và bơi lội tại hồ bơi ngoài trời rộng rãi, thoáng mát.</p>
                         </div>
                     </div>
 
-                    <div className="flex justify-center items-center gap-4 p-6
+                    <div className="flex justify-center items-center gap-4 p-2 md:p-6
                                  hover:cursor-pointer hover:shadow-[0_0_4px_3px_#ccc] transition-all duration-300 ease-in-out">
-                        <LuCctv  className="text-5xl"/>
-                        <div>
-                            <h4 className="text-xl font-bold mb-2">Secure Camera</h4>
-                            <p className="text-sm">Aldus Corporation, which later merged <br/>Adobe Systems, ushered lorem</p>
+                        <LuCctv  className="text-5xl w-1/5"/>
+                        <div className="w-4/5">
+                            <h4 className="text-xl font-bold mb-2 capitalize">Camera an ninh</h4>
+                            <p className="text-sm">Hệ thống camera an ninh 24/7, đảm bảo an toàn cho cư dân và khách hàng.</p>
                         </div>
                     </div>
 
                 </div>
 
                 <div className="my-20">
-                    <h3 className="text-2xl font-bold text-center">Bảng giá</h3>
+                    <h3 className="text-3xl md:text-4xl font-bold text-center">Bảng giá</h3>
 
-                    <table className="border mx-auto text-center mt-6">
+                    <table className="border mx-auto text-center mt-14">
                         <thead>
                         <tr>
                             <th className="border px-4 py-2">Tên</th>
@@ -230,20 +232,32 @@ export default function Amenities() {
                         <tbody>
                         <tr>
                             <td className="border px-4 py-2">Điện</td>
-                            <td className="border px-4 py-2">{formatCurrency(2000)}</td>
-                            <td className="border px-4 py-2">kwh</td>
-                            <td className="border px-4 py-2"></td>
+                            <td className="border px-4 py-2">{formatCurrency(2271)}</td>
+                            <td className="border px-4 py-2">kWh</td>
+                            <td className="border px-4 py-2">Bậc 3</td>
                         </tr>
                         <tr>
                             <td className="border px-4 py-2">Nước</td>
-                            <td className="border px-4 py-2">{formatCurrency(3000)}</td>
-                            <td className="border px-4 py-2">kg</td>
-                            <td className="border px-4 py-2"></td>
+                            <td className="border px-4 py-2">{formatCurrency(8500)}</td>
+                            <td className="border px-4 py-2">m<sup>3</sup></td>
+                            <td className="border px-4 py-2">Mức 1</td>
                         </tr>
                         <tr>
                             <td className="border px-4 py-2">Wifi</td>
-                            <td className="border px-4 py-2">{formatCurrency(120000)}</td>
+                            <td className="border px-4 py-2">{formatCurrency(200000)}</td>
+                            <td className="border px-4 py-2">tháng</td>
                             <td className="border px-4 py-2"></td>
+                        </tr>
+                        <tr>
+                            <td className="border px-4 py-2">Hồ bơi</td>
+                            <td className="border px-4 py-2">{formatCurrency(200000)}</td>
+                            <td className="border px-4 py-2">tháng</td>
+                            <td className="border px-4 py-2"></td>
+                        </tr>
+                        <tr>
+                            <td className="border px-4 py-2">Bãi đậu xe</td>
+                            <td className="border px-4 py-2">{formatCurrency(150000)}</td>
+                            <td className="border px-4 py-2">tháng</td>
                             <td className="border px-4 py-2"></td>
                         </tr>
                         </tbody>
