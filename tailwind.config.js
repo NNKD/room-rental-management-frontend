@@ -21,10 +21,15 @@ export default {
         slideRightToLeft: {
           "0%": { opacity: 0, transform: "translateX(20%)" },
           "100%": { opacity: 1, transform: "translateX(0)" },
+        },
+        slideTopToBottom: {
+          "0%": { opacity: 0, transform: "translateY(-20%)" },
+          "100%": { opacity: 1, transform: "translateY(0)" },
         }
       },
       animation: {
         "slide-right-to-left-500": "slideRightToLeft 0.5s forwards",
+        "slide-top-to-bottom-400": "slideTopToBottom 0.4s forwards",
       }
     },
   },
