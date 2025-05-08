@@ -3,6 +3,7 @@ import {FaChartLine, FaFileContract, FaFileInvoiceDollar, FaHome, FaRegSmile} fr
 import {MdOutlineWorkspacePremium} from "react-icons/md";
 import {FaGear, FaUsersBetweenLines} from "react-icons/fa6";
 import {useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 
 export default function Sidebar() {
@@ -10,6 +11,7 @@ export default function Sidebar() {
     const [showServiceSubMenu, setShowServiceSubMenu] = useState(false)
     const [showUpdateSubMenu, setShowUpdateSubMenu] = useState(false)
     const [showBillSubMenu, setShowBillSubMenu] = useState(false)
+    const navigate = useNavigate()
 
     return (
         <div className="w-1/5 h-screen p-1 select-none overflow-y-auto">
@@ -19,8 +21,12 @@ export default function Sidebar() {
 
             {showApartmentSubMenu ? (
                 <div className="animate-slide-top-to-bottom-400">
-                    <SidebarItem title={"Căn hộ"} />
-                    <SidebarItem title={"Loại căn hộ"} />
+                    <div onClick={() => navigate("apartment-management")}>
+                        <SidebarItem title={"Căn hộ"} path={"apartment-management"} />
+                    </div>
+                    <div onClick={() => navigate("apartment-type-management")}>
+                        <SidebarItem title={"Loại căn hộ"} path={"apartment-type-management"}/>
+                    </div>
                 </div>
             ) : ""}
 
