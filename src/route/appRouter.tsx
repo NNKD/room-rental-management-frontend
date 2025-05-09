@@ -9,6 +9,7 @@ import DashBoardLayout from "../pages/dashboard/DashBoardLayout.tsx";
 import ApartmentManagement from "../pages/dashboard/ApartmentManagement.tsx";
 import DashBoardContent from "../pages/dashboard/DashBoardContent.tsx";
 import ApartmentTypeManagement from "../pages/dashboard/ApartmentTypeManagement.tsx";
+import Contact from "../pages/Contact.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
               path: "apartment-type-management",
               element: <ApartmentTypeManagement/>
             },
+            {
+                path: "contact",
+                element: <Contact></Contact>
+            }
         ]
     }
 ])
