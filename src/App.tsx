@@ -1,11 +1,9 @@
-// import {Outlet} from "react-router-dom";
-import Contact from "./pages/Contact.tsx";
+import {Outlet} from "react-router-dom";
 
 export default function App() {
   return (
-      // <>
-      //     <Outlet/>
-      // </>
-      <Contact></Contact>
+      <>
+          <Outlet/>
+      </>
   )
 }
