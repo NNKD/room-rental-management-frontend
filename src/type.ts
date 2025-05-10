@@ -6,3 +6,27 @@ export interface ApartmentListItem {
     price: number;
     image: string;
 }
+
+/*
+    T is data type Ex: ApartmentManagementType, ApartmentTypeManagementType, ...
+    slug: field name of T
+ */
+
+export interface TableHeader<T> {
+    name: string;
+    slug: keyof T;
+}
+
+export interface ApartmentManagementType {
+    id: number;
+    number: number;
+    type?: string;
+    status?: string;
+    action?: string;
+}
+
+export interface ApartmentTypeManagementType {
+    id: number;
+    name: string;
+    slug?: string;
+}
