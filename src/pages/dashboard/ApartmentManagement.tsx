@@ -35,6 +35,6 @@ export default function ApartmentManagement() {
 
 
     return (
-        <DynamicTable headers={headers} data={data}/>
+        <DynamicTable headers={headers} data={data} hasActionColumn={true}/>
     )
 }

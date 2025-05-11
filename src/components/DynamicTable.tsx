@@ -1,33 +1,38 @@
 import {ApartmentManagementType, ApartmentTypeManagementType, TableHeader} from "../type.ts";
 import {GoTriangleDown, GoTriangleUp} from "react-icons/go";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {FaEdit} from "react-icons/fa";
 import {MdDeleteForever} from "react-icons/md";
+import * as React from "react";
 
 /*
     headers: header of the table
     T:  type of data. Ex: ApartmentManagementType, ApartmentTypeManagementType
     data: data of the table. A lot of types of data. Ex: ApartmentManagementType, ApartmentTypeManagementType
+    hasActionColumn: true => show column "Hành động". False => hide this column
  */
 
 
 export default function DynamicTable<T extends ApartmentManagementType | ApartmentTypeManagementType>
-                                    ({headers, data}: {headers: TableHeader<T>[], data: T[]}) {
+                                    ({headers, data, hasActionColumn}: {headers: TableHeader<T>[], data: T[], hasActionColumn: boolean}) {
 
     const [headersTable, setHeadersTable] = useState<TableHeader<T>[]>(headers)
     const [dataTable, setDataTable] = useState<T[]>(data)
 
-    useEffect(() => {
-        console.log(dataTable)
-    }, [dataTable]);
-
+    // get column sort and type and call function handleSortData
     const handleChangeSortType = (column: string, isASC: boolean) => {
-        console.log(column)
+        // change sortASC of the column which was clicked. And reset other columns
         const sortedHeaders = headersTable.map((header) => header.slug == column ? {...header, sortASC: !header.sortASC} : {...header, sortASC: true})
         setHeadersTable(sortedHeaders)
         handleSortData(column, isASC)
     }
 
+    /*
+        Sort Data
+        Column sort
+        isASC: check asc or desc. Desc = -asc
+        check 3 type data value. Number, String, Date
+     */
     const handleSortData = (column: string, isASC: boolean) => {
         if (!column) return
 
@@ -53,14 +58,24 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
         setDataTable(sortedData)
     }
 
+    // render different type of data. JSX, Date, object, string, number,...
+    const handleRenderTableValue = (value: unknown): React.ReactNode => {
+        if (React.isValidElement(value)) return value;
+        if (value instanceof Date) return value.toLocaleDateString();
+        if (typeof value === "object" && value !== null) return JSON.stringify(value);
+        return String(value ?? "");
+    };
+
+
+
     return (
         <div className="relative overflow-auto h-fit max-h-full w-full rounded-t-xl">
-            <table className="border border-separate border-spacing-0 border-zinc-300  rounded-t-xl w-[1100px]">
+            <table className="table-auto border border-separate border-spacing-0 border-zinc-300 rounded-t-xl w-screen">
                 <thead>
                     <tr>
                         {headersTable.map((header, index) => (
-                            // Make header stick on top of the table
-                            <th key={index} className="sticky top-0 border border-zinc-300 bg-lightGreen p-4 z-50">
+                            // Make header stick on top of the table. Column has % width
+                            <th key={index} className={`sticky top-0 border border-zinc-300 bg-lightGreen p-4 z-50`}>
                                 <div>
                                     {header.name}
 
@@ -83,12 +98,14 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
                             </th>
                         ))}
 
+                        {/*Stick column on the right of the table*/}
+                        {hasActionColumn ? (
+                            <th className="sticky top-0 right-0 border border-zinc-300 bg-lightGreen p-4 z-50 w-[20%]">
+                                Hành động
+                            </th>
+                        ) : ""}
 
-                        <th className="sticky top-0 right-0 border border-zinc-300 bg-lightGreen p-4 z-50">
-                            Hành động
-                        </th>
                     </tr>
-
 
                 </thead>
                 <tbody>
@@ -98,24 +115,28 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
                             <td key={index}
                                 className={`border border-zinc-300 p-4 
                                             ${(index % 2 == 0) ? "bg-zinc-100" : "bg-white"}`}>
-                                {/* cast to string .If value == undefine or null => "" */}
-                                {String(row[header.slug] ?? "")}
+
+                                {handleRenderTableValue(row[header.slug])}
+
                             </td>
                         ))}
 
-                        <td className={`border border-zinc-300 p-4 bg-white sticky right-0
+                        {/*Stick column on the right of the table*/}
+                        {hasActionColumn ? (
+                            <td className={`border border-zinc-300 p-4 bg-white sticky right-0
                                         ${(headers.length % 2 == 0) ? "bg-zinc-100" : "bg-white"}`}>
-                            <div className="flex items-center justify-evenly">
-                                <div className="group p-1 cursor-pointer">
-                                    <FaEdit className="text-2xl hover:text-lightGreen transition-all duration-300 ease-in-out"/>
+                                <div className="flex items-center justify-evenly">
+                                    <div className="group p-1 cursor-pointer">
+                                        <FaEdit className="text-2xl hover:text-lightGreen transition-all duration-300 ease-in-out"/>
+                                    </div>
+
+                                    <div className="group p-1 cursor-pointer">
+                                        <MdDeleteForever className="text-2xl hover:text-lightGreen transition-all duration-300 ease-in-out" />
+                                    </div>
                                 </div>
 
-                                <div className="group p-1 cursor-pointer">
-                                    <MdDeleteForever className="text-2xl hover:text-lightGreen transition-all duration-300 ease-in-out" />
-                                </div>
-                            </div>
-
-                        </td>
+                            </td>
+                        ) : ""}
 
                     </tr>
                 ))}
