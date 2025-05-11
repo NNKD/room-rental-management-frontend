@@ -15,6 +15,7 @@ export interface ApartmentListItem {
 export interface TableHeader<T> {
     name: string;
     slug: keyof T;
+    sortASC?: boolean;
 }
 
 export interface ApartmentManagementType {
@@ -22,7 +23,6 @@ export interface ApartmentManagementType {
     number: number;
     type?: string;
     status?: string;
-    action?: string;
 }
 
 export interface ApartmentTypeManagementType {
