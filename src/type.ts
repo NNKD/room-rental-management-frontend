@@ -23,10 +23,13 @@ export interface ApartmentManagementType {
     number: number;
     type?: string;
     status?: string;
+    bathroom: number;
+    bedroom: number;
 }
 
 export interface ApartmentTypeManagementType {
     id: number;
     name: string;
-    slug?: string;
+    area: number;
+    price: string;
 }
