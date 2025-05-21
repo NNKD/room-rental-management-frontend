@@ -5,6 +5,8 @@ import ApartmentItem from "../components/ApartmentItem.tsx";
 import Search from "../components/Search.tsx";
 import {useEffect, useState} from "react";
 import {IoIosArrowDropleft, IoIosArrowDropright} from "react-icons/io";
+import axios from "axios";
+import {envVar} from "../utils/EnvironmentVariables.ts";
 
 export default function Home() {
     const [name, setName] = useState("")
@@ -16,8 +18,20 @@ export default function Home() {
         console.log(name, type)
     }, [name, type])
 
+    const handleCallAPI = async () => {
+        try {
+            const response = await axios.get(envVar.API_URL);
+            if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
+                console.log(response.data.data);
+            }
+        }catch (error) {
+            console.log(error);
+        }
+    }
+
     // Check resize window
     useEffect(() => {
+        handleCallAPI()
         window.addEventListener("resize", handleGetAmount)
         handleGetAmount()
         return () => {window.removeEventListener("resize", handleGetAmount)} // clean up

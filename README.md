@@ -1,14 +1,14 @@
-# 🏡 Room Management Frontend
-## 📖 Introduction
+# Room Management Frontend
+## Introduction
 This project is frontend of **Room Management System**, built using **React + Vite** with TypeScript.
 
-## 🚀 Technologies Used
+## Technologies Used
 - **React** + **Vite**
 - **TypeScript**
 - **Tailwind CSS (v3.4.17)** 
 
 
-## 📦 How to use
+## How to use
 1. Install dependencies:
    ```sh
    npm install
@@ -27,5 +27,9 @@ This project is frontend of **Room Management System**, built using **React + Vi
     yarn dev
     ```
 
-
+## Env Structure
+VITE_API_URL=
+> **Note:** environment variables in vite start with VITE_
+> - Ex: VITE_API_URL=
+> - Get environment variables in src/utils/EnvironmentVariables.ts
 
