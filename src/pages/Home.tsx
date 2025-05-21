@@ -1,84 +1,123 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import {Link} from "react-router-dom";
 import Header from "../components/Header.tsx";
 import Footer from "../components/Footer.tsx";
+import ApartmentItem from "../components/ApartmentItem.tsx";
+import Search from "../components/Search.tsx";
+import {useEffect, useState} from "react";
+import {IoIosArrowDropleft, IoIosArrowDropright} from "react-icons/io";
 
 export default function Home() {
-    const [searchLocation, setSearchLocation] = useState("");
+    const [name, setName] = useState("")
+    const [type, setType] = useState("")
+    const [indexCarousel, setIndexCarousel] = useState(0)
+    const [visibleAmount, setVisibleAmount] = useState(4) // amount of the element slider show
+
+    useEffect(() => {
+        console.log(name, type)
+    }, [name, type])
+
+    // Check resize window
+    useEffect(() => {
+        window.addEventListener("resize", handleGetAmount)
+        handleGetAmount()
+        return () => {window.removeEventListener("resize", handleGetAmount)} // clean up
+    }, []);
+
+
+    const handleGetAmount = () => {
+        // Mobile => show 1
+        if (window.innerWidth < 760) {
+            setVisibleAmount(1)
+        }else if (window.innerWidth < 1024) { // tablet => show 2
+            setVisibleAmount(2)
+        }else { // desktop => show 3
+            setVisibleAmount(4)
+        }
+    }
+
 
     const topOffers = [
         {
             id: 1,
-            title: "Large 4-room apartment with a beautiful terrace",
-            price: "320.000€",
-            location: "Barcelona IV",
-            image: "https://static.vecteezy.com/system/resources/previews/053/649/515/non_2x/isolated-office-building-symbol-on-for-architectural-designs-and-business-concepts-free-png.png"
+            name: "Căn hộ 1",
+            slug: "can-ho-1",
+            brief: "2 phòng ngủ, 1 phòng tắm",
+            price: 5000000,
+            image: "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
         },
         {
             id: 2,
-            title: "Magnificent duplex in a private villa",
-            price: "315.000€",
-            location: "Barcelona II",
-            image: "https://static.vecteezy.com/system/resources/previews/053/649/515/non_2x/isolated-office-building-symbol-on-for-architectural-designs-and-business-concepts-free-png.png"
+            name: "Căn hộ 2",
+            slug: "can-ho-2",
+            brief: "1 phòng ngủ, 1 phòng tắm",
+            price: 3000000,
+            image: "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
         },
         {
             id: 3,
-            title: "El large design apartment with terrace",
-            price: "280.000€",
-            location: "Madrid VI",
-            image: "https://static.vecteezy.com/system/resources/previews/053/649/515/non_2x/isolated-office-building-symbol-on-for-architectural-designs-and-business-concepts-free-png.png"
+            name: "Căn hộ 3",
+            slug: "can-ho-3",
+            brief: "2 phòng ngủ, 2 phòng tắm",
+            price: 10000000,
+            image: "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
         },
         {
             id: 4,
-            title: "Elegant apartment with private terrace",
-            price: "325.000€",
-            location: "Madrid V",
-            image: "https://static.vecteezy.com/system/resources/previews/053/649/515/non_2x/isolated-office-building-symbol-on-for-architectural-designs-and-business-concepts-free-png.png"
-        }
+            name: "Căn hộ 4",
+            slug: "can-ho-4",
+            brief: "2 phòng ngủ, 1 phòng tắm",
+            price: 15000000,
+            image: "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
+        },
+        {
+            id: 5,
+            name: "Căn hộ 5",
+            slug: "can-ho-5",
+            brief: "2 phòng ngủ, 2 phòng tắm",
+            price: 5500000,
+            image: "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
+        },
     ];
+
+    /*
+        handle back or forward carousel
+        type = 1 ==> Forward
+        type = -1 ==> Back
+    */
+    const handleCarousel = (type: number) => {
+        if (type === 1) {
+            // Max = length - visible. nếu nó lớn hơn thì next tiếp sẽ thiếu element
+            setIndexCarousel(Math.min(indexCarousel + 1, topOffers.length - visibleAmount))
+        }else if (type === -1) {
+            // Min = 0 (vị trí đầu)
+            setIndexCarousel(Math.max(0, indexCarousel - 1))
+        }
+    }
 
     return (
         <div className="flex flex-col min-h-screen">
             {/* Navigation Bar */}
-            <Header />
+            <Header/>
 
             {/* Hero Section */}
             {/*<div className="bg-white py-6 md:py-12">*/}
             <div className="bg-[#CCFFCC]">
-
-            <div className="container mx-auto px-6 md:px-12" >
-                    <div className="flex flex-col md:flex-row items-start justify-between">
-                        <div className="md:w-1/2 mb-8 md:mb-0 md:mt-28">
-                            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Modern living for everyone</h1>
+                <div className="mx-auto px-6 md:px-12">
+                    <div className="flex flex-col lg:flex-row items-center justify-between">
+                        <div className="lg:w-1/2 mb-8 md:mb-0 md:mt-28">
+                            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 my-4">Modern living for
+                                everyone</h1>
                             <p className="text-gray-700 mb-10">
-                                We provide a complete service for the sale, purchase or rental of real estate. We have been operating in Spain more than 15 years.
+                                We provide a complete service for the sale, purchase or rental of real estate. We have
+                                been operating in Spain more than 15 years.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row gap-2 mb-6">
-                                <div className="relative flex-grow">
-                                    <input
-                                        type="text"
-                                        placeholder="Search of location"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-md"
-                                        value={searchLocation}
-                                        onChange={(e) => setSearchLocation(e.target.value)}
-                                    />
-                                </div>
-                                <div className="relative">
-                                    <select className="w-full px-4 py-3 border border-gray-300 rounded-md appearance-none pr-10">
-                                        <option>Property type</option>
-                                        <option>Apartment</option>
-                                        <option>House</option>
-                                        <option>Villa</option>
-                                    </select>
-                                </div>
-                                <button className="px-6 py-3 bg-teal-500 text-white font-medium rounded-md hover:bg-teal-600">
-                                    Search
-                                </button>
+                            <div className=" text-center mb-6">
+                                <Search setName={setName} setType={setType} />
                             </div>
                         </div>
 
-                        <div className="md:w-1/2">
+                        <div className="lg:w-1/2">
                             <img
                                 src="https://static.vecteezy.com/system/resources/previews/053/649/515/non_2x/isolated-office-building-symbol-on-for-architectural-designs-and-business-concepts-free-png.png"
                                 alt="Modern apartment building"
@@ -91,47 +130,40 @@ export default function Home() {
 
             {/* Top Offers Section */}
             <div className="bg-blue-50 py-12">
-                <div className="container mx-auto px-6 md:px-12">
+                <div className="mx-auto px-6">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
                         <div>
                             <h2 className="text-2xl font-bold text-gray-900 mb-2">Top offers</h2>
                             <p className="text-gray-700">
-                                Fulfill your career dreams, enjoy all the achievements of the city center and luxury housing to the fullest.
+                                Fulfill your career dreams, enjoy all the achievements of the city center and luxury
+                                housing to the fullest.
                             </p>
                         </div>
-                        <div className="flex items-center mt-4 md:mt-0">
-                            <button className="p-2 rounded-full border border-gray-300 mr-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </button>
-                            <button className="p-2 rounded-full bg-teal-500 text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                </svg>
-                            </button>
-                            <Link to="/all-offers" className="ml-4 text-teal-500 hover:underline">
-                                Show all offers
+                        <div className="flex items-center mt-4 md:mt-0 select-none">
+                            <div className="mr-1 cursor-pointer" onClick={() => handleCarousel(-1)}>
+                                <IoIosArrowDropleft className="text-4xl hover:text-lightGreenHover transition-all duration-300 ease-in-out"/>
+                            </div>
+
+                            <div className="ml-1 cursor-pointer" onClick={() => handleCarousel(1)}>
+                                <IoIosArrowDropright className="text-4xl hover:text-lightGreenHover transition-all duration-300 ease-in-out"/>
+                            </div>
+
+                            <Link to="/apartments" className="text-xl ml-4 text-teal-500 hover:underline">
+                                Show all
                             </Link>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {topOffers.map((offer) => (
-                            <div key={offer.id} className="bg-white rounded-lg overflow-hidden shadow-sm">
-                                <img src={offer.image} alt={offer.title} className="w-full h-48 object-cover" />
-                                <div className="p-4">
-                                    <h3 className="font-medium text-gray-800 mb-2">{offer.title}</h3>
-                                    <p className="text-teal-500 font-bold">{offer.price}</p>
-                                    <p className="text-gray-500 text-sm">{offer.location}</p>
-                                </div>
-                            </div>
+                        {/* Show from index -> index + visible */}
+                        {topOffers.slice(indexCarousel, indexCarousel + visibleAmount).map((offer) => (
+                            <ApartmentItem key={offer.id} apartment={offer}/>
                         ))}
                     </div>
                 </div>
             </div>
 
-            <Footer />
+            <Footer/>
         </div>
     );
 }

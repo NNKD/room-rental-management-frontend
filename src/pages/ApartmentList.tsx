@@ -90,7 +90,7 @@ export default function ApartmentList() {
             <Header/>
 
             <div className="flex-grow p-8 md:p-12">
-                <Search setName={setName} setType={setType} setBedroom={setBedroom} setBathroom={setBathroom} showName={true}/>
+                <Search setName={setName} setType={setType} setBedroom={setBedroom} setBathroom={setBathroom}/>
 
                 <div className="flex items-center justify-between w-full border-t border-lightGray mt-8 pt-8">
                     <p className="text-xl">6 kết quả</p>

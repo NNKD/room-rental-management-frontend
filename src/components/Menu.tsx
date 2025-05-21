@@ -8,7 +8,7 @@ import {Link} from "react-router-dom";
 
 export default function Menu({showLogin, textColor, underlineColor} : {showLogin: boolean, textColor: string, underlineColor: string}) {
     return (
-        <div className={`flex flex-col md:flex-row md:items-center md:gap-8 lg:gap-12`}>
+        <div className={`flex flex-col lg:flex-row md:items-center md:gap-8 lg:gap-12`}>
             <Link to="/"
                   className={` relative
                      lg:before:absolute lg:before:bottom-0 lg:before:left-1/2 lg:before:-translate-x-1/2
