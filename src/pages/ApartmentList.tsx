@@ -14,39 +14,90 @@ import {envVar} from "../utils/EnvironmentVariables.ts";
 import {ApartmentListItem} from "../types/Apartment.ts";
 import SkeletonApartmentItem from "../components/skeleton-loading/SkeletonApartmentItem.tsx";
 import {PageType} from "../types/PageList.ts";
+import {useSearchParams} from "react-router-dom";
 
 export default function ApartmentList() {
+    // use to get request param (?page=1&name="p"&....)
+    const [searchParams, setSearchParams] = useSearchParams();
+    const currentPage = parseInt(searchParams.get("page") || "1");
+    const name = searchParams.get("name");
+    const type = searchParams.get("type");
+    const bedroom = searchParams.get("bedroom");
+    const priceMin = searchParams.get("priceMin");
+    const priceMax = searchParams.get("priceMax");
+    const sort = searchParams.get("sort");
 
-    const [name, setName] = useState("")
-    const [type, setType] = useState("")
-    const [bedroom, setBedroom] = useState("")
-    const [bathroom, setBathroom] = useState("")
-    const [sort, setSort] = useState("")
+    // Pass set to search to get Value
+    const [nameSearch, setNameSearch] = useState("")
+    const [typeSearch, setTypeSearch] = useState("")
+    const [bedroomSearch, setBedroomSearch] = useState("")
+    const [priceSearch, setPriceSearch] = useState("")
+
     const [apartments, setApartments] = useState<ApartmentListItem[]>([])
     const [pages, setPages] = useState<PageType<ApartmentListItem> | null>(null)
-    const [currentPage, setCurrentPage] = useState(1)
+
     const [pageArray, setPageArray] = useState<number[]>([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        console.log(name, type, bedroom, bathroom)
-    }, [name, type, bedroom, bathroom])
+        handleSetSearchParams()
+    }, [nameSearch, typeSearch, bedroomSearch, priceSearch])
 
+    // name, type, bedroom, price, sort, currentPage change call get apartments
     useEffect(() => {
         handleGetApartments()
-    }, [currentPage])
+    }, [searchParams])
 
+    // Set param to SearchParam
+    const handleSetSearchParams = () => {
+        // min max = 0, 5, 10, ... 50 => * 1000000
+        let min = "", max = "" ;
+        if (priceSearch.includes("-")) {
+            min = priceSearch.split("-")[0];
+            const minNumber = Number(min)
+            min = (minNumber * 1000000) + ""
+            max = priceSearch.split("-")[1];
+            if (Number(max) == 0) {
+                max = "" // set = "" to remove priceMax from param
+            }else {
+                const maxNumber = Number(max)
+                max = (maxNumber * 1000000) + ""
+            }
+        }
+        // Check value = "" => remove from searchParams
+        setSearchParams(
+            Object.fromEntries(
+                Object.entries({
+                    name: nameSearch,
+                    type: typeSearch,
+                    bedroom: bedroomSearch,
+                    priceMin: min,
+                    priceMax: max,
+                }).filter(([, v]) => v !== "")
+            )
+        );
+    }
+
+    // Get list with filter, sort option
     const handleGetApartments = async () => {
         setLoading(true)
         try {
             const response = await axios.get(`${envVar.API_URL}/apartments`, {
-                params: {
-                    page: currentPage,
-                }
+                // Check remove param == null or undefined
+                params: Object.fromEntries( // make Object[] [key, value] => Object {page: 1, ...}
+                    Object.entries({ // make params => Object[] [key, value] == [ [page, 1], [name, null],..]
+                        page: currentPage,
+                        name,
+                        type,
+                        bedroom,
+                        priceMin,
+                        priceMax,
+                        sort
+                    }).filter(([, v]) => v !== null && v !== undefined)
+                )
             });
 
             if (response.status == 200 && response.data.status == "success" && response.data.statusCode == 200) {
-                console.log(response.data)
                 setPages(response.data.data)
             }
 
@@ -56,7 +107,6 @@ export default function ApartmentList() {
     }
 
     useEffect(() => {
-        setCurrentPage(pages?.pageNumber || 1)
         setApartments(pages?.list || [])
         if (pages) {
             handleShowPage()
@@ -64,17 +114,6 @@ export default function ApartmentList() {
         }
     }, [pages]);
 
-    useEffect(() => {
-        if (sort != "") {
-            handleSortByPrice()
-        }
-    }, [sort]);
-
-    const handleSortByPrice = () => {
-        const copy = [...apartments]
-        const sorted = copy.sort((a : ApartmentListItem, b : ApartmentListItem) => sort == "asc" ? (a.price - b.price) : (b.price - a.price))
-        setApartments(sorted)
-    }
 
     // Calculation page number to show 3 number
     const handleShowPage = () => {
@@ -93,23 +132,25 @@ export default function ApartmentList() {
      */
 
     const handleChangePage = (type: number, pageNumber: number) => {
+        let newPage = currentPage;
         switch (type) {
             case -2:
-                setCurrentPage(1)
+                newPage = 1;
                 break
             case -1:
-                setCurrentPage(currentPage - 1)
+                newPage = currentPage - 1 ;
                 break
             case 1:
-                setCurrentPage(currentPage + 1)
+                newPage = currentPage + 1;
                 break
             case 2:
-                setCurrentPage(pages?.totalPages || currentPage)
+                newPage = (pages?.totalPages || currentPage);
                 break
             default:
-                setCurrentPage(pageNumber ?? 1)
+                newPage = (pageNumber ?? 1)
                 break
         }
+        setSearchParams({page: newPage.toString()})
     }
 
     return (
@@ -117,12 +158,12 @@ export default function ApartmentList() {
             <Header/>
 
             <div className="flex-grow p-8 md:p-12">
-                <Search setName={setName} setType={setType} setBedroom={setBedroom} setBathroom={setBathroom}/>
+                <Search setName={setNameSearch} setType={setTypeSearch} setBedroom={setBedroomSearch} setPrice={setPriceSearch}/>
 
                 <div className="flex items-center justify-between w-full border-t border-lightGray mt-8 pt-8">
                     <p className="text-xl">6 kết quả</p>
                     <div className="border outline-none border-darkGray rounded py-4 lg:py-2 px-4">
-                        <select className="outline-none pr-2 text-darkGray select-none cursor-pointer" defaultValue="" onChange={(e) => setSort(e.target.value)}>
+                        <select className="outline-none pr-2 text-darkGray select-none cursor-pointer" defaultValue="" onChange={(e) => setSearchParams({sort: e.target.value})}>
                             <option value="" disabled>Sắp xếp</option>
                             <option value="asc" className="text-black">Giá tăng dần</option>
                             <option value="desc" className="text-black">Giá giảm dần</option>
@@ -136,7 +177,7 @@ export default function ApartmentList() {
                         <SkeletonApartmentItem key={index}/>
                     )) : (
                         apartments.map((apartment: ApartmentListItem) => (
-                            <ApartmentItem key={apartment.id} apartment={apartment} />
+                            <ApartmentItem key={apartment.slug} apartment={apartment} />
                         ))
                     )}
 
