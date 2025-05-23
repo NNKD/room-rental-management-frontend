@@ -55,60 +55,6 @@ export const searchBathroomOption = [
     },
 ]
 
-export const apartmentPages = {
-    content: [
-        {
-            id: 1,
-            name: "Căn hộ 1",
-            slug: "can-ho-1",
-            brief: "2 phòng ngủ, 1 phòng tắm",
-            price: 5000000,
-            image: "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
-        },
-        {
-            id: 2,
-            name: "Căn hộ 2",
-            slug: "can-ho-2",
-            brief: "1 phòng ngủ, 1 phòng tắm",
-            price: 3000000,
-            image: "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
-        },
-        {
-            id: 3,
-            name: "Căn hộ 3",
-            slug: "can-ho-3",
-            brief: "2 phòng ngủ, 2 phòng tắm",
-            price: 10000000,
-            image: "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
-        },
-        {
-            id: 4,
-            name: "Căn hộ 4",
-            slug: "can-ho-4",
-            brief: "2 phòng ngủ, 1 phòng tắm",
-            price: 15000000,
-            image: "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
-        },
-        {
-            id: 5,
-            name: "Căn hộ 5",
-            slug: "can-ho-5",
-            brief: "2 phòng ngủ, 2 phòng tắm",
-            price: 5500000,
-            image: "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
-        },
-        {
-            id: 6,
-            name: "Căn hộ 6",
-            slug: "can-ho-6",
-            brief: "1 phòng ngủ, 1 phòng tắm",
-            price: 7000000,
-            image: "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
-        },
-    ],
-    number: 1,
-    totalPages: 5,
-}
 
 export const relationApartment = [
     {
