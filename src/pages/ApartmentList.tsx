@@ -87,7 +87,7 @@ export default function ApartmentList() {
 
         const updateParams = {
             ...currentParams,
-            page: 1,
+            page: "1",
             name: nameSearch,
             type: typeSearch,
             bedroom: bedroomSearch,
