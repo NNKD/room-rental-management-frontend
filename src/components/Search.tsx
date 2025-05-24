@@ -1,20 +1,37 @@
 import {CiSearch} from "react-icons/ci";
 import axios from "axios";
 import {envVar} from "../utils/EnvironmentVariables.ts";
-import {useEffect, useState} from "react";
+import {ChangeEvent, useEffect, useMemo, useState} from "react";
+import {debounce} from "../utils/Debounce.ts";
 
 /*
+    namePrevalue, typePrevalue,... => use to save value when refresh web
     setName, setType, setBedroom, setPrice => set in useState, is not required. If it has => show element
  */
 
-export default function Search({setName, setType, setBedroom, setPrice}:
-                               {setName?: (value: string) => void,
+export default function Search({namePrevalue, typePrevalue, bedroomPrevalue, pricePrevalue, setName, setType, setBedroom, setPrice}:
+                               {namePrevalue?: string; typePrevalue?: string; bedroomPrevalue?: string; pricePrevalue?:{name: string, value: string}
+                               setName?: (value: string) => void,
                                setType?: (value: string) => void,
                                setBedroom?: (value: string) => void,
                                setPrice?: (value: string) => void}) {
 
     const [bedrooms, setBedrooms] = useState<number[]>([]) // show dropdown
     const [types, setTypes] = useState<string[]>([]) // show dropdown
+    /*
+        Vì debounce dùng setName ảnh hưởng namePrevalue nên sau 500ms mới hiện text lên input
+        Nên dùng biến phụ để hiển thị text nhận được lúc load trang lại
+        Đồng thời ko ảnh hưởng debounce với setName
+     */
+    const [localName, setLocalName] = useState("")
+
+    const debounceSearch = useMemo(() => {
+        return debounce((name: string) => setName?.(name), 500)
+    }, [setName])
+
+    useEffect(() => {
+        setLocalName(namePrevalue || "");
+    }, [namePrevalue]);
 
 
     const priceRanges = [
@@ -50,13 +67,17 @@ export default function Search({setName, setType, setBedroom, setPrice}:
         }
     }
 
+    const handleChangeTextInput = (e: ChangeEvent<HTMLInputElement>) => {
+        setLocalName(e.target.value)
+        debounceSearch(e.target.value)
+    }
 
     return (
         <div className="flex items-center gap-4 flex-wrap">
             <div className={`flex flex-col lg:flex-row gap-4 ${setName ? "flex-grow" : ""} ${setPrice && setBedroom ? "" : "w-full lg:w-fit" }`}>
 
                 {setName && (
-                    <input placeholder="Search by name" className="border bg-transparent border-darkGray rounded py-4 lg:py-2 px-4 outline-none flex-grow" onChange={(e) => setName?.(e.target.value)}/>
+                    <input placeholder="Search by name" value={localName} className="border bg-transparent border-darkGray rounded py-4 lg:py-2 px-4 outline-none flex-grow" onChange={(e) => handleChangeTextInput(e)}/>
                 )}
 
                 {setType && (
@@ -65,7 +86,11 @@ export default function Search({setName, setType, setBedroom, setPrice}:
                             <option value="" disabled>Loại căn hộ</option>
 
                             {types.map((type, index) => (
-                                <option key={index} value={type} className="text-black">{type}</option>
+                                typePrevalue == type ? (
+                                    <option key={index} value={type} className="text-black" selected={true}>{type}</option>
+                                ): (
+                                    <option key={index} value={type} className="text-black">{type}</option>
+                                )
                             ))}
 
                         </select>
@@ -81,7 +106,12 @@ export default function Search({setName, setType, setBedroom, setPrice}:
                             <option value="" disabled>Số phòng ngủ</option>
 
                             {bedrooms.map((numberBed, index) => (
-                                <option key={index} value={numberBed} className="text-black">{numberBed} phòng ngủ</option>
+                                Number(bedroomPrevalue) == numberBed ? (
+                                    <option key={index} value={numberBed} className="text-black" selected={true}>{numberBed} phòng ngủ</option>
+                                ) : (
+                                    <option key={index} value={numberBed} className="text-black">{numberBed} phòng ngủ</option>
+                                )
+
                             ))}
 
                         </select>
@@ -94,7 +124,12 @@ export default function Search({setName, setType, setBedroom, setPrice}:
                             <option value="" disabled>Giá (triệu đồng)</option>
 
                             {priceRanges.map((range, index) => (
-                                <option key={index} value={range.value} className="text-black">{range.name}</option>
+                                pricePrevalue == range ? (
+                                    <option key={index} value={range.value} className="text-black" selected={true}>{range.name}</option>
+                                ) : (
+                                    <option key={index} value={range.value} className="text-black">{range.name}</option>
+                                )
+
                             ))}
 
                         </select>

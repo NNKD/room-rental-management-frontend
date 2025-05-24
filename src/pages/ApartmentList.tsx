@@ -1,6 +1,6 @@
 import Header from "../components/Header.tsx";
 import Footer from "../components/Footer.tsx";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import Search from "../components/Search.tsx";
 import ApartmentItem from "../components/ApartmentItem.tsx";
 import {
@@ -39,6 +39,23 @@ export default function ApartmentList() {
     const [pageArray, setPageArray] = useState<number[]>([])
     const [loading, setLoading] = useState(true)
 
+    const abortControllerRef = useRef<AbortController | null>(null);
+
+    // Save param on url when refresh
+    useEffect(() => {
+        setNameSearch(name || "");
+        setTypeSearch(type || "");
+        setBedroomSearch(bedroom || "");
+        if (priceMin && priceMax) {
+            const min = (parseInt(priceMin) / 1000000).toString();
+            const max = priceMax === "0" ? "0" : (parseInt(priceMax) / 1000000).toString();
+            setPriceSearch(`${min}-${max}`);
+        } else {
+            setPriceSearch("");
+        }
+    }, []);
+
+
     useEffect(() => {
         handleSetSearchParams()
     }, [nameSearch, typeSearch, bedroomSearch, priceSearch])
@@ -64,26 +81,41 @@ export default function ApartmentList() {
                 max = (maxNumber * 1000000) + ""
             }
         }
-        // Check value = "" => remove from searchParams
-        setSearchParams(
-            Object.fromEntries(
-                Object.entries({
-                    name: nameSearch,
-                    type: typeSearch,
-                    bedroom: bedroomSearch,
-                    priceMin: min,
-                    priceMax: max,
-                }).filter(([, v]) => v !== "")
-            )
+
+        // Change searchParam to Object to get current param
+        const currentParams = Object.fromEntries(searchParams.entries())
+
+        const updateParams = {
+            ...currentParams,
+            name: nameSearch,
+            type: typeSearch,
+            bedroom: bedroomSearch,
+            priceMin: min,
+            priceMax: max,
+        }
+
+        // Change object => Object[] [key, value] => Check value = "" => remove [key, value] from searchParams
+        const filteredParams = Object.fromEntries(
+            Object.entries(updateParams).filter(([, v]) => v !== "")
         );
+
+        setSearchParams(filteredParams)
     }
 
     // Get list with filter, sort option
     const handleGetApartments = async () => {
         setLoading(true)
+
+        // Check if exist => remove (remove previous request)
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort()
+        }
+
+        abortControllerRef.current = new AbortController();
+
         try {
             const response = await axios.get(`${envVar.API_URL}/apartments`, {
-                // Check remove param == null or undefined
+                // Check remove [key, value] param == null or undefined
                 params: Object.fromEntries( // make Object[] [key, value] => Object {page: 1, ...}
                     Object.entries({ // make params => Object[] [key, value] == [ [page, 1], [name, null],..]
                         page: currentPage,
@@ -94,10 +126,12 @@ export default function ApartmentList() {
                         priceMax,
                         sort
                     }).filter(([, v]) => v !== null && v !== undefined)
-                )
+                ),
+                signal: abortControllerRef.current.signal // add signal in request => can cancel request when needed
             });
 
             if (response.status == 200 && response.data.status == "success" && response.data.statusCode == 200) {
+                console.log(response.data.data)
                 setPages(response.data.data)
             }
 
@@ -150,7 +184,16 @@ export default function ApartmentList() {
                 newPage = (pageNumber ?? 1)
                 break
         }
-        setSearchParams({page: newPage.toString()})
+
+        // change searchParam to Object to get current param
+        const currentParams = Object.fromEntries(searchParams.entries());
+
+        const updateParams = {
+            ...currentParams,
+            page: newPage.toString()
+        }
+
+        setSearchParams(updateParams);
     }
 
     return (
@@ -158,10 +201,11 @@ export default function ApartmentList() {
             <Header/>
 
             <div className="flex-grow p-8 md:p-12">
-                <Search setName={setNameSearch} setType={setTypeSearch} setBedroom={setBedroomSearch} setPrice={setPriceSearch}/>
+                <Search namePrevalue={nameSearch} typePrevalue={typeSearch} bedroomPrevalue={bedroomSearch} pricePrevalue={{name: "", value: priceSearch}}
+                        setName={setNameSearch} setType={setTypeSearch} setBedroom={setBedroomSearch} setPrice={setPriceSearch}/>
 
                 <div className="flex items-center justify-between w-full border-t border-lightGray mt-8 pt-8">
-                    <p className="text-xl">6 kết quả</p>
+                    <p className="text-xl">{pages?.totalElements} kết quả</p>
                     <div className="border outline-none border-darkGray rounded py-4 lg:py-2 px-4">
                         <select className="outline-none pr-2 text-darkGray select-none cursor-pointer" defaultValue="" onChange={(e) => setSearchParams({sort: e.target.value})}>
                             <option value="" disabled>Sắp xếp</option>
@@ -176,50 +220,60 @@ export default function ApartmentList() {
                     {loading ? Array(6).fill(0).map((_, index) => (
                         <SkeletonApartmentItem key={index}/>
                     )) : (
-                        apartments.map((apartment: ApartmentListItem) => (
-                            <ApartmentItem key={apartment.slug} apartment={apartment} />
-                        ))
+                        apartments.length > 0 ? (
+                            apartments.map((apartment: ApartmentListItem) => (
+                                <ApartmentItem key={apartment.slug} apartment={apartment} />
+                            ))
+                        ) : (
+                            <div>
+                                <p>Không có kết quả phù hợp</p>
+                            </div>
+                        )
                     )}
 
                 </div>
 
-                <div className="flex flex-wrap mt-8 gap-3 md:gap-6 mx-auto w-fit select-none">
+                {pages?.totalElements != 0 ? (
+                    <div className="flex flex-wrap mt-8 gap-3 md:gap-6 mx-auto w-fit select-none">
 
-                    {/*
+                        {/*
                         Show pagination
                         text-lightGray, border-lightGray == disabled => pointer-events-none (prevent event)
                     */}
 
-                    <MdKeyboardDoubleArrowLeft
-                        className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2
+                        <MdKeyboardDoubleArrowLeft
+                            className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2
                                     ${currentPage == 1 ? "text-lightGray border-lightGray pointer-events-none" : "text-lightGreen border-lightGreen cursor-pointer hover:bg-lightGreen hover:text-white duration-300 ease-in-out"}`}
-                    onClick={() => handleChangePage(-2, 0)}/>
+                            onClick={() => handleChangePage(-2, 0)}/>
 
-                    <MdKeyboardArrowLeft
-                        className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2
+                        <MdKeyboardArrowLeft
+                            className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2
                                     ${currentPage == 1 ? "text-lightGray border-lightGray pointer-events-none" : "text-lightGreen border-lightGreen cursor-pointer hover:bg-lightGreen hover:text-white duration-300 ease-in-out"}`}
-                    onClick={() => handleChangePage(-1, 0)}/>
+                            onClick={() => handleChangePage(-1, 0)}/>
 
-                    {pageArray.map((pageNumber: number) => (
-                        <span key={pageNumber}
-                              className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-xl md:text-2xl border-2 text-center
+                        {pageArray.map((pageNumber: number) => (
+                            <span key={pageNumber}
+                                  className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-xl md:text-2xl border-2 text-center
                                     ${currentPage == pageNumber ? "text-white border-lightGreen bg-lightGreen pointer-events-none" : "text-lightGreen border-lightGreen cursor-pointer hover:bg-lightGreen hover:text-white duration-300 ease-in-out"}`}
-                              onClick={() => handleChangePage(0, pageNumber)}>
+                                  onClick={() => handleChangePage(0, pageNumber)}>
                             {pageNumber}
                         </span>
-                    ))}
+                        ))}
 
-                    <MdKeyboardArrowRight
-                        className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2
+                        <MdKeyboardArrowRight
+                            className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2
                                     ${currentPage == pages?.totalPages ? "text-lightGray border-lightGray pointer-events-none" : "text-lightGreen border-lightGreen cursor-pointer hover:bg-lightGreen hover:text-white duration-300 ease-in-out"}`}
-                    onClick={() => handleChangePage(1, 0)}/>
+                            onClick={() => handleChangePage(1, 0)}/>
 
-                    <MdKeyboardDoubleArrowRight
-                        className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2
+                        <MdKeyboardDoubleArrowRight
+                            className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2
                                     ${currentPage == pages?.totalPages ? "text-lightGray border-lightGray pointer-events-none" : "text-lightGreen border-lightGreen cursor-pointer hover:bg-lightGreen hover:text-white duration-300 ease-in-out"}`}
-                        onClick={() => handleChangePage(2, 0)}/>
+                            onClick={() => handleChangePage(2, 0)}/>
 
-                </div>
+                    </div>
+                ) : ""}
+
+
 
             </div>
 
