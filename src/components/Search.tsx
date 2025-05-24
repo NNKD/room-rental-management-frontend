@@ -84,6 +84,7 @@ export default function Search({namePrevalue, typePrevalue, bedroomPrevalue, pri
                     <div className="border outline-none border-darkGray rounded py-4 lg:py-2 px-4">
                         <select className="outline-none bg-transparent pr-2 text-darkGray w-full select-none cursor-pointer" defaultValue="" onChange={(e) => setType?.(e.target.value)}>
                             <option value="" disabled>Loại căn hộ</option>
+                            <option value="" className="text-black">Tất cả</option>
 
                             {types.map((type, index) => (
                                 typePrevalue == type ? (
@@ -104,6 +105,7 @@ export default function Search({namePrevalue, typePrevalue, bedroomPrevalue, pri
                     <div className="border outline-none border-darkGray rounded py-4 lg:py-2 px-4">
                         <select className="outline-none bg-transparent pr-2 text-darkGray w-full select-none cursor-pointer" defaultValue="" onChange={(e) => setBedroom?.(e.target.value)}>
                             <option value="" disabled>Số phòng ngủ</option>
+                            <option value="" className="text-black">Tất cả</option>
 
                             {bedrooms.map((numberBed, index) => (
                                 Number(bedroomPrevalue) == numberBed ? (
