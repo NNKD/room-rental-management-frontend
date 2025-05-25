@@ -7,7 +7,18 @@ export interface ApartmentListItem {
     price: number;
     image: string;
 }
-
+export interface ApartmentResponse {
+    id: number;
+    name: string;
+    slug: string;
+    brief: string;
+    description: string;
+    hot: number;
+    price: number;
+    typeId: number;
+    statusId: number;
+    image?: string; // Nếu backend có trả về image
+}
 /*
     T is data type Ex: ApartmentManagementType, ApartmentTypeManagementType, ...
     slug: field name of T

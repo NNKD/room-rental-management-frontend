@@ -1,17 +1,16 @@
 import { useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 export default function App() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token"); // Kiểm tra token
+  const location = useLocation();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (token) {
+    if (location.pathname === "/" && token) {
       navigate("/home");
-    } else {
-      navigate("/login");
     }
-  }, [token, navigate]);
+  }, [token, location.pathname, navigate]);
 
   return (
       <div>

@@ -18,11 +18,11 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <Login />, // Mặc định hiển thị Login tại /
+                element: <Login />,
             },
             {
                 path: "home",
-                element: <Home />, // Trang Home tại /home
+                element: <Home />,
             },
             {
                 path: "apartments",
