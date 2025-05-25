@@ -1,20 +1,12 @@
-import { useEffect } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
 
 export default function App() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    if (location.pathname === "/" && token) {
-      navigate("/home");
-    }
-  }, [token, location.pathname, navigate]);
-
   return (
-      <div>
-        <Outlet />
-      </div>
+      <AuthProvider>
+        <div>
+          <Outlet />
+        </div>
+      </AuthProvider>
   );
 }

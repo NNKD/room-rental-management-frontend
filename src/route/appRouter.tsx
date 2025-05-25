@@ -1,4 +1,5 @@
-import { createBrowserRouter } from "react-router-dom";
+// router/index.tsx
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../App.tsx";
 import Home from "../pages/Home.tsx";
 import ApartmentList from "../pages/ApartmentList.tsx";
@@ -10,6 +11,7 @@ import DashBoardContent from "../pages/dashboard/DashBoardContent.tsx";
 import ApartmentManagement from "../pages/dashboard/ApartmentManagement.tsx";
 import ApartmentTypeManagement from "../pages/dashboard/ApartmentTypeManagement.tsx";
 import ApartmentPriceService from "../pages/dashboard/ApartmentPriceService.tsx";
+import ProtectedRoute from "../components/ProtectedRoute.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -18,29 +20,53 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
+                element: <Navigate to="/login" replace />, // Redirect về login mặc định
+            },
+            {
+                path: "login",
                 element: <Login />,
             },
             {
                 path: "home",
-                element: <Home />,
+                element: (
+                    <ProtectedRoute>
+                        <Home />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: "apartments",
-                element: <ApartmentList />,
+                element: (
+                    <ProtectedRoute>
+                        <ApartmentList />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: "amenities",
-                element: <Amenities />,
+                element: (
+                    <ProtectedRoute>
+                        <Amenities />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: "apartment/:slug",
-                element: <ApartmentDetail />,
+                element: (
+                    <ProtectedRoute>
+                        <ApartmentDetail />
+                    </ProtectedRoute>
+                ),
             },
         ],
     },
     {
         path: "/dashboard",
-        element: <DashBoardLayout />,
+        element: (
+            <ProtectedRoute>
+                <DashBoardLayout />
+            </ProtectedRoute>
+        ),
         children: [
             {
                 index: true,
