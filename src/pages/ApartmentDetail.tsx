@@ -3,25 +3,73 @@ import Header from "../components/Header.tsx";
 import Footer from "../components/Footer.tsx";
 import {FiPhone} from "react-icons/fi";
 import {IoIosArrowBack, IoIosArrowForward} from "react-icons/io";
-import {useState} from "react";
-import {HiOutlineBuildingOffice2} from "react-icons/hi2";
+import {useEffect, useState} from "react";
 import {RiCustomSize} from "react-icons/ri";
 import {CiLocationOn} from "react-icons/ci";
-import {relationApartment} from "../data.ts";
-import {ApartmentListItem} from "../type.ts";
-import ApartmentItem from "../components/ApartmentItem.tsx";
+import {FaHome} from "react-icons/fa";
+import axios from "axios";
+import {envVar} from "../utils/EnvironmentVariables.ts";
+import {ApartmentDetailType} from "../types/Apartment.ts";
+import {calPriceDiscount, formatCurrency} from "../utils/NumberCalculate.ts";
+import GoTop from "../components/GoTop.tsx";
+import {useNotice} from "../hook/useNotice.ts";
+import {NoticeType} from "../types/Context.ts";
 
 export default function ApartmentDetail() {
     const {slug} = useParams();
     const [indexCarousel, setIndexCarousel] = useState(0)
+    const [apartmentDetail, setApartmentDetail] = useState<ApartmentDetailType>()
+    const [currentImg, setCurrentImg] = useState("")
+    const [durationMonth, setDurationMonth] = useState("1")
+    const [visibleAmount, setVisibleAmount] = useState(3)
+    const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
+    const [messageForm, setMessageForm] = useState("")
+    const {setMessage, setType} = useNotice()
 
-    const images = [
-        "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
-        "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
-        "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
-        "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
-        "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp",
-    ]
+    useEffect(() => {
+        handleGetApartmentDetail()
+    }, [slug]);
+
+    useEffect(() => {
+        if (apartmentDetail?.images) {
+            setCurrentImg(apartmentDetail.images[0].url);
+        }
+    }, [apartmentDetail]);
+
+    useEffect(() => {
+        window.addEventListener("resize", handleGetAmount);
+        handleGetAmount()
+        return () => {
+            window.removeEventListener("resize", handleGetAmount);
+        }
+    }, []);
+
+    const handleGetAmount = () => {
+        // Mobile => show 1
+        if (window.innerWidth < 760) {
+            setVisibleAmount(1)
+        }else if (window.innerWidth < 1024) { // tablet => show 2
+            setVisibleAmount(2)
+        }else { // desktop => show 3
+            setVisibleAmount(3)
+        }
+    }
+
+    const handleGetApartmentDetail = async () => {
+        try {
+            const response = await axios.get(`${envVar.API_URL}/apartments/${slug}`);
+
+            if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
+                setApartmentDetail(response.data.data);
+            }
+
+        }catch (error) {
+            console.log(error)
+            setMessage("Đã có lỗi xảy ra: "+ error)
+            setType(NoticeType.ERROR)
+        }
+    }
 
     /*
      handle back or forward carousel
@@ -32,11 +80,32 @@ export default function ApartmentDetail() {
     const handleCarousel = (type: number) => {
         if (type === 1) {
             // Max = length - visible. nếu nó lớn hơn thì next tiếp sẽ thiếu element
-            const visibleAmount = window.innerWidth < 760 ? 2 : 3
-            setIndexCarousel(Math.min(indexCarousel + 1, images.length - visibleAmount))
+            setIndexCarousel(Math.min(indexCarousel + 1, (apartmentDetail?.images.length || 0) - visibleAmount))
         }else if (type === -1) {
             // Min = 0 (vị trí đầu)
             setIndexCarousel(Math.max(0, indexCarousel - 1))
+        }
+    }
+
+    const handleSubmitForm = async () => {
+        try {
+            const response = await axios.post(`${envVar.API_URL}/apartments/${slug}/form`, {
+                body: {
+                    slug: slug,
+                    name: username,
+                    message: messageForm,
+                },
+            })
+
+            if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
+                setType(NoticeType.SUCCESS)
+                setMessage("Gửi thành công")
+            }
+
+        }catch (error) {
+            console.log(error)
+            setType(NoticeType.ERROR)
+            setMessage("Đã có lỗi xảy ra: "+ error)
         }
     }
 
@@ -45,11 +114,11 @@ export default function ApartmentDetail() {
             <Header/>
 
             <div className="flex-grow p-8 md:p-12">
-                <h2 className="font-bold text-2xl md:text-3xl lg:text-4xl">Exclusive 5-room residence with a rooftop terrace {slug}</h2>
+                <h2 className="font-bold text-2xl md:text-3xl lg:text-4xl">{apartmentDetail?.name} - {apartmentDetail?.brief}</h2>
                 <div className="flex flex-col lg:flex-row gap-10 mt-6">
                     <div className="lg:w-[70%]">
                         <div className="aspect-[16/9] overflow-hidden rounded select-none">
-                            <img src="https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp" className="w-full h-full object-cover rounded"/>
+                            <img src={apartmentDetail?.images.find(img => img.url == currentImg)?.url} className="w-full h-full object-cover rounded"/>
                         </div>
                         <div className="mt-4 mb-8 flex items-center justify-center gap-3 select-none">
                             <div className={`w-[40px] h-[40px] md:w-[56px] md:h-[56px] flex items-center justify-center rounded-full flex-shrink-0 text-white
@@ -58,15 +127,14 @@ export default function ApartmentDetail() {
                                 <IoIosArrowBack className="w-[24px] h-[24px]"/>
                             </div>
 
-                            {/* show 3 images. Check if mobile (< 760) show 2 images */}
-                            {images.slice(indexCarousel, indexCarousel + (window.innerWidth < 760 ? 2 : 3)).map((image, index) => (
-                                <div key={index} className="aspect-[16/9] overflow-hidden rounded">
-                                    <img src={image}  className="w-full h-full object-cover rounded"/>
+                            {apartmentDetail?.images.slice(indexCarousel, indexCarousel + visibleAmount).map((image, index) => (
+                                <div key={index} className="aspect-[16/9] w-[20%] overflow-hidden rounded cursor-pointer" onClick={() => setCurrentImg(image.url)}>
+                                    <img src={image.url}  className="w-full h-full object-cover rounded"/>
                                 </div>
                             ))}
 
                             <div className={`w-[40px] h-[40px] md:w-[56px] md:h-[56px] flex items-center justify-center text-white  rounded-full flex-shrink-0
-                                            ${indexCarousel == (images.length - 3) ? "bg-lightBlue pointer-events-none" : " bg-lightGreen cursor-pointer hover:bg-lightGreenHover transition-all duration-300 ease-in-out"}`}
+                                            ${indexCarousel == Math.max(0, (apartmentDetail?.images.length || 0) - visibleAmount) ? "bg-lightBlue pointer-events-none" : " bg-lightGreen cursor-pointer hover:bg-lightGreenHover transition-all duration-300 ease-in-out"}`}
                                  onClick={() => handleCarousel(1)}>
                                 <IoIosArrowForward className="w-[24px] h-[24px]"/>
                             </div>
@@ -74,105 +142,78 @@ export default function ApartmentDetail() {
 
                         <div className="flex flex-col gap-4 md:flex-row justify-around">
                             <div className="flex gap-2 items-center">
-                                <HiOutlineBuildingOffice2 className="text-5xl text-lightGreen"/>
-                                <span className="font-bold text-xl">a Flat</span>
+                                <FaHome className="text-5xl text-lightGreen"/>
+                                <span className="font-bold text-xl">{apartmentDetail?.type}</span>
                             </div>
                             <div className="flex gap-2 items-center">
                                 <RiCustomSize className="text-5xl text-lightGreen"/>
-                                <span className="font-bold text-xl">224 m<sup>2</sup></span>
+                                <span className="font-bold text-xl">{(apartmentDetail?.width || 0) * (apartmentDetail?.height || 0)} m<sup>2</sup></span>
                             </div>
                             <div className="flex gap-2 items-center">
                                 <CiLocationOn  className="text-5xl text-lightGreen"/>
-                                <span className="font-bold text-xl">Barcelona I.</span>
+                                <span className="font-bold text-xl">Tầng {apartmentDetail?.floor}</span>
                             </div>
                         </div>
 
                         <div className="md:px-16 mx-auto">
-                            <div className="my-8 bg-lightBlue flex flex-col md:flex-row gap-4 justify-between p-4 md:px-6 md:py-8 rounded">
+                            <div className="my-8 bg-lightBlue flex flex-col md:flex-row gap-10 items-center justify-between p-4 md:px-6 md:py-8 rounded">
+                                <div className="bg-lightGreen text-center w-fit font-bold rounded px-8 md:px-12 py-3">
+                                    <p className="text-xl text-white">Thời hạn thuê</p>
+                                    <div className="border-2 border-white mt-4 p-2 rounded">
+                                        <select className="outline-none bg-transparent pr-2 text-white w-fit select-none cursor-pointer" onChange={(e) => setDurationMonth(e.target.value)}>
+
+                                            {apartmentDetail?.discounts.map((ad, index) => (
+                                                <option key={index} value={ad.duration_month} className="text-black">{
+                                                    ad.duration_month} tháng
+                                                </option>
+                                            ))}
+
+                                        </select>
+                                    </div>
+                                </div>
                                 <div className="flex flex-col justify-center">
-                                    <span className="text-base">Mortgage since:</span>
-                                    <span className="text-xl font-bold text-lightGreen">807.57 €/ month</span>
+                                    <span className="text-base">Giá mỗi tháng:</span>
+                                    <span className="text-xl font-bold text-lightGreen">
+                                        {formatCurrency(calPriceDiscount(apartmentDetail?.price || 0, apartmentDetail?.discounts.find(ad => ad.duration_month == Number(durationMonth))?.discount_percent || 0))}
+                                        / tháng
+                                    </span>
                                 </div>
-                                <div className="bg-lightGreen text-center w-fit text-white font-bold rounded px-8 md:px-12 py-3 cursor-pointer hover:bg-lightGreenHover duration-300 transition-all ease-in-out">
-                                    Get a mortage
-                                </div>
-                            </div>
-
-                            <div>
-                                <p className="text-base">
-                                    Real estate offers an exclusive FOR SALE elegant large 5-room apartment on Vincent Hložník Street in the Condominium Renaissance residential complex.
-                                </p>
-
-                                <p className="my-4 text-base">
-                                    Thanks to its unique location, the property has access to a large Japanese garden with an area of 35 m², which can be accessed directly from the bedroom. The front of the apartment is at the height of the third floor, so the terrace is located just above the treetops, which gives the apartment a unique atmosphere. Overall, the apartment has a direct view of the Danube River and the surrounding forests.
-                                </p>
-
-                                <p className="text-base">
-                                    The apartment offers extraordinary comfort, has a first-class interior from the leading architectural office Cakov Makara and equipment from renowned world furniture manufacturers. The overall atmosphere of the apartment is completed
-                                </p>
                             </div>
 
                             <div className="my-10">
-                                <h2 className="mb-4 font-bold text-xl">Basic characteristics:</h2>
+                                <h2 className="mb-4 font-bold text-xl">Thông tin cơ bản:</h2>
                                 <ul className="list-disc pl-6">
-                                    <li>number of rooms: 5</li>
-                                    <li>2nd floor of 5</li>
-                                    <li>apartment area: 223.92 m2</li>
-                                    <li>terrace area: 27.09 m2</li>
-                                    <li>balcony area: 6.63 m2</li>
-                                    <li>area of the Japanese garden: 35 m2</li>
+                                    <li>Số phòng ngủ: {apartmentDetail?.bedrooms}</li>
+                                    <li>Tầng: {apartmentDetail?.floor}</li>
+                                    <li>Diện tích: {(apartmentDetail?.width || 0) * (apartmentDetail?.height || 0)} m<sup>2</sup></li>
+                                    {
+                                        (apartmentDetail?.balcony || 0) > 0 ? (
+                                            <li>Diện tích ban công: {apartmentDetail?.balcony} m<sup>2</sup></li>
+                                        ) : ""
+                                    }
                                 </ul>
                             </div>
 
                             <div >
-                                <h2 className="font-bold text-xl">Layout solution:</h2>
+                                <h2 className="font-bold text-xl">Mô tả:</h2>
 
                                 <p className="my-4">
-                                    Kitchen, living room, study, 4 bedrooms, 2 bathrooms, wardrobe, fireplace. Two garage parking spaces in the underground garage.
+                                    {apartmentDetail?.brief}
                                 </p>
-
-                                <p>
-                                    The apartment is divided into day and night zone. The living area consists of a large living room, which is connected to the kitchen and dining room. In this part of the apartment there is also a study, which is very subtly separated from the living area by an elegant glass wall and wooden beams. From the living area there is a smooth transition to the night wing, where there are two rooms, a wardrobe, a shared bathroom and a master bedroom with a separate bathroom.
-                                </p>
-                            </div>
-
-                            <div className="my-10">
-                                <h2 className="font-bold text-xl">Execution and furnishing of the apartment:</h2>
 
                                 <p className="my-4">
-                                    The apartment has intelligent control via a mobile application. Premium natural materials - wood, stone tiles, cast concrete - are found in many places in the living space.
+                                    {apartmentDetail?.description}
                                 </p>
 
-                                <p>
-                                    The kitchen of the LEICHT brand with SIEMENS appliances has been made to measure, bathrooms and toilets are equipped with sanitary ware from the manufacturers VILLEROY BOCH and HANSGROHE. In the master bathroom you will find the design edition of the AXOR MASSAUD brand, the master bedroom is dominated by the RUF BETTEN bed. The living room is equipped with ROLF BENZ brand products.
-                                </p>
                             </div>
 
-                            <div>
-                                <h2 className="font-bold text-xl">Location:</h2>
-
-                                <p className="my-4">
-                                    The apartment has intelligent control via a mobile application. Premium natural materials - wood, stone tiles, cast concrete - are found in many places in the living space.
-                                </p>
-
-                                <p>
-                                    The property is located above Passeig de Gràcia, there is an excellent transport connection. The nearby housing estate provides complete civic amenities, including shops, cafes, restaurants, schools, kindergartens and many other benefits.
-                                </p>
-
-                                <div className="rounded mt-4 aspect-[16/9] overflow-hidden">
-                                    <iframe
-                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.220483632046!2d106.78897027332259!3d10.870827989283695!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752700665a002d%3A0xfc064824c164728b!2zS2hvYSBDw7RuZyBuZ2jhu4cgVGjDtG5nIHRpbiwgxJBIIE7DtG5nIEzDom0gVFAuIEhDTQ!5e0!3m2!1svi!2s!4v1744011929039!5m2!1svi!2s"
-                                        width="600" height="450" className="w-full h-full" allowFullScreen={true} loading="lazy"
-                                        referrerPolicy="no-referrer-when-downgrade"></iframe>
-                                </div>
-                            </div>
                         </div>
 
 
                     </div>
                     <div className="lg:w-[30%]">
                         <div className="p-4 md:p-10 rounded bg-lightBlue">
-                            <h2 className="font-bold text-xl">Contact us</h2>
+                            <h2 className="font-bold text-xl">Liên hệ với chúng tôi</h2>
                             <div className="flex items-center my-2 gap-2">
                                 <img
                                     src="https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp"
@@ -186,85 +227,97 @@ export default function ApartmentDetail() {
                                 </div>
                             </div>
                             <div>
-                                <p className="mb-1 text-base">Full name</p>
-                                <input type="text" placeholder="Your full name" className="p-2 w-full text-base outline-none border border-darkGray rounded"/>
+                                <p className="mb-1 text-base">Họ tên</p>
+                                <input type="text" placeholder="Họ tên"
+                                       onChange={(e) => setUsername(e.target.value)}
+                                       className="p-2 w-full text-base outline-none border border-darkGray rounded"/>
                             </div>
 
                             <div className="my-4">
                                 <p className="mb-1 text-base">Email</p>
-                                <input type="email" placeholder="Your email" className="p-2 w-full text-base outline-none border border-darkGray rounded"/>
+                                <input type="email" value={email} placeholder="Email"
+                                        onChange={(e) => setEmail(e.target.value)}
+                                       className="p-2 w-full text-base outline-none border border-darkGray rounded required"/>
                             </div>
 
                             <div>
-                                <p className="mb-1 text-base">Your Message</p>
-                                <textarea placeholder="Your message" rows={10} className="p-2 w-full text-base resize-none outline-none border border-darkGray rounded">
+                                <p className="mb-1 text-base">Lời nhắn</p>
+                                <textarea placeholder="Lời nhắn" rows={10}
+                                          onChange={(e) => setMessageForm(e.target.value)}
+                                          className="p-2 w-full text-base resize-none outline-none border border-darkGray rounded">
 
                                 </textarea>
                             </div>
-                            <div className="border-lightGreen p-2 text-center text-base border-2 font-bold text-lightGreen rounded mt-4 hover:bg-lightGreen hover:text-white duration-300 transition-all cursor-pointer ease-in-out">
-                                Send Message
+                            <div className="border-lightGreen p-2 text-center text-base border-2 font-bold text-lightGreen rounded mt-4 cursor-pointer hover:bg-lightGreen hover:text-white duration-300 transition-all ease-in-out"
+                                onClick={() => handleSubmitForm()}>
+                                Gửi lời nhắn
                             </div>
                         </div>
                         <div className="p-4 md:p-10 rounded mt-10 bg-lightBlue">
                             <div className="flex flex-col gap-4">
-                                <h2 className="font-bold text-xl">Brief characteristics</h2>
+                                <h2 className="font-bold text-xl">Thông tin căn hộ</h2>
                                 <div>
-                                    <span className="text-base font-bold">City: </span>
-                                    <span>Barcelona I</span>
+                                    <span className="text-base font-bold">Tầng: </span>
+                                    <span>{apartmentDetail?.floor}</span>
                                 </div>
                                 <div>
-                                    <span className="text-base font-bold">Street: </span>
-                                    <span>Vincent ala Carne</span>
+                                    <span className="text-base font-bold">Số phòng ngủ: </span>
+                                    <span>{apartmentDetail?.bedrooms}</span>
                                 </div>
                                 <div>
-                                    <span className="text-base font-bold">Garages: </span>
-                                    <span>2 cars</span>
+                                    <span className="text-base font-bold">Số nhà bếp: </span>
+                                    <span>{apartmentDetail?.kitchens}</span>
                                 </div>
                                 <div>
-                                    <span className="text-base font-bold">Number of rooms: </span>
-                                    <span>5</span>
+                                    <span className="text-base font-bold">Số nhà vệ sinh: </span>
+                                    <span>{apartmentDetail?.bathrooms}</span>
                                 </div>
                                 <div>
-                                    <span className="text-base font-bold">Usable area: </span>
-                                    <span>224 m<sup>2</sup></span>
+                                    <span className="text-base font-bold">Diện tích: </span>
+                                    <span>{(apartmentDetail?.width || 0) * (apartmentDetail?.height || 0)} m<sup>2</sup></span>
                                 </div>
+
                                 <div>
-                                    <span className="text-base font-bold">Total area: </span>
-                                    <span>307 m<sup>2</sup></span>
+                                    <span className="text-base font-bold">Ban công: </span>
+                                    <span>{(apartmentDetail?.balcony || 0) > 0 ? "Có" : "Không"}</span>
                                 </div>
+
+                                {
+                                    (apartmentDetail?.balcony || 0) > 0 ? (
+                                        <div>
+                                            <span className="text-base font-bold">Diện tích ban công: </span>
+                                            <span>{apartmentDetail?.balcony} m<sup>2</sup></span>
+                                        </div>
+                                    ) : ""
+                                }
+
                                 <div>
-                                    <span className="text-base font-bold">Insulated object: </span>
-                                    <span>Yes</span>
+                                    <span className="text-base font-bold">Sân thượng riêng: </span>
+                                    <span>{(apartmentDetail?.terrace || 0) > 0 ? "Có" : "Không"}</span>
                                 </div>
+
+                                {
+                                    (apartmentDetail?.terrace || 0) > 0 ? (
+                                        <div>
+                                            <span className="text-base font-bold">Diện tích sân thượng: </span>
+                                            <span>{apartmentDetail?.terrace} m<sup>2</sup></span>
+                                        </div>
+                                    ) : ""
+                                }
+
                                 <div>
-                                    <span className="text-base font-bold">Balcony: </span>
-                                    <span>Yes</span>
-                                </div>
-                                <div>
-                                    <span className="text-base font-bold">Terrace: </span>
-                                    <span>Yes</span>
-                                </div>
-                                <div>
-                                    <span className="text-base font-bold">Number of bathrooms: </span>
-                                    <span>1</span>
+                                    <span className="text-base font-bold">Nội thất: </span>
+                                    <span>{apartmentDetail?.furniture}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="mt-20 text-center">
-                    <h2 className="font-bold text-xl">You might be interested in</h2>
-                    <div className="flex flex-col gap-6 md:flex-row items-center mt-6 justify-evenly">
-                        {relationApartment.map((apartment: ApartmentListItem) => (
-                            <div className="md:w-1/3">
-                                <ApartmentItem key={apartment.id} apartment={apartment} />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
             </div>
+
+            <GoTop/>
+
 
             <Footer/>
         </div>

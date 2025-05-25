@@ -1,6 +1,6 @@
 import {ApartmentTypeManagementType, TableHeader} from "../../type.ts";
 import DynamicTable from "../../components/DynamicTable.tsx";
-import {formatCurrency} from "../../utils/NumberFormat.ts";
+import {formatCurrency} from "../../utils/NumberCalculate.ts";
 
 export default function ApartmentTypeManagement() {
     const headers: TableHeader<ApartmentTypeManagementType>[] = [

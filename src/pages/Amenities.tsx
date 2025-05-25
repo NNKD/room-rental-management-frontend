@@ -15,7 +15,7 @@ import {
     MdOutlineWorkspacePremium
 } from "react-icons/md";
 import {GiTreeSwing, GiUnbalanced} from "react-icons/gi";
-import {formatCurrency} from "../utils/NumberFormat.ts";
+import {formatCurrency} from "../utils/NumberCalculate.ts";
 
 export default function Amenities() {
     return (

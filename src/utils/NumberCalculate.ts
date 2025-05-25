@@ -4,3 +4,7 @@ export const formatCurrency = (price : number) => {
         currency: 'VND',
     }).format(price);
 }
+
+export const calPriceDiscount = (price: number, discount_percent: number) => {
+    return price * (1 - discount_percent/100);
+}

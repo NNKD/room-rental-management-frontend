@@ -1,5 +1,5 @@
 
-import {formatCurrency} from "../utils/NumberFormat.ts";
+import {formatCurrency} from "../utils/NumberCalculate.ts";
 import {Link} from "react-router-dom";
 import {ApartmentListItem} from "../types/Apartment.ts";
 
