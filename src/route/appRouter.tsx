@@ -1,4 +1,4 @@
-import {createBrowserRouter} from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import App from "../App.tsx";
 import Home from "../pages/Home.tsx";
 import ApartmentList from "../pages/ApartmentList.tsx";
@@ -6,58 +6,58 @@ import ApartmentDetail from "../pages/ApartmentDetail.tsx";
 import Login from "../pages/Login.tsx";
 import Amenities from "../pages/Amenities.tsx";
 import DashBoardLayout from "../pages/dashboard/DashBoardLayout.tsx";
-import ApartmentManagement from "../pages/dashboard/ApartmentManagement.tsx";
 import DashBoardContent from "../pages/dashboard/DashBoardContent.tsx";
+import ApartmentManagement from "../pages/dashboard/ApartmentManagement.tsx";
 import ApartmentTypeManagement from "../pages/dashboard/ApartmentTypeManagement.tsx";
-import Contact from "../pages/dashboard/Contact.tsx";
+import ApartmentPriceService from "../pages/dashboard/ApartmentPriceService.tsx";
 
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <App/>,
+        element: <App />,
         children: [
             {
                 index: true,
-                element: <Home/>
+                element: <Login />, // Mặc định hiển thị Login tại /
             },
             {
-                path: "login",
-                element: <Login/>
+                path: "home",
+                element: <Home />, // Trang Home tại /home
             },
             {
                 path: "apartments",
-                element: <ApartmentList/>
+                element: <ApartmentList />,
             },
             {
                 path: "amenities",
-                element: <Amenities/>
+                element: <Amenities />,
             },
             {
                 path: "apartment/:slug",
-                element: <ApartmentDetail/>
-            }
-        ]
+                element: <ApartmentDetail />,
+            },
+        ],
     },
     {
         path: "/dashboard",
-        element: <DashBoardLayout/>,
+        element: <DashBoardLayout />,
         children: [
             {
                 index: true,
-                element: <DashBoardContent/>
+                element: <DashBoardContent />,
             },
             {
-              path: "apartment-management",
-              element: <ApartmentManagement/>
+                path: "apartment-management",
+                element: <ApartmentManagement />,
             },
             {
-              path: "apartment-type-management",
-              element: <ApartmentTypeManagement/>
+                path: "apartment-type-management",
+                element: <ApartmentTypeManagement />,
             },
             {
-                path: "contact",
-                element: <Contact></Contact>
-            }
-        ]
-    }
-])
+                path: "apartment-price-service",
+                element: <ApartmentPriceService />,
+            },
+        ],
+    },
+]);

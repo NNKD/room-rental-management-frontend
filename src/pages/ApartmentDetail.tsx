@@ -31,11 +31,11 @@ export default function ApartmentDetail() {
 
     const handleCarousel = (type: number) => {
         if (type === 1) {
-            // Check max = length - 3 (tablet, desktop)| length - 2 (mobile). if max = lengh - 1 => > length - 3 not show enough 3 images
+            // Max = length - visible. nếu nó lớn hơn thì next tiếp sẽ thiếu element
             const visibleAmount = window.innerWidth < 760 ? 2 : 3
             setIndexCarousel(Math.min(indexCarousel + 1, images.length - visibleAmount))
         }else if (type === -1) {
-            // Check min = 0 (first img)
+            // Min = 0 (vị trí đầu)
             setIndexCarousel(Math.max(0, indexCarousel - 1))
         }
     }
