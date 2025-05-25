@@ -19,6 +19,7 @@ export interface ApartmentResponse {
     statusId: number;
     image?: string; // Nếu backend có trả về image
 }
+
 /*
     T is data type Ex: ApartmentManagementType, ApartmentTypeManagementType, ...
     slug: field name of T

@@ -6,6 +6,7 @@ export default function ApartmentItem({ apartment }: { apartment: ApartmentListI
     // Xử lý trường hợp image rỗng hoặc undefined
     const apartmentImage = apartment.image || "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp";
 
+
     return (
         <Link
             to={`/apartment/${apartment.slug}`}
@@ -18,6 +19,7 @@ export default function ApartmentItem({ apartment }: { apartment: ApartmentListI
                     className="w-full h-full object-cover rounded-t hover:scale-125 transition-all duration-300 ease-in-out"
                     alt={`${apartment.name}-image`}
                 />
+
             </div>
             <div className="p-4 flex-grow flex flex-col justify-evenly gap-2">
                 <h2 className="font-bold text-xl leading-[1]">{apartment.brief || "No brief available"}</h2>
