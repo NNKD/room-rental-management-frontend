@@ -1,4 +1,4 @@
-import {ApartmentManagementType, ApartmentTypeManagementType, TableHeader} from "../type.ts";
+import {ApartmentManagementType, ApartmentPriceServiceType, ApartmentTypeManagementType, TableHeader} from "../type.ts";
 import {GoTriangleDown, GoTriangleUp} from "react-icons/go";
 import {useState} from "react";
 import {FaEdit} from "react-icons/fa";
@@ -13,7 +13,7 @@ import * as React from "react";
  */
 
 
-export default function DynamicTable<T extends ApartmentManagementType | ApartmentTypeManagementType>
+export default function DynamicTable<T extends ApartmentManagementType | ApartmentTypeManagementType | ApartmentPriceServiceType>
                                     ({headers, data, hasActionColumn}: {headers: TableHeader<T>[], data: T[], hasActionColumn: boolean}) {
 
     const [headersTable, setHeadersTable] = useState<TableHeader<T>[]>(headers)
@@ -65,9 +65,6 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
         if (typeof value === "object" && value !== null) return JSON.stringify(value);
         return String(value ?? "");
     };
-
-
-
     return (
         <div className="relative overflow-auto h-fit max-h-full w-full rounded-t-xl">
             <table className="table-auto border border-separate border-spacing-0 border-zinc-300 rounded-t-xl w-screen">
