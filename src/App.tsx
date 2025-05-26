@@ -1,5 +1,5 @@
 import {Outlet} from "react-router-dom";
-import {NoticeProvider} from "./context/NoticeContext.tsx";
+import {NoticeProvider} from "./contexts/NoticeContext.tsx";
 import NoticeUI from "./components/NoticeUI.tsx";
 import { AuthProvider } from './contexts/AuthContext';
 

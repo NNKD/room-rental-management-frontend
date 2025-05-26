@@ -1,9 +1,14 @@
-import {ApartmentManagementType, ApartmentPriceServiceType, ApartmentTypeManagementType, TableHeader} from "../type.ts";
 import {GoTriangleDown, GoTriangleUp} from "react-icons/go";
 import {useState} from "react";
 import {FaEdit} from "react-icons/fa";
 import {MdDeleteForever} from "react-icons/md";
 import * as React from "react";
+import {
+    ApartmentManagementType,
+    ApartmentPriceServiceType,
+    ApartmentTypeManagementType,
+    TableHeader
+} from "../types/Dashboard.ts";
 
 /*
     headers: header of the table
