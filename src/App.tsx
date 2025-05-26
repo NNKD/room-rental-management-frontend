@@ -1,12 +1,15 @@
-import { Outlet } from 'react-router-dom';
+import {Outlet} from "react-router-dom";
+import {NoticeProvider} from "./context/NoticeContext.tsx";
+import NoticeUI from "./components/NoticeUI.tsx";
 import { AuthProvider } from './contexts/AuthContext';
 
 export default function App() {
   return (
       <AuthProvider>
-        <div>
-          <Outlet />
-        </div>
+        <NoticeProvider>
+              <Outlet/>
+              <NoticeUI/>
+          </NoticeProvider>
       </AuthProvider>
   );
 }

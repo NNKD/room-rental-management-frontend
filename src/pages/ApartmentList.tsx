@@ -210,8 +210,8 @@ export default function ApartmentList() {
                     <div className="border outline-none border-darkGray rounded py-4 lg:py-2 px-4">
                         <select className="outline-none pr-2 text-darkGray select-none cursor-pointer" defaultValue="" onChange={(e) => setSearchParams({sort: e.target.value})}>
                             <option value="" disabled>Sắp xếp</option>
-                            <option value="asc" className="text-black">Giá tăng dần</option>
-                            <option value="desc" className="text-black">Giá giảm dần</option>
+                            <option value="asc" className="text-black" selected={sort=="asc"}>Giá tăng dần</option>
+                            <option value="desc" className="text-black" selected={sort == "desc"}>Giá giảm dần</option>
                         </select>
                     </div>
                 </div>

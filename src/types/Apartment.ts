@@ -10,3 +10,28 @@ export interface ApartmentListItem {
 export interface ApartmentImage {
     url: string;
 }
+
+export interface ApartmentDiscount {
+    discount_percent: number;
+    duration_month: number;
+}
+
+export interface ApartmentDetailType {
+    name: string;
+    slug: string;
+    brief: string;
+    description: string;
+    price: number;
+    width: number;
+    height: number;
+    floor: number;
+    balcony: number;
+    terrace: number;
+    furniture: string;
+    bedrooms: number;
+    kitchens: number;
+    bathrooms: number;
+    type: string;
+    discounts: ApartmentDiscount[];
+    images: ApartmentImage[];
+}

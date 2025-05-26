@@ -54,15 +54,16 @@ export default function Home() {
         };
     }, [token]); // Thêm token vào dependency để gọi lại khi token thay đổi
 
-    const handleGetAmount = () => {
+     const handleGetAmount = () => {
+        // Mobile => show 1
         if (window.innerWidth < 760) {
-            setVisibleAmount(1);
-        } else if (window.innerWidth < 1024) {
-            setVisibleAmount(2);
-        } else {
-            setVisibleAmount(4);
+            setVisibleAmount(1)
+        }else if (window.innerWidth < 1024) { // tablet => show 2
+            setVisibleAmount(2)
+        }else { // desktop => show 4
+            setVisibleAmount(4)
         }
-    };
+    }
 
     const handleCarousel = (type: number) => {
         if (type === 1) {

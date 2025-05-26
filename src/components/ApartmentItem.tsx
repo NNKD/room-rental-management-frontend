@@ -1,11 +1,10 @@
-import { ApartmentListItem } from "../type.ts";
-import { formatCurrency } from "../utils/NumberFormat.ts";
-import { Link } from "react-router-dom";
+import {ApartmentListItem} from "../types/Apartment.ts";
+import {formatCurrency} from "../utils/NumberCalculate.ts";
+import {Link} from "react-router-dom";
 
 export default function ApartmentItem({ apartment }: { apartment: ApartmentListItem }) {
     // Xử lý trường hợp image rỗng hoặc undefined
     const apartmentImage = apartment.image || "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp";
-
 
     return (
         <Link
