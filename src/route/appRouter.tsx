@@ -1,4 +1,5 @@
-import {createBrowserRouter} from "react-router-dom";
+// router/index.tsx
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../App.tsx";
 import Home from "../pages/Home.tsx";
 import ApartmentList from "../pages/ApartmentList.tsx";
@@ -6,53 +7,83 @@ import ApartmentDetail from "../pages/ApartmentDetail.tsx";
 import Login from "../pages/Login.tsx";
 import Amenities from "../pages/Amenities.tsx";
 import DashBoardLayout from "../pages/dashboard/DashBoardLayout.tsx";
-import ApartmentManagement from "../pages/dashboard/ApartmentManagement.tsx";
 import DashBoardContent from "../pages/dashboard/DashBoardContent.tsx";
+import ApartmentManagement from "../pages/dashboard/ApartmentManagement.tsx";
 import ApartmentTypeManagement from "../pages/dashboard/ApartmentTypeManagement.tsx";
+import ApartmentPriceService from "../pages/dashboard/ApartmentPriceService.tsx";
+import ProtectedRoute from "../components/ProtectedRoute.tsx";
 
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <App/>,
+        element: <App />,
         children: [
             {
                 index: true,
-                element: <Home/>
+                element: <Navigate to="/login" replace />, // Redirect về login mặc định
             },
             {
                 path: "login",
-                element: <Login/>
+                element: <Login />,
+            },
+            {
+                path: "home",
+                element: (
+                    <ProtectedRoute>
+                        <Home />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: "apartments",
-                element: <ApartmentList/>
+                element: (
+                    <ProtectedRoute>
+                        <ApartmentList />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: "amenities",
-                element: <Amenities/>
+                element: (
+                    <ProtectedRoute>
+                        <Amenities />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: "apartment/:slug",
-                element: <ApartmentDetail/>
-            }
-        ]
+                element: (
+                    <ProtectedRoute>
+                        <ApartmentDetail />
+                    </ProtectedRoute>
+                ),
+            },
+        ],
     },
     {
         path: "/dashboard",
-        element: <DashBoardLayout/>,
+        element: (
+            <ProtectedRoute>
+                <DashBoardLayout />
+            </ProtectedRoute>
+        ),
         children: [
             {
                 index: true,
-                element: <DashBoardContent/>
+                element: <DashBoardContent />,
             },
             {
-              path: "apartment-management",
-              element: <ApartmentManagement/>
+                path: "apartment-management",
+                element: <ApartmentManagement />,
             },
             {
-              path: "apartment-type-management",
-              element: <ApartmentTypeManagement/>
+                path: "apartment-type-management",
+                element: <ApartmentTypeManagement />,
             },
-        ]
-    }
-])
+            {
+                path: "apartment-price-service",
+                element: <ApartmentPriceService />,
+            },
+        ],
+    },
+]);

@@ -37,7 +37,9 @@ export default function Sidebar() {
 
             {showServiceSubMenu ? (
                 <div className="animate-slide-top-to-bottom-400">
-                    <SidebarItem title={"Bảng giá dịch vụ"} />
+                    <div onClick={() => navigate("/dashboard/apartment-price-service")}>
+                        <SidebarItem title={"Bảng giá dịch vụ"} path={"apartment-price-service"} />
+                    </div>
                     <SidebarItem title={"Nợ mua hàng"} />
 
                     <div onClick={() => setShowUpdateSubMenu(!showUpdateSubMenu)}>

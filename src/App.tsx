@@ -1,14 +1,15 @@
 import {Outlet} from "react-router-dom";
 import {NoticeProvider} from "./context/NoticeContext.tsx";
 import NoticeUI from "./components/NoticeUI.tsx";
+import { AuthProvider } from './contexts/AuthContext';
 
 export default function App() {
   return (
-      <>
-          <NoticeProvider>
+      <AuthProvider>
+        <NoticeProvider>
               <Outlet/>
               <NoticeUI/>
           </NoticeProvider>
-      </>
-  )
+      </AuthProvider>
+  );
 }
