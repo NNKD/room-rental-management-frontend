@@ -1,3 +1,13 @@
+export interface AuthContextType {
+    isAuthenticated: boolean;
+    token: string | null;
+    user: unknown | null;
+    login: (token: string, userData?: unknown) => void;
+    logout: () => void;
+    loading: boolean;
+}
+
+
 // use for notice. Type = error | alert == warning | information
 export interface NoticeContextType {
     message: string,

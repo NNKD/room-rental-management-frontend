@@ -1,5 +1,5 @@
 import DynamicTable from "../../components/DynamicTable.tsx";
-import { ApartmentPriceServiceType, TableHeader } from "../../type.ts";
+import {ApartmentPriceServiceType, TableHeader} from "../../types/Dashboard.ts";
 
 export default function ApartmentPriceService() {
     // Dữ liệu mẫu cho bảng dịch vụ giá

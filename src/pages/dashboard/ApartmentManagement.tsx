@@ -1,5 +1,5 @@
 import DynamicTable from "../../components/DynamicTable.tsx";
-import {ApartmentManagementType, TableHeader} from "../../type.ts";
+import {ApartmentManagementType, TableHeader} from "../../types/Dashboard.ts";
 
 
 export default function ApartmentManagement() {
