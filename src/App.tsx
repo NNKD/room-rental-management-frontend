@@ -1,14 +1,15 @@
-// import { Outlet } from 'react-router-dom';
-// import { AuthProvider } from './contexts/AuthContext';
-import ForgotPassword from "./pages/FotgotPassword.tsx";
+import {Outlet} from "react-router-dom";
+import {NoticeProvider} from "./contexts/NoticeContext.tsx";
+import NoticeUI from "./components/NoticeUI.tsx";
+import { AuthProvider } from './contexts/AuthContext';
 
 export default function App() {
-  return (
-      // <AuthProvider>
-      //   <div>
-      //     <Outlet />
-      //   </div>
-      // </AuthProvider>
-      <ForgotPassword></ForgotPassword>
-  );
+    return (
+        <AuthProvider>
+            <NoticeProvider>
+                <Outlet/>
+                <NoticeUI/>
+            </NoticeProvider>
+        </AuthProvider>
+    );
 }

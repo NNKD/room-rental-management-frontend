@@ -1,10 +1,8 @@
-import { ApartmentListItem } from "../type.ts";
-import { formatCurrency } from "../utils/NumberFormat.ts";
-import { Link } from "react-router-dom";
+import {ApartmentListItem} from "../types/Apartment.ts";
+import {formatCurrency} from "../utils/NumberCalculate.ts";
+import {Link} from "react-router-dom";
 
 export default function ApartmentItem({ apartment }: { apartment: ApartmentListItem }) {
-    // Xử lý trường hợp image rỗng hoặc undefined
-    const apartmentImage = apartment.image || "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp";
 
     return (
         <Link
@@ -14,10 +12,11 @@ export default function ApartmentItem({ apartment }: { apartment: ApartmentListI
             <div className="overflow-hidden rounded-t aspect-[4/3] flex-shrink-0">
                 <img
                     loading="lazy"
-                    src={apartmentImage}
+                    src={(apartment.images[0].url || "")}
                     className="w-full h-full object-cover rounded-t hover:scale-125 transition-all duration-300 ease-in-out"
                     alt={`${apartment.name}-image`}
                 />
+
             </div>
             <div className="p-4 flex-grow flex flex-col justify-evenly gap-2">
                 <h2 className="font-bold text-xl leading-[1]">{apartment.brief || "No brief available"}</h2>

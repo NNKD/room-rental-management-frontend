@@ -1,31 +1,97 @@
-import {searchBathroomOption, searchBedroomOption, searchTypeOption} from "../data.ts";
 import {CiSearch} from "react-icons/ci";
+import axios from "axios";
+import {envVar} from "../utils/EnvironmentVariables.ts";
+import {ChangeEvent, useEffect, useMemo, useState} from "react";
+import {debounce} from "../utils/Debounce.ts";
 
 /*
-    setName, setType, setBedroom, setBathroom => set in useState, is not required. If it has => show element
+    namePrevalue, typePrevalue,... => use to save value when refresh web
+    setName, setType, setBedroom, setPrice => set in useState, is not required. If it has => show element
  */
 
-export default function Search({setName, setType, setBedroom, setBathroom}:
-                               {setName?: (value: string) => void,
+export default function Search({namePrevalue, typePrevalue, bedroomPrevalue, pricePrevalue, setName, setType, setBedroom, setPrice}:
+                               {namePrevalue?: string; typePrevalue?: string; bedroomPrevalue?: string; pricePrevalue?:{name: string, value: string}
+                               setName?: (value: string) => void,
                                setType?: (value: string) => void,
                                setBedroom?: (value: string) => void,
-                               setBathroom?: (value: string) => void}) {
+                               setPrice?: (value: string) => void}) {
+
+    const [bedrooms, setBedrooms] = useState<number[]>([]) // show dropdown
+    const [types, setTypes] = useState<string[]>([]) // show dropdown
+    /*
+        Vì debounce dùng setName ảnh hưởng namePrevalue nên sau 500ms mới hiện text lên input
+        Nên dùng biến phụ để hiển thị text nhận được lúc load trang lại
+        Đồng thời ko ảnh hưởng debounce với setName
+     */
+    const [localName, setLocalName] = useState("")
+
+    const debounceSearch = useMemo(() => {
+        return debounce((name: string) => setName?.(name), 500)
+    }, [setName])
+
+    useEffect(() => {
+        setLocalName(namePrevalue || "");
+    }, [namePrevalue]);
+
+
+    const priceRanges = [
+        {name: "Tất cả", value: "0-0"},
+        {name: "Dưới 5", value: "0-5"},
+        {name: "5 - 10", value: "5-10"},
+        {name: "10 - 20", value: "10-20"},
+        {name: "20 - 30", value: "20-30"},
+        {name: "30 - 40", value: "30-40"},
+        {name: "Trên 50", value: "50-0"},
+    ]
+
+    useEffect(() => {
+        handleGetFilter()
+    }, [])
+
+    const handleGetFilter = async () => {
+        try {
+            const response = await axios.get(`${envVar.API_URL}/apartments/filters`);
+
+            if (response.status === 200 && response.data.status == "success" && response.data.statusCode == 200) {
+                const minBedroom = response.data.data.minBedroom;
+                const maxBedroom = response.data.data.maxBedroom;
+                setTypes(response.data.data.types.map((type: {name: string}) => type.name));
+
+                // calculate to show bedroom from min -> max
+                const bedroomArray = Array.from({length: maxBedroom - minBedroom + 1}, (_, i) => i + 1);
+                setBedrooms(bedroomArray)
+            }
+
+        }catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleChangeTextInput = (e: ChangeEvent<HTMLInputElement>) => {
+        setLocalName(e.target.value)
+        debounceSearch(e.target.value)
+    }
 
     return (
         <div className="flex items-center gap-4 flex-wrap">
-            <div className={`flex flex-col lg:flex-row gap-4 ${setName ? "flex-grow" : ""} ${setBathroom && setBedroom ? "" : "w-full lg:w-fit" }`}>
+            <div className={`flex flex-col lg:flex-row gap-4 ${setName ? "flex-grow" : ""} ${setPrice && setBedroom ? "" : "w-full lg:w-fit" }`}>
 
                 {setName && (
-                    <input placeholder="Search by name" className="border bg-transparent border-darkGray rounded py-4 lg:py-2 px-4 outline-none flex-grow" onChange={(e) => setName?.(e.target.value)}/>
+                    <input placeholder="Search by name" value={localName} className="border bg-transparent border-darkGray rounded py-4 lg:py-2 px-4 outline-none flex-grow" onChange={(e) => handleChangeTextInput(e)}/>
                 )}
 
                 {setType && (
                     <div className="border outline-none border-darkGray rounded py-4 lg:py-2 px-4">
                         <select className="outline-none bg-transparent pr-2 text-darkGray w-full select-none cursor-pointer" defaultValue="" onChange={(e) => setType?.(e.target.value)}>
                             <option value="" disabled>Loại căn hộ</option>
+                            <option value="" className="text-black">Tất cả</option>
 
-                            {searchTypeOption.map((option, index) => (
-                                <option key={index} value={option.value} className="text-black">{option.name}</option>
+                            {types.map((type, index) => (
+                                typePrevalue == type ? (
+                                    <option key={index} value={type} className="text-black" selected={true}>{type}</option>
+                                ): (
+                                    <option key={index} value={type} className="text-black">{type}</option>
+                                )
                             ))}
 
                         </select>
@@ -39,22 +105,33 @@ export default function Search({setName, setType, setBedroom, setBathroom}:
                     <div className="border outline-none border-darkGray rounded py-4 lg:py-2 px-4">
                         <select className="outline-none bg-transparent pr-2 text-darkGray w-full select-none cursor-pointer" defaultValue="" onChange={(e) => setBedroom?.(e.target.value)}>
                             <option value="" disabled>Số phòng ngủ</option>
+                            <option value="" className="text-black">Tất cả</option>
 
-                            {searchBedroomOption.map((option, index) => (
-                                <option key={index} value={option.value} className="text-black">{option.name}</option>
+                            {bedrooms.map((numberBed, index) => (
+                                Number(bedroomPrevalue) == numberBed ? (
+                                    <option key={index} value={numberBed} className="text-black" selected={true}>{numberBed} phòng ngủ</option>
+                                ) : (
+                                    <option key={index} value={numberBed} className="text-black">{numberBed} phòng ngủ</option>
+                                )
+
                             ))}
 
                         </select>
                     </div>
                 )}
 
-                {setBathroom && (
+                {setPrice && (
                     <div className="border outline-none border-darkGray rounded py-4 lg:py-2 px-4">
-                        <select className="outline-none bg-transparent pr-2 text-darkGray w-full select-none cursor-pointer" defaultValue="" onChange={(e) => setBathroom?.(e.target.value)}>
-                            <option value="" disabled>Số phòng tắm</option>
+                        <select className="outline-none bg-transparent pr-2 text-darkGray w-full select-none cursor-pointer" defaultValue="" onChange={(e) => setPrice?.(e.target.value)}>
+                            <option value="" disabled>Giá (triệu đồng)</option>
 
-                            {searchBathroomOption.map((option, index) => (
-                                <option key={index} value={option.value} className="text-black">{option.name}</option>
+                            {priceRanges.map((range, index) => (
+                                pricePrevalue == range ? (
+                                    <option key={index} value={range.value} className="text-black" selected={true}>{range.name}</option>
+                                ) : (
+                                    <option key={index} value={range.value} className="text-black">{range.name}</option>
+                                )
+
                             ))}
 
                         </select>

@@ -1,9 +1,14 @@
-import {ApartmentManagementType, ApartmentPriceServiceType, ApartmentTypeManagementType, TableHeader} from "../type.ts";
 import {GoTriangleDown, GoTriangleUp} from "react-icons/go";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {FaEdit} from "react-icons/fa";
 import {MdDeleteForever} from "react-icons/md";
 import * as React from "react";
+import {
+    ApartmentManagementType,
+    ApartmentPriceServiceType,
+    ApartmentTypeManagementType, ServiceType,
+    TableHeader
+} from "../types/Dashboard.ts";
 
 /*
     headers: header of the table
@@ -13,11 +18,19 @@ import * as React from "react";
  */
 
 
-export default function DynamicTable<T extends ApartmentManagementType | ApartmentTypeManagementType | ApartmentPriceServiceType>
+export default function DynamicTable<T extends ApartmentManagementType | ApartmentTypeManagementType | ApartmentPriceServiceType | ServiceType>
                                     ({headers, data, hasActionColumn}: {headers: TableHeader<T>[], data: T[], hasActionColumn: boolean}) {
 
     const [headersTable, setHeadersTable] = useState<TableHeader<T>[]>(headers)
     const [dataTable, setDataTable] = useState<T[]>(data)
+
+    useEffect(() => {
+        setHeadersTable(headers);
+    }, [headers]);
+
+    useEffect(() => {
+        setDataTable(data);
+    }, [data]);
 
     // get column sort and type and call function handleSortData
     const handleChangeSortType = (column: string, isASC: boolean) => {
@@ -62,17 +75,17 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
     const handleRenderTableValue = (value: unknown): React.ReactNode => {
         if (React.isValidElement(value)) return value;
         if (value instanceof Date) return value.toLocaleDateString();
-        if (typeof value === "object" && value !== null) return JSON.stringify(value);
         return String(value ?? "");
     };
     return (
-        <div className="relative overflow-auto h-fit max-h-full w-full rounded-t-xl">
+        <div className="relative overflow-auto h-fit max-h-full max-w-full rounded-t-xl">
             <table className="table-auto border border-separate border-spacing-0 border-zinc-300 rounded-t-xl w-screen">
                 <thead>
                     <tr>
                         {headersTable.map((header, index) => (
                             // Make header stick on top of the table. Column has % width
-                            <th key={index} className={`sticky top-0 border border-zinc-300 bg-lightGreen p-4 z-50`}>
+                            <th key={index}
+                                className="sticky top-0 border border-zinc-300 bg-lightGreen p-4 z-50">
                                 <div>
                                     {header.name}
 
@@ -111,7 +124,8 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
                         {headersTable.map((header, index) => (
                             <td key={index}
                                 className={`border border-zinc-300 p-4 
-                                            ${(index % 2 == 0) ? "bg-zinc-100" : "bg-white"}`}>
+                                            ${(index % 2 == 0) ? "bg-zinc-100" : "bg-white"}
+                                            ${header.center ? "text-center" : ""}`}>
 
                                 {handleRenderTableValue(row[header.slug])}
 

@@ -1,47 +1,43 @@
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 import Header from "../components/Header.tsx";
 import Footer from "../components/Footer.tsx";
 import ApartmentItem from "../components/ApartmentItem.tsx";
 import Search from "../components/Search.tsx";
-import { useEffect, useState } from "react";
-import { IoIosArrowDropleft, IoIosArrowDropright } from "react-icons/io";
+import {useEffect, useState} from "react";
+import {IoIosArrowDropleft, IoIosArrowDropright} from "react-icons/io";
 import axios from "axios";
-import { ApartmentListItem, ApartmentResponse } from "../type.ts";
+import {ApartmentListItem} from "../types/Apartment.ts";
+import {envVar} from "../utils/EnvironmentVariables.ts";
+import {useNotice} from "../hook/useNotice.ts";
+import {NoticeType} from "../types/Context.ts";
 
 export default function Home() {
     const [name, setName] = useState("");
-    const [type, setType] = useState("");
+    const [typeSearch, setTypeSearch] = useState("");
     const [indexCarousel, setIndexCarousel] = useState(0);
     const [visibleAmount, setVisibleAmount] = useState(4);
     const [topOffers, setTopOffers] = useState<ApartmentListItem[]>([]);
     const token = localStorage.getItem("token"); // Lấy token từ localStorage
+    const {setMessage, setType} = useNotice()
 
     useEffect(() => {
-        console.log(name, type);
-    }, [name, type]);
+        console.log(name, typeSearch);
+    }, [name, typeSearch]);
 
     const handleCallAPI = async () => {
         try {
-            const response = await axios.get<ApartmentResponse[]>("http://localhost:8080/api/apartments/hot", {
+            const response = await axios.get(`${envVar.API_URL}/apartments/hot`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Thêm token vào header
                 },
             });
-            console.log("API Response:", response.data);
-            if (response.status === 200) {
-                const apartments: ApartmentListItem[] = response.data.map((item: ApartmentResponse) => ({
-                    id: item.id,
-                    name: item.name,
-                    slug: item.slug,
-                    brief: item.brief,
-                    price: item.price,
-                    image: "https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images/test.webp", // URL mặc định
-                }));
-                console.log("Mapped Apartments:", apartments);
-                setTopOffers(apartments);
+            if (response.status === 200 && response.data.status === "success" && response.data.statusCode === "200" ) {
+                setTopOffers(response.data.data);
             }
         } catch (error) {
             console.error("API Error:", error);
+            setType(NoticeType.ERROR)
+            setMessage("Đang có lỗi xảy ra" +error)
         }
     };
 
@@ -54,15 +50,16 @@ export default function Home() {
         };
     }, [token]); // Thêm token vào dependency để gọi lại khi token thay đổi
 
-    const handleGetAmount = () => {
+     const handleGetAmount = () => {
+        // Mobile => show 1
         if (window.innerWidth < 760) {
-            setVisibleAmount(1);
-        } else if (window.innerWidth < 1024) {
-            setVisibleAmount(2);
-        } else {
-            setVisibleAmount(4);
+            setVisibleAmount(1)
+        }else if (window.innerWidth < 1024) { // tablet => show 2
+            setVisibleAmount(2)
+        }else { // desktop => show 4
+            setVisibleAmount(4)
         }
-    };
+    }
 
     const handleCarousel = (type: number) => {
         if (type === 1) {
@@ -87,7 +84,7 @@ export default function Home() {
                                 been operating in Spain more than 15 years.
                             </p>
                             <div className="text-center mb-6">
-                                <Search setName={setName} setType={setType} />
+                                <Search setName={setName} setType={setTypeSearch} />
                             </div>
                         </div>
                         <div className="lg:w-1/2">
