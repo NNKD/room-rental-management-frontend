@@ -2,7 +2,6 @@
     T is data type Ex: ApartmentManagementType, ApartmentTypeManagementType, ...
     slug: field name of T
     sortASC = true => has sort in column
-    width: width of column (percent %). Ex: width: 10, ...
     center = true => data text center
  */
 
@@ -10,7 +9,6 @@ export interface TableHeader<T> {
     name: string;
     slug: keyof T;
     sortASC?: boolean;
-    width?: number;
     center?: boolean;
 }
 

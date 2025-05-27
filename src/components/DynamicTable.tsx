@@ -75,18 +75,16 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
     const handleRenderTableValue = (value: unknown): React.ReactNode => {
         if (React.isValidElement(value)) return value;
         if (value instanceof Date) return value.toLocaleDateString();
-        if (typeof value === "object" && value !== null) return JSON.stringify(value);
         return String(value ?? "");
     };
     return (
-        <div className="relative overflow-auto h-fit max-h-full w-full rounded-t-xl">
+        <div className="relative overflow-auto h-fit max-h-full max-w-full rounded-t-xl">
             <table className="table-auto border border-separate border-spacing-0 border-zinc-300 rounded-t-xl w-screen">
                 <thead>
                     <tr>
                         {headersTable.map((header, index) => (
                             // Make header stick on top of the table. Column has % width
                             <th key={index}
-                                style={{ width: `${header.width}%` }}
                                 className="sticky top-0 border border-zinc-300 bg-lightGreen p-4 z-50">
                                 <div>
                                     {header.name}

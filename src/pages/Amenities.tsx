@@ -29,20 +29,16 @@ export default function Amenities() {
     const {setMessage, setType} = useNotice()
 
     const headers: TableHeader<ServiceType>[] = [
-        {name: 'STT', slug: 'id', width: 5, center: true},
-        {name: 'Dịch vụ', slug: 'name', width: 10, center: true},
-        {name: 'Mô tả', slug: 'description', width: 20, center: true},
-        {name: 'Giá (VNĐ)', slug: 'price', width: 10, center: true},
-        {name: 'Đơn vị tính', slug: 'unit', width: 10, center: true},
+        {name: 'STT', slug: 'id', center: true},
+        {name: 'Dịch vụ', slug: 'name', center: true},
+        {name: 'Mô tả', slug: 'description', center: true},
+        {name: 'Giá (VNĐ)', slug: 'price', center: true},
+        {name: 'Đơn vị tính', slug: 'unit', center: true},
     ]
 
     useEffect(() => {
         handleGetServices()
     }, []);
-
-    useEffect(() => {
-        console.log(services)
-    }, [services]);
 
     const handleGetServices = async () => {
         try {
