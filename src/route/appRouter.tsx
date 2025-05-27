@@ -12,6 +12,7 @@ import ApartmentTypeManagement from "../pages/dashboard/ApartmentTypeManagement.
 import ApartmentPriceService from "../pages/dashboard/ApartmentPriceService.tsx";
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
 import ForgotPassword from "../pages/FotgotPassword.tsx";
+import Contact from "../pages/Contact.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
             {
                 path: "home",
                 element: <Home />,
+            },
+            {
+                path: "contact",
+                element: <Contact />,
             },
             {
                 path: "apartments",
