@@ -1,16 +1,16 @@
+// src/pages/ForgotPassword.tsx
 import { useState, FormEvent } from 'react';
+import { useNotice } from '../hook/useNotice';
 import LoadingPage from '../components/LoadingPage';
+import {NoticeType} from "../types/Context.ts";
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState<string>('');
-    const [message, setMessage] = useState<string>('');
-    const [error, setError] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { setMessage, setType } = useNotice();
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setMessage('');
-        setError('');
         setIsLoading(true);
 
         try {
@@ -32,10 +32,11 @@ export default function ForgotPassword() {
                 throw new Error(data.message || 'Đã có lỗi xảy ra');
             }
 
-            setMessage(data.message === 'Operation successful' ? 'Mật khẩu mới đã được gửi tới email của bạn' : data.message);
+            setMessage(data.message === 'Operation successful' ? 'Mật khẩu mới đã được gửi tới email của bạn' : data.message)
+            setType(NoticeType.SUCCESS)
         } catch (err: unknown) {
-            const errorMessage = err instanceof Error ? err.message : 'Đã có lỗi xảy ra, vui lòng thử lại';
-            setError(errorMessage);
+            setMessage(err instanceof Error ? err.message : 'Đã có lỗi xảy ra, vui lòng thử lại')
+            setType(NoticeType.ERROR)
         } finally {
             setIsLoading(false);
         }
@@ -48,7 +49,6 @@ export default function ForgotPassword() {
     return (
         <div className="min-h-screen bg-gradient-to-tr from-[#149e94] via-[#17c2b1] to-[#1ad7cb] flex items-center justify-center px-4">
             <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col md:flex-row">
-                {/* Left - Image Section */}
                 <div className="md:w-1/2 w-full relative">
                     <img
                         src="https://static.designboom.com/wp-content/uploads/2021/06/city-oasis-apartments-k-a-studio-vietnam-designboom-3.jpg"
@@ -61,17 +61,16 @@ export default function ForgotPassword() {
                     </div>
                 </div>
 
-                {/* Right - Form Section */}
                 <div className="md:w-1/2 w-full p-8 md:p-12">
                     <h2 className="text-3xl font-bold mb-2">Quên Mật Khẩu</h2>
-                    <p className="text-sm text-gray-500 mb-6">
+                    <p className="text-sm text-gray-foreground mb-6">
                         Nhập email của bạn để nhận mật khẩu mới. <a href="/login" className="text-blue-500 underline">Quay lại đăng nhập</a>
                     </p>
 
                     <form className="space-y-4" onSubmit={handleSubmit}>
                         <input
                             type="email"
-                            placeholder="Email"
+                            placeholder="Nhập email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full border-b border-gray-300 py-2 px-2 focus:outline-none focus:border-pink-500"
@@ -79,20 +78,9 @@ export default function ForgotPassword() {
                             disabled={isLoading}
                         />
 
-                        {message && (
-                            <div className="p-3 bg-green-100 border-l-4 border-green-500 text-green-700 rounded-md animate-fade-in">
-                                {message}
-                            </div>
-                        )}
-                        {error && (
-                            <div className="p-3 bg-red-100 border-l-4 border-red-500 text-red-700 rounded-md animate-fade-in">
-                                {error}
-                            </div>
-                        )}
-
                         <button
                             type="submit"
-                            className="w-full bg-pink-500 text-white py-2 rounded-full font-semibold hover:bg-pink-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full bg-pink-500 text-white py-2 rounded-full font-semibold hover:bg-pink-600 transition-colors disabled:bg-gray-400 disabled: disabled:cursor-not-allowed"
                             disabled={isLoading}
                         >
                             GỬI YÊU CẦU
@@ -100,22 +88,6 @@ export default function ForgotPassword() {
                     </form>
                 </div>
             </div>
-
-            <style>{`
-                .animate-fade-in {
-                    animation: fadeIn 0.5s ease-in;
-                }
-                @keyframes fadeIn {
-                    from {
-                        opacity: 0;
-                        transform: translateY(-10px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-            `}</style>
         </div>
     );
 }

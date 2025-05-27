@@ -3,6 +3,7 @@ import {IoMenu} from "react-icons/io5";
 import {IoIosClose} from "react-icons/io";
 import {useState} from "react";
 import Logo from "./Logo.tsx";
+import { Navigate, useLocation } from 'react-router-dom';
 
 export default function Header() {
     const [showSideBar, setShowSideBar] = useState(false)

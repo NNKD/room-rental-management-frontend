@@ -1,4 +1,3 @@
-// router/index.tsx
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../App.tsx";
 import Home from "../pages/Home.tsx";
@@ -12,6 +11,8 @@ import ApartmentManagement from "../pages/dashboard/ApartmentManagement.tsx";
 import ApartmentTypeManagement from "../pages/dashboard/ApartmentTypeManagement.tsx";
 import ApartmentPriceService from "../pages/dashboard/ApartmentPriceService.tsx";
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
+import ForgotPassword from "../pages/FotgotPassword.tsx";
+import Contact from "../pages/Contact.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -20,7 +21,7 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <Navigate to="/login" replace />, // Redirect về login mặc định
+                element: <Navigate to="/home" replace />, // Thay /login thành /home
             },
             {
                 path: "login",
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
             {
                 path: "home",
                 element: <Home />,
+            },
+            {
+                path: "contact",
+                element: <Contact />,
             },
             {
                 path: "apartments",
@@ -42,31 +47,35 @@ export const router = createBrowserRouter([
                 path: "apartment/:slug",
                 element: <ApartmentDetail />,
             },
-        ],
-    },
-    {
-        path: "/dashboard",
-        element: (
-            <ProtectedRoute>
-                <DashBoardLayout />
-            </ProtectedRoute>
-        ),
-        children: [
             {
-                index: true,
-                element: <DashBoardContent />,
+                path: "forgot-password",
+                element: <ForgotPassword />,
             },
             {
-                path: "apartment-management",
-                element: <ApartmentManagement />,
-            },
-            {
-                path: "apartment-type-management",
-                element: <ApartmentTypeManagement />,
-            },
-            {
-                path: "apartment-price-service",
-                element: <ApartmentPriceService />,
+                path: "dashboard",
+                element: (
+                    <ProtectedRoute>
+                        <DashBoardLayout />
+                    </ProtectedRoute>
+                ),
+                children: [
+                    {
+                        index: true,
+                        element: <DashBoardContent />,
+                    },
+                    {
+                        path: "apartment-management",
+                        element: <ApartmentManagement />,
+                    },
+                    {
+                        path: "apartment-type-management",
+                        element: <ApartmentTypeManagement />,
+                    },
+                    {
+                        path: "apartment-price-service",
+                        element: <ApartmentPriceService />,
+                    },
+                ],
             },
         ],
     },
