@@ -85,7 +85,9 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
                     <tr>
                         {headersTable.map((header, index) => (
                             // Make header stick on top of the table. Column has % width
-                            <th key={index} className={`sticky top-0 border border-zinc-300 bg-lightGreen p-4 z-50`}>
+                            <th key={index}
+                                style={{ width: `${header.width}%` }}
+                                className="sticky top-0 border border-zinc-300 bg-lightGreen p-4 z-50">
                                 <div>
                                     {header.name}
 
@@ -124,7 +126,8 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
                         {headersTable.map((header, index) => (
                             <td key={index}
                                 className={`border border-zinc-300 p-4 
-                                            ${(index % 2 == 0) ? "bg-zinc-100" : "bg-white"}`}>
+                                            ${(index % 2 == 0) ? "bg-zinc-100" : "bg-white"}
+                                            ${header.center ? "text-center" : ""}`}>
 
                                 {handleRenderTableValue(row[header.slug])}
 

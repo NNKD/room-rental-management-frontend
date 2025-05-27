@@ -29,11 +29,11 @@ export default function Amenities() {
     const {setMessage, setType} = useNotice()
 
     const headers: TableHeader<ServiceType>[] = [
-        {name: 'STT', slug: 'id',},
-        {name: 'Dịch vụ', slug: 'name',},
-        {name: 'Mô tả', slug: 'description',},
-        {name: 'Giá (VNĐ)', slug: 'price',},
-        {name: 'Đơn vị tính', slug: 'unit',},
+        {name: 'STT', slug: 'id', width: 5, center: true},
+        {name: 'Dịch vụ', slug: 'name', width: 10, center: true},
+        {name: 'Mô tả', slug: 'description', width: 20, center: true},
+        {name: 'Giá (VNĐ)', slug: 'price', width: 10, center: true},
+        {name: 'Đơn vị tính', slug: 'unit', width: 10, center: true},
     ]
 
     useEffect(() => {
