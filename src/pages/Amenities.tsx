@@ -16,13 +16,60 @@ import {
 } from "react-icons/md";
 import {GiTreeSwing, GiUnbalanced} from "react-icons/gi";
 import {formatCurrency} from "../utils/NumberCalculate.ts";
+import {ServiceType, TableHeader} from "../types/Dashboard.ts";
+import DynamicTable from "../components/DynamicTable.tsx";
+import {useEffect, useState} from "react";
+import {NoticeType} from "../types/Context.ts";
+import {useNotice} from "../hook/useNotice.ts";
+import axios from "axios";
+import {envVar} from "../utils/EnvironmentVariables.ts";
 
 export default function Amenities() {
+    const [services, setServices] = useState<ServiceType[]>([])
+    const {setMessage, setType} = useNotice()
+
+    const headers: TableHeader<ServiceType>[] = [
+        {name: 'STT', slug: 'id',},
+        {name: 'Dịch vụ', slug: 'name',},
+        {name: 'Mô tả', slug: 'description',},
+        {name: 'Giá (VNĐ)', slug: 'price',},
+        {name: 'Đơn vị tính', slug: 'unit',},
+    ]
+
+    useEffect(() => {
+        handleGetServices()
+    }, []);
+
+    useEffect(() => {
+        console.log(services)
+    }, [services]);
+
+    const handleGetServices = async () => {
+        try {
+            const response = await axios.get(`${envVar.API_URL}/services`)
+
+            if (response.status === 200 && response.data.status == "success" && response.data.statusCode == 200) {
+                const serviceNormalizePrice = response.data.data.map((service: ServiceType) => ({
+                    ...service,
+                    price: formatCurrency(Number(service.price)),
+                }));
+                setServices(serviceNormalizePrice)
+            }
+
+        }catch (error) {
+            console.log(error)
+            setMessage("Đã có lỗi xảy ra: "+ error)
+            setType(NoticeType.ERROR)
+        }
+    }
+
+
+
     return (
         <div className="flex flex-col min-h-screen">
             <Header/>
 
-            <div className="flex-grow mx-auto my-10 px-6 md:px-12">
+            <div className="flex-grow mx-auto my-10 px-6 md:px-12 w-full">
                 <div className="flex flex-col lg:flex-row items-center justify-center gap-10">
                     <div className="w-full lg:w-2/5">
                         <h3 className="text-2xl md:text-4xl font-bold">Hồ Bơi</h3>
@@ -92,8 +139,8 @@ export default function Amenities() {
 
                 <div className="flex flex-col lg:flex-row items-center justify-center gap-10">
                     <div className="w-full lg:w-2/5">
-                        <h3 className="text-2xl md:text-4xl font-bold">Căn Hộ Loft Hiện Đại</h3>
-                        <p className="text-sm md:text-base mt-4 mb-10">Thiết kế theo phong cách loft với không gian mở, trần cao và ánh sáng tự nhiên, mang lại cảm giác rộng rãi và năng động cho cuộc sống hiện đại.</p>
+                        <h3 className="text-2xl md:text-4xl font-bold">Căn Hộ Hiện Đại</h3>
+                        <p className="text-sm md:text-base mt-4 mb-10">Thiết kế theo phong cách hiện đại với không gian mở, trần cao và ánh sáng tự nhiên, mang lại cảm giác rộng rãi và năng động cho cuộc sống.</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 gap-8">
                             <div className="flex items-center gap-3">
                                 <MdOutlineLocalLaundryService className="text-xl"/>
@@ -218,51 +265,11 @@ export default function Amenities() {
                 </div>
 
                 <div className="my-20">
-                    <h3 className="text-3xl md:text-4xl font-bold text-center">Bảng giá</h3>
+                    <h3 className="text-3xl mb-14 md:text-4xl font-bold text-center">Bảng giá</h3>
+                    <div className="h-[400px]">
+                        <DynamicTable headers={headers} data={services} hasActionColumn={false}/>
+                    </div>
 
-                    <table className="border mx-auto text-center mt-14">
-                        <thead>
-                        <tr>
-                            <th className="border px-4 py-2">Tên</th>
-                            <th className="border px-4 py-2">Giá</th>
-                            <th className="border px-4 py-2">Đơn vị</th>
-                            <th className="border px-4 py-2">Ghi chú</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td className="border px-4 py-2">Điện</td>
-                            <td className="border px-4 py-2">{formatCurrency(2271)}</td>
-                            <td className="border px-4 py-2">kWh</td>
-                            <td className="border px-4 py-2">Bậc 3</td>
-                        </tr>
-                        <tr>
-                            <td className="border px-4 py-2">Nước</td>
-                            <td className="border px-4 py-2">{formatCurrency(8500)}</td>
-                            <td className="border px-4 py-2">m<sup>3</sup></td>
-                            <td className="border px-4 py-2">Mức 1</td>
-                        </tr>
-                        <tr>
-                            <td className="border px-4 py-2">Wifi</td>
-                            <td className="border px-4 py-2">{formatCurrency(200000)}</td>
-                            <td className="border px-4 py-2">tháng</td>
-                            <td className="border px-4 py-2"></td>
-                        </tr>
-                        <tr>
-                            <td className="border px-4 py-2">Hồ bơi</td>
-                            <td className="border px-4 py-2">{formatCurrency(200000)}</td>
-                            <td className="border px-4 py-2">tháng</td>
-                            <td className="border px-4 py-2"></td>
-                        </tr>
-                        <tr>
-                            <td className="border px-4 py-2">Bãi đậu xe</td>
-                            <td className="border px-4 py-2">{formatCurrency(150000)}</td>
-                            <td className="border px-4 py-2">tháng</td>
-                            <td className="border px-4 py-2"></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    
                 </div>
 
             </div>

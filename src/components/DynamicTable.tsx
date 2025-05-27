@@ -1,12 +1,12 @@
 import {GoTriangleDown, GoTriangleUp} from "react-icons/go";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {FaEdit} from "react-icons/fa";
 import {MdDeleteForever} from "react-icons/md";
 import * as React from "react";
 import {
     ApartmentManagementType,
     ApartmentPriceServiceType,
-    ApartmentTypeManagementType,
+    ApartmentTypeManagementType, ServiceType,
     TableHeader
 } from "../types/Dashboard.ts";
 
@@ -18,11 +18,19 @@ import {
  */
 
 
-export default function DynamicTable<T extends ApartmentManagementType | ApartmentTypeManagementType | ApartmentPriceServiceType>
+export default function DynamicTable<T extends ApartmentManagementType | ApartmentTypeManagementType | ApartmentPriceServiceType | ServiceType>
                                     ({headers, data, hasActionColumn}: {headers: TableHeader<T>[], data: T[], hasActionColumn: boolean}) {
 
     const [headersTable, setHeadersTable] = useState<TableHeader<T>[]>(headers)
     const [dataTable, setDataTable] = useState<T[]>(data)
+
+    useEffect(() => {
+        setHeadersTable(headers);
+    }, [headers]);
+
+    useEffect(() => {
+        setDataTable(data);
+    }, [data]);
 
     // get column sort and type and call function handleSortData
     const handleChangeSortType = (column: string, isASC: boolean) => {

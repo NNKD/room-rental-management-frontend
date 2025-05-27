@@ -28,35 +28,19 @@ export const router = createBrowserRouter([
             },
             {
                 path: "home",
-                element: (
-                    <ProtectedRoute>
-                        <Home />
-                    </ProtectedRoute>
-                ),
+                element: <Home />,
             },
             {
                 path: "apartments",
-                element: (
-                    <ProtectedRoute>
-                        <ApartmentList />
-                    </ProtectedRoute>
-                ),
+                element: <ApartmentList />,
             },
             {
                 path: "amenities",
-                element: (
-                    <ProtectedRoute>
-                        <Amenities />
-                    </ProtectedRoute>
-                ),
+                element: <Amenities />,
             },
             {
                 path: "apartment/:slug",
-                element: (
-                    <ProtectedRoute>
-                        <ApartmentDetail />
-                    </ProtectedRoute>
-                ),
+                element: <ApartmentDetail />,
             },
         ],
     },

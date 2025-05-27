@@ -31,3 +31,11 @@ export interface ApartmentPriceServiceType {
     price: number;
     unit: string;
 }
+
+export interface ServiceType {
+    id: number;
+    name: string;
+    description: string;
+    price: string;
+    unit: string;
+}
