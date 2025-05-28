@@ -1,4 +1,3 @@
-// router/index.tsx
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../App.tsx";
 import Home from "../pages/Home.tsx";
@@ -39,35 +38,36 @@ export const router = createBrowserRouter([
                 element: <Amenities />,
             },
             {
-                path: "apartment/:slug",
+                path: "apartments/:slug",
                 element: <ApartmentDetail />,
             },
+            {
+                path: "/dashboard",
+                element: (
+                    // <ProtectedRoute>
+                        <DashBoardLayout />
+                    // </ProtectedRoute>
+                ),
+                children: [
+                    {
+                        index: true,
+                        element: <DashBoardContent />,
+                    },
+                    {
+                        path: "apartment-management",
+                        element: <ApartmentManagement />,
+                    },
+                    {
+                        path: "apartment-type-management",
+                        element: <ApartmentTypeManagement />,
+                    },
+                    {
+                        path: "apartment-price-service",
+                        element: <ApartmentPriceService />,
+                    },
+                ],
+            },
         ],
     },
-    {
-        path: "/dashboard",
-        element: (
-            <ProtectedRoute>
-                <DashBoardLayout />
-            </ProtectedRoute>
-        ),
-        children: [
-            {
-                index: true,
-                element: <DashBoardContent />,
-            },
-            {
-                path: "apartment-management",
-                element: <ApartmentManagement />,
-            },
-            {
-                path: "apartment-type-management",
-                element: <ApartmentTypeManagement />,
-            },
-            {
-                path: "apartment-price-service",
-                element: <ApartmentPriceService />,
-            },
-        ],
-    },
+
 ]);

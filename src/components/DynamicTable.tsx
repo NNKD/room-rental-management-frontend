@@ -1,6 +1,5 @@
 import {GoTriangleDown, GoTriangleUp} from "react-icons/go";
-import {useEffect, useState} from "react";
-import {FaEdit} from "react-icons/fa";
+import {ReactElement, useEffect, useState} from "react";
 import {MdDeleteForever} from "react-icons/md";
 import * as React from "react";
 import {
@@ -9,6 +8,8 @@ import {
     ApartmentTypeManagementType, ServiceType,
     TableHeader
 } from "../types/Dashboard.ts";
+import {formatCurrency} from "../utils/NumberCalculate.ts";
+
 
 /*
     headers: header of the table
@@ -35,7 +36,11 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
     // get column sort and type and call function handleSortData
     const handleChangeSortType = (column: string, isASC: boolean) => {
         // change sortASC of the column which was clicked. And reset other columns
-        const sortedHeaders = headersTable.map((header) => header.slug == column ? {...header, sortASC: !header.sortASC} : {...header, sortASC: true})
+        const sortedHeaders = headersTable.map((header) =>{
+            if (!('sortASC' in header)) return header;
+            return header.slug == column ? {...header, sortASC: !header.sortASC} : {...header, sortASC: true};
+        })
+
         setHeadersTable(sortedHeaders)
         handleSortData(column, isASC)
     }
@@ -50,17 +55,27 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
         if (!column) return
 
         const sortedData = [...dataTable].sort((a, b) => {
-            const valueA = a[column as keyof T]
-            const valueB = b[column as keyof T]
+            let valueA: unknown = a[column as keyof T]
+            let valueB: unknown = b[column as keyof T]
 
             if (valueA == null || valueB == null) return 0;
 
             let result = 0;
 
+
+            // Check if is a React Element get data-sort from props to compare. Ex: <div data-sort="123"> Text </div>
+            if (React.isValidElement(valueA) && React.isValidElement(valueB)) {
+                const valueAElement = valueA as ReactElement<{"data-sort": string}>;
+                const valueBElement = valueB as ReactElement<{"data-sort": string}>;
+
+                valueA = valueAElement.props["data-sort"]
+                valueB = valueBElement.props["data-sort"]
+            }
+
             if (typeof valueA === "number" && typeof valueB === "number") {
                 result = valueA - valueB
             }else if (typeof valueA === "string" && typeof valueB === "string") {
-                result = valueA.localeCompare(valueB)
+                result = valueA.localeCompare(valueB);
             }else if (valueA instanceof Date && valueB instanceof Date) {
                 result = valueA.getTime() - valueB.getTime()
             }
@@ -78,12 +93,19 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
         return String(value ?? "");
     };
     return (
-        <div className="relative overflow-auto h-fit max-h-full max-w-full rounded-t-xl">
+        <div className="relative overflow-auto h-fit max-h-full w-full rounded-t-xl">
             <table className="table-auto border border-separate border-spacing-0 border-zinc-300 rounded-t-xl w-screen">
                 <thead>
                     <tr>
+
+                        <th className="sticky top-0 border border-zinc-300 bg-lightGreen p-4 z-50 w-[10%]">
+                            <div>
+                                STT
+                            </div>
+                        </th>
+
                         {headersTable.map((header, index) => (
-                            // Make header stick on top of the table. Column has % width
+                            // Make header stick on top of the table.
                             <th key={index}
                                 className="sticky top-0 border border-zinc-300 bg-lightGreen p-4 z-50">
                                 <div>
@@ -110,7 +132,7 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
 
                         {/*Stick column on the right of the table*/}
                         {hasActionColumn ? (
-                            <th className="sticky top-0 right-0 border border-zinc-300 bg-lightGreen p-4 z-50 w-[20%]">
+                            <th className="sticky top-0 right-0 border border-zinc-300 bg-lightGreen p-4 z-50 w-[10%]">
                                 Hành động
                             </th>
                         ) : ""}
@@ -119,15 +141,19 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
 
                 </thead>
                 <tbody>
-                {dataTable.map(row => (
-                    <tr key={row.id}>
+                {dataTable.map((row, index) => (
+                    <tr key={index}>
+                        <td className="border border-zinc-300 p-4 bg-white">
+                            {index + 1}
+                        </td>
+
                         {headersTable.map((header, index) => (
                             <td key={index}
                                 className={`border border-zinc-300 p-4 
                                             ${(index % 2 == 0) ? "bg-zinc-100" : "bg-white"}
                                             ${header.center ? "text-center" : ""}`}>
 
-                                {handleRenderTableValue(row[header.slug])}
+                                {header.isCurrency ? formatCurrency(Number(row[header.slug])) : handleRenderTableValue(row[header.slug])}
 
                             </td>
                         ))}
@@ -137,10 +163,6 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
                             <td className={`border border-zinc-300 p-4 bg-white sticky right-0
                                         ${(headers.length % 2 == 0) ? "bg-zinc-100" : "bg-white"}`}>
                                 <div className="flex items-center justify-evenly">
-                                    <div className="group p-1 cursor-pointer">
-                                        <FaEdit className="text-2xl hover:text-lightGreen transition-all duration-300 ease-in-out"/>
-                                    </div>
-
                                     <div className="group p-1 cursor-pointer">
                                         <MdDeleteForever className="text-2xl hover:text-lightGreen transition-all duration-300 ease-in-out" />
                                     </div>

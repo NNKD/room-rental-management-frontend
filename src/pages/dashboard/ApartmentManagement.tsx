@@ -1,43 +1,52 @@
 import DynamicTable from "../../components/DynamicTable.tsx";
 import {ApartmentManagementType, TableHeader} from "../../types/Dashboard.ts";
+import {useEffect, useState} from "react";
+import {useNotice} from "../../hook/useNotice.ts";
+import {NoticeType} from "../../types/Context.ts";
+import axios from "axios";
+import {envVar} from "../../utils/EnvironmentVariables.ts";
+import {Link} from "react-router-dom";
 
 export default function ApartmentManagement() {
+    const [apartments, setApartments] = useState<ApartmentManagementType[]>([])
+    const {setMessage, setType} = useNotice()
+
     const headers : TableHeader<ApartmentManagementType>[] = [
-        {
-            name: 'STT',
-            slug: 'id',
-            sortASC: true,
-        }, {
-            name: 'Phòng số',
-            slug: 'number',
-            sortASC: true,
-        }, {
-            name: 'Loại phòng',
-            slug: 'type',
-            sortASC: true,
-        }, {
-            name: 'Trạng thái',
-            slug: 'status',
-        }, {
-            name: 'Số nhà vệ sinh',
-            slug: 'bathroom',
-        },{
-            name: 'Số phòng ngủ',
-            slug: 'bedroom'
-        }
+        {name: 'Phòng số', slug: 'name', sortASC: true},
+        {name: 'Giá (VNĐ)', slug: 'price', isCurrency: true, sortASC: true},
+        {name: 'Loại phòng', slug: 'type'},
+        {name: 'Trạng thái', slug: 'status'},
+        {name: 'Người thuê', slug: 'user', sortASC: true},
     ]
 
-    const data = [
-        { id: 1, number: 1, type: "Deluxe", status: "Done", bathroom: 1, bedroom: 3},
-        { id: 2, number: 204, type: "VIP", status: "Fix", bathroom: 2, bedroom: 3},
-        { id: 3, number: 50, type: "VIP", status: "Pending", bathroom: 3, bedroom: 3},
-        { id: 4, number: 123, type: "Basic", status: "Pending", bathroom: 1, bedroom: 1},
-        { id: 5, number: 102, type: "Normal", status: "Done", bathroom: 1, bedroom: 1},
-    ];
+    useEffect(() => {
+        handleGetApartmentMagement()
+    }, [])
+
+    const handleGetApartmentMagement = async () => {
+        try {
+            const response = await axios.get(`${envVar.API_URL}/dashboard/apartments`);
+
+            if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
+                const apartmentsNormalize = response.data.data.map((a: ApartmentManagementType) => ({
+                    ...a,
+                    price: a.price,
+                    name: <Link to={`/apartments/${a.slug}`} className="underline text-blue-500" data-sort={a.name}>{a.name}</Link>,
+                    user: <Link to={`/users/${a.userEmail}`} className="underline text-blue-500" data-sort={a.user}>{a.user}</Link>
+                }))
+                setApartments(apartmentsNormalize);
+            }
+
+        } catch (error) {
+            console.log(error)
+            setMessage("Đã có lỗi xảy ra: "+ error)
+            setType(NoticeType.ERROR)
+        }
+    }
 
 
     return (
-        <DynamicTable headers={headers} data={data} hasActionColumn={true}/>
+        <DynamicTable headers={headers} data={apartments} hasActionColumn={true}/>
     )
 }
 
