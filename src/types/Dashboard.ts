@@ -46,3 +46,57 @@ export interface ServiceType {
     price: string;
     unit: string;
 }
+
+// Có trùng, sửa lại sau
+export interface ApartmentDTO {
+    id?: number;
+    name: string;
+    slug: string;
+    brief: string;
+    description: string;
+    hot: number;
+    price: number;
+    type: ApartmentTypeDTO;
+    status: ApartmentStatusDTO;
+    discounts: ApartmentDiscountDTO[];
+    images: ApartmentImageDTO[];
+    information: ApartmentInformationDTO
+}
+
+export interface ApartmentInformationDTO {
+    id?: number;
+    width: number;
+    height: number;
+    floor: number;
+    balcony: number;
+    terrace: number;
+    furniture: string;
+    bedrooms: number;
+    kitchens: number;
+    bathrooms: number;
+}
+
+export interface ApartmentTypeDTO {
+    id?: number;
+    name: string;
+    description: string;
+
+}
+
+export interface ApartmentStatusDTO {
+    id?: number;
+    name: string;
+}
+
+export interface ApartmentDiscountDTO {
+    id?: number;
+    discount_percent: number;
+    duration_month: number;
+}
+
+export interface ApartmentImageDTO {
+    id: number;
+    url: string;
+}
+
+

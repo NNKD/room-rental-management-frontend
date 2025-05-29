@@ -7,10 +7,11 @@ import Login from "../pages/Login.tsx";
 import Amenities from "../pages/Amenities.tsx";
 import DashBoardLayout from "../pages/dashboard/DashBoardLayout.tsx";
 import DashBoardContent from "../pages/dashboard/DashBoardContent.tsx";
-import ApartmentManagement from "../pages/dashboard/ApartmentManagement.tsx";
+import ApartmentManagement from "../pages/dashboard/apartment/ApartmentManagement.tsx";
 import ApartmentTypeManagement from "../pages/dashboard/ApartmentTypeManagement.tsx";
 import ApartmentPriceService from "../pages/dashboard/ApartmentPriceService.tsx";
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
+import ApartmentDetailDashboard from "../pages/dashboard/apartment/ApartmentDetailDashboard.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -56,6 +57,10 @@ export const router = createBrowserRouter([
                     {
                         path: "apartment-management",
                         element: <ApartmentManagement />,
+                    },
+                    {
+                        path: "apartment-management/:slug",
+                        element: <ApartmentDetailDashboard />,
                     },
                     {
                         path: "apartment-type-management",
