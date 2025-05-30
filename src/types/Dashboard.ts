@@ -99,4 +99,12 @@ export interface ApartmentImageDTO {
     url: string;
 }
 
+export interface ServiceDTO {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    unit: string;
+}
+
 

@@ -29,7 +29,6 @@ export default function Amenities() {
     const {setMessage, setType} = useNotice()
 
     const headers: TableHeader<ServiceType>[] = [
-        {name: 'STT', slug: 'id', center: true},
         {name: 'Dịch vụ', slug: 'name', center: true},
         {name: 'Mô tả', slug: 'description', center: true},
         {name: 'Giá (VNĐ)', slug: 'price', center: true},

@@ -1,14 +1,16 @@
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import Header from "../components/Header.tsx";
 import Footer from "../components/Footer.tsx";
 import ApartmentItem from "../components/ApartmentItem.tsx";
 import Search from "../components/Search.tsx";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { IoIosArrowDropleft, IoIosArrowDropright } from "react-icons/io";
 import { ApartmentListItem } from "../types/Apartment.ts";
 import { useNotice } from "../hook/useNotice.ts";
 import { NoticeType } from "../types/Context.ts";
 import SkeletonApartmentItem from "../components/skeleton-loading/SkeletonApartmentItem.tsx";
+import {envVar} from "../utils/EnvironmentVariables.ts";
+import axios from "axios";
 
 export default function Home() {
     const [name, setName] = useState("");
@@ -18,47 +20,36 @@ export default function Home() {
     const [topOffers, setTopOffers] = useState<ApartmentListItem[]>([]);
     const [loading, setLoading] = useState(true);
     const { setMessage, setType } = useNotice();
-    const abortControllerRef = useRef<AbortController | null>(null);
+    const navigate = useNavigate()
 
     useEffect(() => {
         console.log(name, typeSearch);
     }, [name, typeSearch]);
 
+    useEffect(() => {
+        if (topOffers) {
+            setLoading(false);
+        }
+    }, [topOffers]);
+
+    const handleSearch = () => {
+        console.log("Search button clicked");
+        navigate(`/apartments?name=${name}&type=${typeSearch}`);
+    }
+
+
     const handleCallAPI = async () => {
         setLoading(true);
 
-        if (abortControllerRef.current) {
-            abortControllerRef.current.abort();
-        }
-
-        abortControllerRef.current = new AbortController();
-
         try {
-            const response = await fetch(`http://localhost:8080/apartments/hot`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                signal: abortControllerRef.current.signal,
-            });
+            const response = await axios.get(`${envVar.API_URL}/apartments/hot`);
 
-            const text = await response.text();
-
-            if (!response.ok) {
-                throw new Error(`Lỗi HTTP! trạng thái: ${response.status}`);
-            }
-
-            const data = JSON.parse(text);
-            if (data.status === "success" && data.statusCode === 200) {
-                setTopOffers(data.data);
-            } else {
-                throw new Error("Dữ liệu phản hồi không hợp lệ");
+            if (response.data.status === "success" && response.data.statusCode === 200) {
+                setTopOffers(response.data.data);
             }
         } catch (error) {
             setType(NoticeType.ERROR);
             setMessage(`Đang có lỗi xảy ra: ${error}`);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -68,9 +59,6 @@ export default function Home() {
         handleGetAmount();
         return () => {
             window.removeEventListener("resize", handleGetAmount);
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
         };
     }, []);
 
@@ -107,7 +95,7 @@ export default function Home() {
                                 đã hoạt động tại Việt Nam hơn 15 năm.
                             </p>
                             <div className="text-center mb-6">
-                                <Search setName={setName} setType={setTypeSearch} />
+                                <Search setName={setName} setType={setTypeSearch} searchBtn={handleSearch}/>
                             </div>
                         </div>
                         <div className="lg:w-1/2">

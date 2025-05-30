@@ -232,7 +232,7 @@ export default function ApartmentDetail() {
                                         <p className="text-base">Green Home</p>
                                         <div className="flex items-center justify-center gap-2">
                                             <FiPhone />
-                                            <span className="underline text-base">+84 123 465 898</span>
+                                            <span className="underline text-base">+84 28 1234 5678</span>
                                         </div>
                                     </div>
                                 </div>

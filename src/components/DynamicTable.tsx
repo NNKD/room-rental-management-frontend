@@ -145,7 +145,7 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
                 <tbody>
                 {dataTable.map((row, index) => (
                     <tr key={index}>
-                        <td className="border border-zinc-300 p-4 bg-white">
+                        <td className="border border-zinc-300 p-4 bg-white text-center">
                             {index + 1}
                         </td>
 

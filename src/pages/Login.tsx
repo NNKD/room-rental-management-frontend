@@ -5,6 +5,7 @@ import { useAuth } from '../hook/useAuth.ts';
 import { useNotice } from '../hook/useNotice';
 import LoadingPage from '../components/LoadingPage';
 import { NoticeType } from "../types/Context.ts";
+import {envVar} from "../utils/EnvironmentVariables.ts";
 
 export default function Login() {
     const [username, setUsername] = useState<string>('');
@@ -26,7 +27,7 @@ export default function Login() {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:8080/auth/login', {
+            const response = await fetch(`${envVar.API_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -155,29 +156,29 @@ export default function Login() {
                         </button>
                     </form>
 
-                    <div className="mt-6 text-center text-sm text-gray-500">
-                        Đăng nhập bằng mạng xã hội
-                        <div className="flex justify-center gap-4 mt-3">
-                            <button
-                                className="bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
-                                disabled={isLoading}
-                            >
-                                Facebook
-                            </button>
-                            <button
-                                className="bg-blue-400 text-white px-4 py-2 rounded-full text-xs font-semibold hover:bg-blue-500 transition-colors disabled:opacity-50"
-                                disabled={isLoading}
-                            >
-                                Twitter
-                            </button>
-                            <button
-                                className="bg-red-500 text-white px-4 py-2 rounded-full text-xs font-semibold hover:bg-red-600 transition-colors disabled:opacity-50"
-                                disabled={isLoading}
-                            >
-                                Google +
-                            </button>
-                        </div>
-                    </div>
+                    {/*<div className="mt-6 text-center text-sm text-gray-500">*/}
+                    {/*    Đăng nhập bằng mạng xã hội*/}
+                    {/*    <div className="flex justify-center gap-4 mt-3">*/}
+                    {/*        <button*/}
+                    {/*            className="bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"*/}
+                    {/*            disabled={isLoading}*/}
+                    {/*        >*/}
+                    {/*            Facebook*/}
+                    {/*        </button>*/}
+                    {/*        <button*/}
+                    {/*            className="bg-blue-400 text-white px-4 py-2 rounded-full text-xs font-semibold hover:bg-blue-500 transition-colors disabled:opacity-50"*/}
+                    {/*            disabled={isLoading}*/}
+                    {/*        >*/}
+                    {/*            Twitter*/}
+                    {/*        </button>*/}
+                    {/*        <button*/}
+                    {/*            className="bg-red-500 text-white px-4 py-2 rounded-full text-xs font-semibold hover:bg-red-600 transition-colors disabled:opacity-50"*/}
+                    {/*            disabled={isLoading}*/}
+                    {/*        >*/}
+                    {/*            Google +*/}
+                    {/*        </button>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
                 </div>
             </div>
         </div>

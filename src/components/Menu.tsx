@@ -39,7 +39,7 @@ export default function Menu({showLogin, textColor, underlineColor} : {showLogin
                      py-2`}>
                 Tiện ích
             </Link>
-            <Link to=""
+            <Link to="/contact"
                   className={` relative
                      lg:before:absolute lg:before:bottom-0 lg:before:left-1/2 lg:before:-translate-x-1/2
                      lg:before:w-0 lg:before:h-0.5 lg:hover:before:w-full
