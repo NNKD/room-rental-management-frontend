@@ -7,10 +7,11 @@ import Login from "../pages/Login.tsx";
 import Amenities from "../pages/Amenities.tsx";
 import DashBoardLayout from "../pages/dashboard/DashBoardLayout.tsx";
 import DashBoardContent from "../pages/dashboard/DashBoardContent.tsx";
-import ApartmentManagement from "../pages/dashboard/ApartmentManagement.tsx";
-import ApartmentTypeManagement from "../pages/dashboard/ApartmentTypeManagement.tsx";
+import ApartmentManagement from "../pages/dashboard/apartment/ApartmentManagement.tsx";
+import ApartmentTypeManagement from "../pages/dashboard/apartment/ApartmentTypeManagement.tsx";
 import ApartmentPriceService from "../pages/dashboard/ApartmentPriceService.tsx";
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
+import ApartmentDetailDashboard from "../pages/dashboard/apartment/ApartmentDetailDashboard.tsx";
 import ForgotPassword from "../pages/FotgotPassword.tsx";
 import Contact from "../pages/Contact.tsx";
 
@@ -44,7 +45,7 @@ export const router = createBrowserRouter([
                 element: <Amenities />,
             },
             {
-                path: "apartment/:slug",
+                path: "apartments/:slug",
                 element: <ApartmentDetail />,
             },
             {
@@ -68,6 +69,10 @@ export const router = createBrowserRouter([
                         element: <ApartmentManagement />,
                     },
                     {
+                        path: "apartment-management/:slug",
+                        element: <ApartmentDetailDashboard />,
+                    },
+                    {
                         path: "apartment-type-management",
                         element: <ApartmentTypeManagement />,
                     },
@@ -79,4 +84,5 @@ export const router = createBrowserRouter([
             },
         ],
     },
+
 ]);

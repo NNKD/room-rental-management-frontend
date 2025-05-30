@@ -6,7 +6,7 @@ export default function ApartmentItem({ apartment }: { apartment: ApartmentListI
 
     return (
         <Link
-            to={`/apartment/${apartment.slug}`}
+            to={`/apartments/${apartment.slug}`}
             className="w-full mx-auto rounded shadow-[0_0_4px_2px_#ddd] select-none hover:shadow-[0_0_6px_4px_#bbb] transition-all duration-300 ease-in-out flex flex-col h-full"
         >
             <div className="overflow-hidden rounded-t aspect-[4/3] flex-shrink-0">

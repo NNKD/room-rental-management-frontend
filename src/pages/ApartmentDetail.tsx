@@ -229,10 +229,10 @@ export default function ApartmentDetail() {
                                         src="https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//test.webp"
                                         className="w-[50px] h-[50px] rounded-full" alt="avatar"/>
                                     <div className="flex flex-col justify-center">
-                                        <p className="text-base">Haylie Donin</p>
+                                        <p className="text-base">Green Home</p>
                                         <div className="flex items-center justify-center gap-2">
                                             <FiPhone />
-                                            <span className="underline text-base">+34 555 781 731</span>
+                                            <span className="underline text-base">+84 123 465 898</span>
                                         </div>
                                     </div>
                                 </div>
