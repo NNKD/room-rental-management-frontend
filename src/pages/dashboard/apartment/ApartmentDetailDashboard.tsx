@@ -9,6 +9,7 @@ import {ApartmentDTO, ApartmentStatusDTO, ApartmentTypeDTO} from "../../../types
 import {NoticeType} from "../../../types/Context.ts";
 import {useNotice} from "../../../hook/useNotice.ts";
 import {calPriceDiscount, formatCurrency} from "../../../utils/NumberCalculate.ts";
+import UploadWidget from "../../../components/UploadWidget.tsx"
 
 export default function ApartmentDetailDashboard() {
     const {slug} = useParams();
@@ -381,9 +382,7 @@ export default function ApartmentDetailDashboard() {
 
                         {
                             mode === "add" ? (
-                                <div className="bg-lightGreen w-fit p-2 rounded ml-auto">
-                                    Tải ảnh lên
-                                </div>
+                                <UploadWidget/>
                             ) : ""
                         }
 
