@@ -96,11 +96,10 @@ export default function ApartmentDetail() {
     const handleSubmitForm = async () => {
         try {
             const response = await axios.post(`${envVar.API_URL}/apartments/${slug}/form`, {
-                body: {
-                    slug: slug,
-                    name: username,
-                    message: messageForm,
-                },
+                slug: slug,
+                name: username,
+                email: email,
+                message: messageForm,
             })
 
             if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
@@ -238,7 +237,7 @@ export default function ApartmentDetail() {
                                 </div>
                                 <div>
                                     <p className="mb-1 text-base">Họ tên</p>
-                                    <input type="text" placeholder="Họ tên"
+                                    <input type="text" placeholder="Họ tên" value={username}
                                            onChange={(e) => setUsername(e.target.value)}
                                            className="p-2 w-full text-base outline-none border border-darkGray rounded"/>
                                 </div>
@@ -252,7 +251,7 @@ export default function ApartmentDetail() {
 
                                 <div>
                                     <p className="mb-1 text-base">Lời nhắn</p>
-                                    <textarea placeholder="Lời nhắn" rows={10}
+                                    <textarea placeholder="Lời nhắn" rows={10} value={messageForm}
                                               onChange={(e) => setMessageForm(e.target.value)}
                                               className="p-2 w-full text-base resize-none outline-none border border-darkGray rounded">
 
