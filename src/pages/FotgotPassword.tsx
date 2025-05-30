@@ -1,9 +1,54 @@
+// src/pages/ForgotPassword.tsx
+import { useState, FormEvent } from 'react';
+import { useNotice } from '../hook/useNotice';
+import LoadingPage from '../components/LoadingPage';
+import {NoticeType} from "../types/Context.ts";
 
 export default function ForgotPassword() {
+    const [email, setEmail] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { setMessage, setType } = useNotice();
+
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsLoading(true);
+
+        try {
+            const response = await fetch('http://localhost:8080/auth/forgot-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            const data: { statusCode: number; status: string; message: string } = await response.json();
+
+            if (data.statusCode === 400) {
+                throw new Error(data.message || 'Email không hợp lệ');
+            }
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Đã có lỗi xảy ra');
+            }
+
+            setMessage(data.message === 'Operation successful' ? 'Mật khẩu mới đã được gửi tới email của bạn' : data.message)
+            setType(NoticeType.SUCCESS)
+        } catch (err: unknown) {
+            setMessage(err instanceof Error ? err.message : 'Đã có lỗi xảy ra, vui lòng thử lại')
+            setType(NoticeType.ERROR)
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    if (isLoading) {
+        return <LoadingPage />;
+    }
+
     return (
-        <div className="min-h-screen bg-gradient-to-tr from-[#149e94] via-[#17c2b1] to-[#1ad7cb]0 flex items-center justify-center px-4">
+        <div className="min-h-screen bg-gradient-to-tr from-[#149e94] via-[#17c2b1] to-[#1ad7cb] flex items-center justify-center px-4">
             <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col md:flex-row">
-                {/* Left - Image Section */}
                 <div className="md:w-1/2 w-full relative">
                     <img
                         src="https://static.designboom.com/wp-content/uploads/2021/06/city-oasis-apartments-k-a-studio-vietnam-designboom-3.jpg"
@@ -15,35 +60,32 @@ export default function ForgotPassword() {
                         <p className="text-sm text-center">Tiên phong trong việc xây dựng môi trường xanh cho mọi nhà.</p>
                     </div>
                 </div>
-                '
-                {/* Right - Form Section */}
+
                 <div className="md:w-1/2 w-full p-8 md:p-12">
-                    <h2 className="text-3xl font-bold mb-2">Forgot Password</h2>
-                    <p className="text-sm text-gray-500 mb-6">
-                        If you already to login ? <a href="#" className="text-blue-500 underline">Login your account</a>, it takes less than a minute
+                    <h2 className="text-3xl font-bold mb-2">Quên Mật Khẩu</h2>
+                    <p className="text-sm text-gray-foreground mb-6">
+                        Nhập email của bạn để nhận mật khẩu mới. <a href="/login" className="text-blue-500 underline">Quay lại đăng nhập</a>
                     </p>
 
-                    <form className="space-y-4">
-                        <input type="text" placeholder="Name" className="w-full border-b border-gray-300 py-2 px-2 focus:outline-none focus:border-pink-500" />
-                        <input type="password" placeholder="Password" className="w-full border-b border-gray-300 py-2 px-2 focus:outline-none focus:border-pink-500" />
-                        <input type="password" placeholder="Rewrite Password" className="w-full border-b border-gray-300 py-2 px-2 focus:outline-none focus:border-pink-500" />
+                    <form className="space-y-4" onSubmit={handleSubmit}>
+                        <input
+                            type="email"
+                            placeholder="Nhập email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full border-b border-gray-300 py-2 px-2 focus:outline-none focus:border-pink-500"
+                            required
+                            disabled={isLoading}
+                        />
 
-                        <div className="flex items-center text-sm">
-                            <input type="checkbox" id="terms" className="mr-2" />
-                            <label htmlFor="terms">I accept terms and conditions & privacy policy</label>
-                        </div>
-
-                        <button type="submit" className="w-full bg-pink-500 text-white py-2 rounded-full font-semibold hover:bg-pink-600 transition">CHANGE PASSWORD</button>
+                        <button
+                            type="submit"
+                            className="w-full bg-pink-500 text-white py-2 rounded-full font-semibold hover:bg-pink-600 transition-colors disabled:bg-gray-400 disabled: disabled:cursor-not-allowed"
+                            disabled={isLoading}
+                        >
+                            GỬI YÊU CẦU
+                        </button>
                     </form>
-
-                    <div className="mt-6 text-center text-sm text-gray-500">
-                        Login with social media
-                        <div className="flex justify-center gap-4 mt-3">
-                            <button className="bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-semibold">Facebook</button>
-                            <button className="bg-blue-400 text-white px-4 py-2 rounded-full text-xs font-semibold">Twitter</button>
-                            <button className="bg-red-500 text-white px-4 py-2 rounded-full text-xs font-semibold">Google +</button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

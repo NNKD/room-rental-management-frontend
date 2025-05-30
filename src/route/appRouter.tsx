@@ -12,6 +12,8 @@ import ApartmentTypeManagement from "../pages/dashboard/apartment/ApartmentTypeM
 import ApartmentPriceService from "../pages/dashboard/ApartmentPriceService.tsx";
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
 import ApartmentDetailDashboard from "../pages/dashboard/apartment/ApartmentDetailDashboard.tsx";
+import ForgotPassword from "../pages/FotgotPassword.tsx";
+import Contact from "../pages/Contact.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -20,7 +22,7 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <Navigate to="/login" replace />, // Redirect về login mặc định
+                element: <Navigate to="/home" replace />,
             },
             {
                 path: "login",
@@ -29,6 +31,10 @@ export const router = createBrowserRouter([
             {
                 path: "home",
                 element: <Home />,
+            },
+            {
+                path: "contact",
+                element: <Contact />,
             },
             {
                 path: "apartments",
@@ -43,11 +49,15 @@ export const router = createBrowserRouter([
                 element: <ApartmentDetail />,
             },
             {
-                path: "/dashboard",
+                path: "forgot-password",
+                element: <ForgotPassword />,
+            },
+            {
+                path: "dashboard",
                 element: (
-                    // <ProtectedRoute>
+                    <ProtectedRoute>
                         <DashBoardLayout />
-                    // </ProtectedRoute>
+                    </ProtectedRoute>
                 ),
                 children: [
                     {

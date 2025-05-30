@@ -4,12 +4,12 @@ import NoticeUI from "./components/NoticeUI.tsx";
 import { AuthProvider } from './contexts/AuthContext';
 
 export default function App() {
-  return (
-      <AuthProvider>
-        <NoticeProvider>
-              <Outlet/>
-              <NoticeUI/>
-          </NoticeProvider>
-      </AuthProvider>
-  );
+    return (
+        <AuthProvider>
+            <NoticeProvider>
+                <Outlet/>
+                <NoticeUI/>
+            </NoticeProvider>
+        </AuthProvider>
+    );
 }
