@@ -48,7 +48,7 @@ export default function ApartmentManagement() {
     return (
         <div className="h-full flex flex-col overflow-hidden">
             <Link to={"/dashboard/apartment-management/add"} className="ml-auto mb-4 bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out">
-                Lưu
+                Thêm căn hộ
             </Link>
             <DynamicTable headers={headers} data={apartments} hasActionColumn={true}/>
         </div>

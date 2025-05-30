@@ -4,11 +4,12 @@ import {MdDeleteForever} from "react-icons/md";
 import * as React from "react";
 import {
     ApartmentManagementType,
-    ApartmentPriceServiceType,
-    ApartmentTypeManagementType, ServiceType,
+    ApartmentPriceServiceType, ApartmentTypeDTO,
+    ServiceType,
     TableHeader
 } from "../types/Dashboard.ts";
 import {formatCurrency} from "../utils/NumberCalculate.ts";
+import {FaEdit} from "react-icons/fa";
 
 
 /*
@@ -16,11 +17,12 @@ import {formatCurrency} from "../utils/NumberCalculate.ts";
     T:  type of data. Ex: ApartmentManagementType, ApartmentTypeManagementType
     data: data of the table. A lot of types of data. Ex: ApartmentManagementType, ApartmentTypeManagementType
     hasActionColumn: true => show column "Hành động". False => hide this column
+    hasEdit: true => edit icon
  */
 
 
-export default function DynamicTable<T extends ApartmentManagementType | ApartmentTypeManagementType | ApartmentPriceServiceType | ServiceType>
-                                    ({headers, data, hasActionColumn}: {headers: TableHeader<T>[], data: T[], hasActionColumn: boolean}) {
+export default function DynamicTable<T extends ApartmentManagementType | ApartmentTypeDTO | ApartmentPriceServiceType | ServiceType>
+                                    ({headers, data, hasActionColumn, hasEdit}: {headers: TableHeader<T>[], data: T[], hasActionColumn: boolean, hasEdit?: boolean}) {
 
     const [headersTable, setHeadersTable] = useState<TableHeader<T>[]>(headers)
     const [dataTable, setDataTable] = useState<T[]>(data)
@@ -163,6 +165,16 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
                             <td className={`border border-zinc-300 p-4 bg-white sticky right-0
                                         ${(headers.length % 2 == 0) ? "bg-zinc-100" : "bg-white"}`}>
                                 <div className="flex items-center justify-evenly">
+
+                                    {
+                                        hasEdit ? (
+                                            <div className="group p-1 cursor-pointer">
+                                                <FaEdit className="text-2xl hover:text-lightGreen transition-all duration-300 ease-in-out"/>
+                                            </div>
+                                        ) : ""
+                                    }
+
+
                                     <div className="group p-1 cursor-pointer">
                                         <MdDeleteForever className="text-2xl hover:text-lightGreen transition-all duration-300 ease-in-out" />
                                     </div>

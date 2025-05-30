@@ -8,7 +8,7 @@ import Amenities from "../pages/Amenities.tsx";
 import DashBoardLayout from "../pages/dashboard/DashBoardLayout.tsx";
 import DashBoardContent from "../pages/dashboard/DashBoardContent.tsx";
 import ApartmentManagement from "../pages/dashboard/apartment/ApartmentManagement.tsx";
-import ApartmentTypeManagement from "../pages/dashboard/ApartmentTypeManagement.tsx";
+import ApartmentTypeManagement from "../pages/dashboard/apartment/ApartmentTypeManagement.tsx";
 import ApartmentPriceService from "../pages/dashboard/ApartmentPriceService.tsx";
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
 import ApartmentDetailDashboard from "../pages/dashboard/apartment/ApartmentDetailDashboard.tsx";
