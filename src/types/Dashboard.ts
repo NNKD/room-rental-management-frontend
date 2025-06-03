@@ -95,7 +95,7 @@ export interface ApartmentDiscountDTO {
 }
 
 export interface ApartmentImageDTO {
-    id: number;
+    id?: number;
     url: string;
 }
 

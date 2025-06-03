@@ -5,16 +5,18 @@ import ModalZoomImage from "../../../components/modal/ModalZoomImage.tsx";
 import {IoCloseCircle} from "react-icons/io5";
 import axios from "axios";
 import {envVar} from "../../../utils/EnvironmentVariables.ts";
-import {ApartmentDTO, ApartmentStatusDTO, ApartmentTypeDTO} from "../../../types/Dashboard.ts";
+import {ApartmentDTO, ApartmentImageDTO, ApartmentStatusDTO, ApartmentTypeDTO} from "../../../types/Dashboard.ts";
 import {NoticeType} from "../../../types/Context.ts";
 import {useNotice} from "../../../hook/useNotice.ts";
 import {calPriceDiscount, formatCurrency} from "../../../utils/NumberCalculate.ts";
 import UploadWidget from "../../../components/UploadWidget.tsx"
+import LoadingPage from "../../../components/LoadingPage.tsx";
 
 export default function ApartmentDetailDashboard() {
     const {slug} = useParams();
     const [indexCarousel, setIndexCarousel] = useState(0)
     const [statuses, setStatuses] = useState<ApartmentStatusDTO[]>([])
+    const [imagesDeleteCloudinary, setImagesDeleteCloudinary] = useState<ApartmentImageDTO[]>([])
     const [types, setTypes] = useState<ApartmentTypeDTO[]>([])
     const [visibleAmount, setVisibleAmount] = useState(3)
     const [mode, setMode] = useState("read")
@@ -22,6 +24,7 @@ export default function ApartmentDetailDashboard() {
     const inputNameRef = useRef<HTMLInputElement|null>(null);
     const {setMessage, setType} = useNotice()
     const [durationMonth, setDurationMonth] = useState(1)
+    const [loading, setLoading] = useState(false)
 
     const defaultApartmentDetail: ApartmentDTO = {
         name: "",
@@ -73,16 +76,13 @@ export default function ApartmentDetailDashboard() {
     }, [mode]);
 
     useEffect(() => {
-        if (slug != "add") {
-            handleGetDetail()
-            handleGetAllType()
-            handleGetAllStatus()
-        }
         if (slug == "add") {
             setMode("add")
-            handleGetAllType()
-            handleGetAllStatus()
+        }else {
+            handleGetDetail()
         }
+        handleGetAllType()
+        handleGetAllStatus()
     }, [slug]);
 
     const handleGetDetail = async () => {
@@ -202,6 +202,71 @@ export default function ApartmentDetailDashboard() {
         })
     }
 
+    const handleUploadImg = (url: string) => {
+        setApartmentDetail(prev => {
+            return {
+                ...prev,
+                images: [...prev.images, {url: url}]
+            }
+        })
+    }
+
+    const handleDeleteImg = (url: string) => {
+        setApartmentDetail(prev => {
+            return {
+                ...prev,
+                images: prev.images.filter(i => i.url != url)
+            }
+        })
+        const deleteImgList = [...imagesDeleteCloudinary, {url: url}];
+        setImagesDeleteCloudinary(deleteImgList);
+    }
+
+    const handleAddOrUpdateApartment = async () => {
+        try {
+            const response = await axios.post(`${envVar.API_URL}/dashboard/apartments`, {
+                apartment: apartmentDetail
+            });
+
+            if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
+                setLoading(false)
+                console.log(response.data.data)
+                setType(NoticeType.SUCCESS)
+                setMessage(response.data.data)
+            }
+
+        } catch (error) {
+            setLoading(false)
+            console.log(error)
+            setMessage("Đã có lỗi xảy ra: "+ error)
+            setType(NoticeType.ERROR)
+        }
+    }
+
+    const handleDeleteImgOnCloudinary = async () => {
+        try {
+            const response = await axios.post(`${envVar.API_URL}/cloudinary/delete-images`, {
+                images: imagesDeleteCloudinary
+            });
+
+            if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
+                console.log(response.data.data)
+                setType(NoticeType.SUCCESS);
+                setMessage(response.data.data)
+            }
+
+        } catch (error) {
+            console.log(error)
+            setMessage("Đã có lỗi xảy ra: "+ error)
+            setType(NoticeType.ERROR)
+        }
+    }
+
+    const handleSave = () => {
+        setLoading(true)
+        handleAddOrUpdateApartment()
+        handleDeleteImgOnCloudinary()
+    }
 
     return (
         <div className="overflow-auto h-fit max-h-full w-full rounded shadow-[0_0_3px_2px_#ccc]">
@@ -215,11 +280,11 @@ export default function ApartmentDetailDashboard() {
                         {mode != "add" ? (
                             <div className="flex border-2 border-zinc-300 select-none">
                                 <div className={`px-4 py-2 text-base ${mode == "read" ? "bg-lightGreen pointer-events-none" : "bg-zinc-300 hover:bg-lightGreenHover hover:cursor-pointer transition-all duration-300 ease-in-out"}`}
-                                     onClick={() => setMode("read")}>
+                                     onClick={() => {handleSave(); setMode("read")}}>
                                     Xem
                                 </div>
                                 <div className={`px-4 py-2 text-base ${mode == "update" ? "bg-lightGreen pointer-events-none" : "bg-zinc-300 hover:bg-lightGreenHover hover:cursor-pointer transition-all duration-300 ease-in-out"}`}
-                                     onClick={() => setMode("update")}>
+                                     onClick={() => {handleSave(); setMode("update")}}>
                                     Sửa
                                 </div>
                             </div>
@@ -382,7 +447,7 @@ export default function ApartmentDetailDashboard() {
 
                         {
                             mode === "add" ? (
-                                <UploadWidget/>
+                                <UploadWidget onGetImgUrl={handleUploadImg}/>
                             ) : ""
                         }
 
@@ -401,8 +466,9 @@ export default function ApartmentDetailDashboard() {
                                                 <img src={img.url}  className="w-full h-full object-cover rounded"/>
                                             </div>
 
-                                            {mode === "update" ? (
-                                                <div className="absolute -top-4 -right-4 p-1 hover:cursor-pointer" onClick={() => {console.log(index)}}>
+                                            {mode != "read" ? (
+                                                <div className="absolute -top-4 -right-4 p-1 hover:cursor-pointer"
+                                                     onClick={() => handleDeleteImg(img.url)}>
                                                     <IoCloseCircle className="text-3xl text-red-500"/>
                                                 </div>
                                             ) : ""}
@@ -421,7 +487,8 @@ export default function ApartmentDetailDashboard() {
                         }
 
                         {mode != "read" ? (
-                            <div className="mx-auto bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out">
+                            <div className="mx-auto bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
+                                onClick={() => handleSave()}>
                                 Lưu
                             </div>
                         ) : ""}
@@ -434,6 +501,10 @@ export default function ApartmentDetailDashboard() {
 
             {imageZoom != "" ? (
                 <ModalZoomImage image={imageZoom} setImage={setImageZoom} />
+            ) : ""}
+
+            {loading ? (
+                <LoadingPage/>
             ) : ""}
 
         </div>
