@@ -18,11 +18,12 @@ import {FaEdit} from "react-icons/fa";
     data: data of the table. A lot of types of data. Ex: ApartmentManagementType, ApartmentTypeManagementType
     hasActionColumn: true => show column "Hành động". False => hide this column
     hasEdit: true => edit icon
+    onDelete: function, use when click on delete icon
  */
 
 
 export default function DynamicTable<T extends ApartmentManagementType | ApartmentTypeDTO | ApartmentPriceServiceType | ServiceType>
-                                    ({headers, data, hasActionColumn, hasEdit}: {headers: TableHeader<T>[], data: T[], hasActionColumn: boolean, hasEdit?: boolean}) {
+                                    ({headers, data, hasActionColumn, hasEdit, onDelete}: {headers: TableHeader<T>[], data: T[], hasActionColumn: boolean, hasEdit?: boolean, onDelete?: (id: string) => void}) {
 
     const [headersTable, setHeadersTable] = useState<TableHeader<T>[]>(headers)
     const [dataTable, setDataTable] = useState<T[]>(data)
@@ -175,7 +176,7 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
                                     }
 
 
-                                    <div className="group p-1 cursor-pointer">
+                                    <div className="group p-1 cursor-pointer" onClick={() => onDelete?.(String(row.id))}>
                                         <MdDeleteForever className="text-2xl hover:text-lightGreen transition-all duration-300 ease-in-out" />
                                     </div>
                                 </div>

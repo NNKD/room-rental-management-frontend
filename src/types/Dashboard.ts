@@ -16,6 +16,7 @@ export interface TableHeader<T> {
 }
 
 export interface ApartmentManagementType {
+    id?: number
     name: string;
     slug: ReactNode;
     price: number;

@@ -1,6 +1,6 @@
 import {IoIosArrowBack, IoIosArrowForward, IoMdArrowBack} from "react-icons/io";
 import {Link, useParams} from "react-router-dom";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import ModalZoomImage from "../../../components/modal/ModalZoomImage.tsx";
 import {IoCloseCircle} from "react-icons/io5";
 import axios from "axios";
@@ -11,6 +11,8 @@ import {useNotice} from "../../../hook/useNotice.ts";
 import {calPriceDiscount, formatCurrency} from "../../../utils/NumberCalculate.ts";
 import UploadWidget from "../../../components/UploadWidget.tsx"
 import LoadingPage from "../../../components/LoadingPage.tsx";
+import extractPublicId from "../../../utils/StringProcess.ts";
+import {debounce} from "../../../utils/Debounce.ts";
 
 export default function ApartmentDetailDashboard() {
     const {slug} = useParams();
@@ -33,8 +35,8 @@ export default function ApartmentDetailDashboard() {
         hot: 0,
         price: 0,
         description: "",
-        type: { id: 0, name: "", description: "" },
-        status: { id: 0, name: "" },
+        type: { id: 1, name: "", description: "" },
+        status: { id: 1, name: "" },
         discounts: [
             {discount_percent: 0, duration_month: 1},
             {discount_percent: 0, duration_month: 3},
@@ -163,6 +165,10 @@ export default function ApartmentDetailDashboard() {
         console.log(apartmentDetail)
     }, [apartmentDetail]);
 
+    const debounceCheckSlug = useMemo(() => {
+        return debounce((slugName: string) => handleCheckSlug(slugName), 500)
+    }, [])
+
     const handleChangeField = (field: string, value: unknown) => {
         setApartmentDetail(prev => {
             return {
@@ -218,54 +224,75 @@ export default function ApartmentDetailDashboard() {
                 images: prev.images.filter(i => i.url != url)
             }
         })
-        const deleteImgList = [...imagesDeleteCloudinary, {url: url}];
+        const deleteImgList = [...imagesDeleteCloudinary, {url: (extractPublicId(url) || "")}];
         setImagesDeleteCloudinary(deleteImgList);
     }
 
     const handleAddOrUpdateApartment = async () => {
         try {
-            const response = await axios.post(`${envVar.API_URL}/dashboard/apartments`, {
-                apartment: apartmentDetail
-            });
+            const response = await axios.post(`${envVar.API_URL}/dashboard/apartments`, apartmentDetail);
 
             if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
                 setLoading(false)
-                console.log(response.data.data)
                 setType(NoticeType.SUCCESS)
                 setMessage(response.data.data)
+                setMode("read")
             }
 
         } catch (error) {
             setLoading(false)
+            if (axios.isAxiosError(error)) {
+                setMessage("Đã có lỗi xảy ra: " + (error.response?.data?.message ?? "Không rõ lỗi"));
+            } else {
+                setMessage("Đã có lỗi xảy ra không xác định");
+            }
             console.log(error)
-            setMessage("Đã có lỗi xảy ra: "+ error)
+            setType(NoticeType.ERROR)
+        }
+    }
+
+    const handleCheckSlug = async (slugName: string) => {
+        try {
+            const response = await axios.get(`${envVar.API_URL}/apartments/check-slug?slug=${slugName}`);
+
+            if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
+                if (response.data.data == false) {
+                    setType(NoticeType.ERROR)
+                    setMessage("Slug đã tồn tại");
+                }
+            }
+
+        } catch (error) {
+            setLoading(false)
+            if (axios.isAxiosError(error)) {
+                setMessage("Đã có lỗi xảy ra: " + (error.response?.data?.message ?? "Không rõ lỗi"));
+            } else {
+                setMessage("Đã có lỗi xảy ra không xác định");
+            }
+            console.log(error)
             setType(NoticeType.ERROR)
         }
     }
 
     const handleDeleteImgOnCloudinary = async () => {
         try {
-            const response = await axios.post(`${envVar.API_URL}/cloudinary/delete-images`, {
-                images: imagesDeleteCloudinary
-            });
+            const response = await axios.post(`${envVar.API_URL}/cloudinary/delete-images`, imagesDeleteCloudinary);
 
             if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
                 console.log(response.data.data)
-                setType(NoticeType.SUCCESS);
-                setMessage(response.data.data)
             }
 
         } catch (error) {
             console.log(error)
-            setMessage("Đã có lỗi xảy ra: "+ error)
-            setType(NoticeType.ERROR)
         }
     }
 
     const handleSave = () => {
-        setLoading(true)
-        handleAddOrUpdateApartment()
-        handleDeleteImgOnCloudinary()
+        if (mode == "update" || mode == "add") {
+            setLoading(true)
+            handleAddOrUpdateApartment()
+            handleDeleteImgOnCloudinary()
+        }
     }
 
     return (
@@ -297,12 +324,12 @@ export default function ApartmentDetailDashboard() {
                             <div className="flex items-center border p-2 rounded w-full lg:w-3/5">
                                 <label className="flex-shrink-0 text-sm font-medium">Căn hộ:</label>
                                 <input className="w-full outline-none border-none px-2 py-1" value={apartmentDetail?.name} disabled={mode === "read"} ref={inputNameRef}
-                                       onChange={(e) => handleChangeField("name", e.target.value)} />
+                                       onChange={(e) => handleChangeField("name", e.target.value)} required={true}/>
                             </div>
                             <div className="flex items-center border p-2 rounded w-full lg:w-2/5">
                                 <label className="flex-shrink-0 text-sm font-medium">Tên Slug:</label>
                                 <input className="w-full outline-none border-none px-2 py-1" value={apartmentDetail?.slug} disabled={mode === "read"}
-                                    onChange={(e) => handleChangeField("slug", e.target.value)} />
+                                    onChange={(e) => {handleChangeField("slug", e.target.value); debounceCheckSlug(e.target.value)}} required={true}/>
                             </div>
                         </div>
 
@@ -351,7 +378,7 @@ export default function ApartmentDetailDashboard() {
                             <div className="flex items-center border p-2 rounded w-full lg:w-[12%]">
                                 <label className="flex-shrink-0 text-sm font-medium">Tầng:</label>
                                 <input className="w-full outline-none border-none px-2 py-1 text-right" type="number" value={apartmentDetail?.information.floor} disabled={mode === "read"}
-                                    onChange={(e) => handleChangeFieldInformation("floor", e.target.value)}/>
+                                    onChange={(e) => handleChangeFieldInformation("floor", e.target.value)} min={0} max={20}/>
                             </div>
                         </div>
 
@@ -359,14 +386,14 @@ export default function ApartmentDetailDashboard() {
                             <div className="flex items-center border p-2 rounded flex-grow w-full lg:w-2/5">
                                 <label className="flex-shrink-0 text-sm font-medium">Nội thất:</label>
                                 <input className="w-full outline-none border-none px-2 py-1 text-right" value={apartmentDetail?.information.furniture} disabled={mode === "read"}
-                                       onChange={(e) => handleChangeFieldInformation("furniture", e.target.value)}/>
+                                       onChange={(e) => handleChangeFieldInformation("furniture", e.target.value)} required={true}/>
                             </div>
 
                             <div className="flex items-center border p-2 rounded w-full lg:w-3/5">
                                 <label className="flex-shrink-0 text-sm font-medium">Giá tiền thuê gốc (1 tháng):</label>
                                 <div className="w-full">
                                     <input className="w-full outline-none border-none px-2 py-1 text-right" type="number" value={apartmentDetail?.price} disabled={mode === "read"}
-                                            onChange={(e) => handleChangeField("price", e.target.value)} />
+                                            onChange={(e) => handleChangeField("price", e.target.value)} min={0} />
                                     <p className="text-base text-right">{formatCurrency(apartmentDetail?.price || 0)}</p>
                                 </div>
                             </div>
@@ -387,25 +414,45 @@ export default function ApartmentDetailDashboard() {
                                 <label className="flex-shrink-0 text-sm font-medium">Chiều dài:</label>
                                 <input className="w-full outline-none border-none px-2 py-1 text-right" type="number"
                                        value={apartmentDetail?.information.height} disabled={mode === "read"}
-                                       onChange={(e) => handleChangeFieldInformation("height", e.target.value)}/>
+                                       onChange={(e) => handleChangeFieldInformation("height", e.target.value)} min={0}/>
                             </div>
                             <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/4">
                                 <label className="flex-shrink-0 text-sm font-medium">Chiều rộng:</label>
                                 <input className="w-full outline-none border-none px-2 py-1 text-right" type="number"
                                        value={apartmentDetail?.information.width} disabled={mode === "read"}
-                                       onChange={(e) => handleChangeFieldInformation("width", e.target.value)}/>
+                                       onChange={(e) => handleChangeFieldInformation("width", e.target.value)} min={0}/>
                             </div>
                             <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/4">
                                 <label className="flex-shrink-0 text-sm font-medium">Ban công (m<sup>2</sup>):</label>
                                 <input className="w-full outline-none border-none px-2 py-1 text-right" type="number"
                                        value={apartmentDetail?.information.balcony} disabled={mode === "read"}
-                                       onChange={(e) => handleChangeFieldInformation("balcony", e.target.value)}/>
+                                       onChange={(e) => handleChangeFieldInformation("balcony", e.target.value)} min={0}/>
                             </div>
                             <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/4">
                                 <label className="flex-shrink-0 text-sm font-medium">Sân thượng (m<sup>2</sup>):</label>
                                 <input className="w-full outline-none border-none px-2 py-1 text-right" type="number"
                                        value={apartmentDetail?.information.terrace} disabled={mode === "read"}
-                                       onChange={(e) => handleChangeFieldInformation("terrace", e.target.value)}/>
+                                       onChange={(e) => handleChangeFieldInformation("terrace", e.target.value)} min={0}/>
+                            </div>
+                        </div>
+                        <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/4">
+                                <label className="flex-shrink-0 text-sm font-medium">Phòng ngủ:</label>
+                                <input className="w-full outline-none border-none px-2 py-1 text-right" type="number"
+                                       value={apartmentDetail?.information.bedrooms} disabled={mode === "read"}
+                                       onChange={(e) => handleChangeFieldInformation("bedrooms", e.target.value)} min={0}/>
+                            </div>
+                            <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/4">
+                                <label className="flex-shrink-0 text-sm font-medium">Phòng bếp:</label>
+                                <input className="w-full outline-none border-none px-2 py-1 text-right" type="number"
+                                       value={apartmentDetail?.information.kitchens} disabled={mode === "read"}
+                                       onChange={(e) => handleChangeFieldInformation("kitchens", e.target.value)} min={0}/>
+                            </div>
+                            <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/4">
+                                <label className="flex-shrink-0 text-sm font-medium">Phòng vệ sinh:</label>
+                                <input className="w-full outline-none border-none px-2 py-1 text-right" type="number"
+                                       value={apartmentDetail?.information.bathrooms} disabled={mode === "read"}
+                                       onChange={(e) => handleChangeFieldInformation("bathrooms", e.target.value)} min={0}/>
                             </div>
                         </div>
 
@@ -422,7 +469,7 @@ export default function ApartmentDetailDashboard() {
                             </div>
                             <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/5">
                                 <label className="flex-shrink-0 text-sm font-medium">Giảm giá (%):</label>
-                                <input className="w-full outline-none border-none px-2 py-1 text-right" type="number"
+                                <input className="w-full outline-none border-none px-2 py-1 text-right" type="number" min={0}
                                        value={Array.isArray(apartmentDetail?.discounts)
                                            ? apartmentDetail?.discounts.find(d => d.duration_month === durationMonth)?.discount_percent ?? 0
                                            : 0} disabled={mode === "read"}
@@ -437,16 +484,16 @@ export default function ApartmentDetailDashboard() {
 
                         <h1 className="text-left text-xl font-bold underline">Mô tả ngắn:</h1>
                         <textarea className="resize-none w-full h-full border rounded p-2" disabled={mode === "read"} value={apartmentDetail?.brief}
-                                  onChange={(e) => handleChangeField("brief", e.target.value)}></textarea>
+                                  onChange={(e) => handleChangeField("brief", e.target.value)} required={true}></textarea>
 
                         <h1 className="text-left text-xl font-bold underline">Mô tả chi tiết:</h1>
                         <textarea rows={6} className="resize-none w-full h-full border rounded p-2" disabled={mode === "read"} value={apartmentDetail?.description}
-                                  onChange={(e) => handleChangeField("description", e.target.value)}></textarea>
+                                  onChange={(e) => handleChangeField("description", e.target.value)} required={true}></textarea>
 
                         <h1 className="text-left text-xl font-bold underline">Hình ảnh:</h1>
 
                         {
-                            mode === "add" ? (
+                            mode != "read" ? (
                                 <UploadWidget onGetImgUrl={handleUploadImg}/>
                             ) : ""
                         }

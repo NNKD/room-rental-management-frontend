@@ -10,6 +10,7 @@ import {Link} from "react-router-dom";
 export default function ApartmentManagement() {
     const [apartments, setApartments] = useState<ApartmentManagementType[]>([])
     const {setMessage, setType} = useNotice()
+    const [loading, setLoading] = useState(false)
 
     const headers : TableHeader<ApartmentManagementType>[] = [
         {name: 'Phòng số', slug: 'name', sortASC: true},
@@ -28,6 +29,7 @@ export default function ApartmentManagement() {
             const response = await axios.get(`${envVar.API_URL}/dashboard/apartments`);
 
             if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
+                console.log(response.data.data)
                 const apartmentsNormalize = response.data.data.map((a: ApartmentManagementType) => ({
                     ...a,
                     price: a.price,
@@ -44,13 +46,33 @@ export default function ApartmentManagement() {
         }
     }
 
+    const handleDeleteApartment = async (id: string) => {
+        setLoading(true);
+        try {
+            const response = await axios.delete(`${envVar.API_URL}/dashboard/apartments/${id}`);
 
-    return (
+            if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
+                setLoading(false)
+                setApartments(prev => prev.filter(a => a.id != Number(id)))
+                setType(NoticeType.SUCCESS)
+                setMessage("Xoá thành công")
+            }
+
+        } catch (error) {
+            setLoading(false)
+            console.log(error)
+            setMessage("Đã có lỗi xảy ra: "+ error)
+            setType(NoticeType.ERROR)
+        }
+    }
+
+
+    return loading ? "" : (
         <div className="h-full flex flex-col overflow-hidden">
             <Link to={"/dashboard/apartment-management/add"} className="ml-auto mb-4 bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out">
                 Thêm căn hộ
             </Link>
-            <DynamicTable headers={headers} data={apartments} hasActionColumn={true}/>
+            <DynamicTable headers={headers} data={apartments} hasActionColumn={true} onDelete={handleDeleteApartment}/>
         </div>
     )
 }
