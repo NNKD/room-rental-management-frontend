@@ -40,8 +40,12 @@ export default function ApartmentManagement() {
             }
 
         } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setMessage((error.response?.data?.message ?? "Không rõ lỗi"));
+            } else {
+                setMessage("Đã có lỗi xảy ra không xác định");
+            }
             console.log(error)
-            setMessage("Đã có lỗi xảy ra: "+ error)
             setType(NoticeType.ERROR)
         }
     }
@@ -60,8 +64,12 @@ export default function ApartmentManagement() {
 
         } catch (error) {
             setLoading(false)
+            if (axios.isAxiosError(error)) {
+                setMessage((error.response?.data?.message ?? "Không rõ lỗi"));
+            } else {
+                setMessage("Đã có lỗi xảy ra không xác định");
+            }
             console.log(error)
-            setMessage("Đã có lỗi xảy ra: "+ error)
             setType(NoticeType.ERROR)
         }
     }

@@ -97,8 +97,12 @@ export default function ApartmentDetailDashboard() {
             }
 
         } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setMessage((error.response?.data?.message ?? "Không rõ lỗi"));
+            } else {
+                setMessage("Đã có lỗi xảy ra không xác định");
+            }
             console.log(error)
-            setMessage("Đã có lỗi xảy ra: "+ error)
             setType(NoticeType.ERROR)
         }
     }
@@ -112,8 +116,12 @@ export default function ApartmentDetailDashboard() {
             }
 
         } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setMessage((error.response?.data?.message ?? "Không rõ lỗi"));
+            } else {
+                setMessage("Đã có lỗi xảy ra không xác định");
+            }
             console.log(error)
-            setMessage("Đã có lỗi xảy ra: "+ error)
             setType(NoticeType.ERROR)
         }
     }
@@ -128,8 +136,12 @@ export default function ApartmentDetailDashboard() {
             }
 
         } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setMessage((error.response?.data?.message ?? "Không rõ lỗi"));
+            } else {
+                setMessage("Đã có lỗi xảy ra không xác định");
+            }
             console.log(error)
-            setMessage("Đã có lỗi xảy ra: "+ error)
             setType(NoticeType.ERROR)
         }
     }
@@ -242,7 +254,7 @@ export default function ApartmentDetailDashboard() {
         } catch (error) {
             setLoading(false)
             if (axios.isAxiosError(error)) {
-                setMessage("Đã có lỗi xảy ra: " + (error.response?.data?.message ?? "Không rõ lỗi"));
+                setMessage((error.response?.data?.message ?? "Không rõ lỗi"));
             } else {
                 setMessage("Đã có lỗi xảy ra không xác định");
             }
@@ -265,7 +277,7 @@ export default function ApartmentDetailDashboard() {
         } catch (error) {
             setLoading(false)
             if (axios.isAxiosError(error)) {
-                setMessage("Đã có lỗi xảy ra: " + (error.response?.data?.message ?? "Không rõ lỗi"));
+                setMessage((error.response?.data?.message ?? "Không rõ lỗi"));
             } else {
                 setMessage("Đã có lỗi xảy ra không xác định");
             }
