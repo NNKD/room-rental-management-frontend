@@ -4,9 +4,10 @@ import axios from "axios";
 import {envVar} from "../../../utils/EnvironmentVariables.ts";
 import {NoticeType} from "../../../types/Context.ts";
 import {useNotice} from "../../../hook/useNotice.ts";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {IoIosClose} from "react-icons/io";
 import LoadingPage from "../../../components/LoadingPage.tsx";
+import {debounce} from "../../../utils/Debounce.ts";
 
 export default function ApartmentTypeManagement() {
     const {setMessage, setType} = useNotice()
@@ -96,6 +97,36 @@ export default function ApartmentTypeManagement() {
         }
     }
 
+    const debounceName = useMemo(() => {
+        return debounce((name: string) => handleCheckNameType(name), 500)
+    }, [])
+
+    const handleCheckNameType = async (name: string) => {
+
+        try {
+            const response = await axios.get(`${envVar.API_URL}/dashboard/types/check-name?name=${name}`);
+
+            if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
+                if (response.data.data == false) {
+                    setType(NoticeType.ERROR)
+                    setMessage("Tên loại căn hộ đã tồn tại");
+                }else {
+                    setMessage("");
+                }
+            }
+
+        } catch (error) {
+
+            if (axios.isAxiosError(error)) {
+                setMessage((error.response?.data?.message ?? "Không rõ lỗi"));
+            } else {
+                setMessage("Đã có lỗi xảy ra không xác định");
+            }
+            console.log(error)
+            setType(NoticeType.ERROR)
+        }
+    }
+
 
     return (
         <div className="h-full flex flex-col overflow-hidden">
@@ -119,7 +150,8 @@ export default function ApartmentTypeManagement() {
                             <label className="text-base flex-shrink-0">Loại phòng</label>
                             <input type="text" placeholder="..." className="outline-none p-2 w-full" required={true}
                                    value={typeSelect?.name || ""}
-                                   onChange={(e) => setTypeSelect(prev => ({...prev, name: e.target.value}))}/>
+                                   onChange={(e) => {setTypeSelect(prev => ({...prev, name: e.target.value}));
+                                                                                 debounceName(e.target.value);}}/>
                         </div>
                         <label className="text-base flex-shrink-0">Mô tả</label>
                         <textarea className="outline-none mt-4 border-2 border-[#ccc] rounded p-2 w-full resize-none" rows={5} placeholder="..." required={true}
