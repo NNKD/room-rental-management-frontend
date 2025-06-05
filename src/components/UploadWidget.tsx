@@ -1,33 +1,40 @@
 import { useEffect, useRef } from 'react';
+import {envVar} from "../utils/EnvironmentVariables.ts";
 
 declare global {
     interface Window {
         cloudinary: {
             createUploadWidget: (
-                options: object,
-                callback: (err: unknown, result: unknown) => void
-            ) => {
-                open: () => void;
-            };
-        };
+                object: object,
+                callback: (err: unknown, result: {event: string, info: unknown}) => void,
+            ) => {open: () => void};
+        }
     }
 }
 
-export default function UploadWidget() {
+
+export default function UploadWidget({onGetImgUrl} : {onGetImgUrl: (url: string) => void}) {
     const cloudinaryRef = useRef<typeof window.cloudinary | null>(null);
-    const widgetRef = useRef<{ open: () => void } | null>(null);
+    const widgetRef = useRef<{open: () => void} | null>(null);
 
     useEffect(() => {
         cloudinaryRef.current = window.cloudinary
         widgetRef.current = cloudinaryRef.current.createUploadWidget({
-            cloudName: 'cloudinary',
-            uploadPreset: 'cloudinary',
-            sources: ['local', 'url', 'camera'],
-            clientAllowedFormats: ['jpg', 'png', 'jpeg', 'gif', 'webp'],
+            cloudName: envVar.CLOUD_NAME,
+            uploadPreset: envVar.UPLOAD_PRESET,
+            sources: ['local'],
+            clientAllowedFormats: ['jpg', 'png', 'jpeg', 'webp'],
             multiple: false,
             resourceType: 'image',
-        }, function (err: unknown, result: unknown) {
-            console.log(err, result);
+        }, function (err: unknown, result: {event: string, info: unknown}) {
+            if (result.event === "success") {
+                const info = result.info as { secure_url: string };
+                let url =info.secure_url
+                url = url.replace("/upload/", "/upload/f_webp/");
+                onGetImgUrl(url);
+            } else {
+                console.log(err, result);
+            }
         })
     }, []);
 
@@ -38,4 +45,5 @@ export default function UploadWidget() {
         </button>
     );
 };
+
 
