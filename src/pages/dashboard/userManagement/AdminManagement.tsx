@@ -117,7 +117,7 @@ export default function AdminManagement() {
     const confirmDeleteAdmin = async () => {
         if (!deletingAdminId) return;
         try {
-            const response = await axios.delete(`${envVar.API_URL}/auth/users/${deletingAdminId}`, {
+            const response = await axios.delete(`${envVar.API_URL}/auth/${deletingAdminId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             if (response.status === 200 && response.data.status === "success") {
@@ -160,11 +160,11 @@ export default function AdminManagement() {
         try {
             let response;
             if (editingAdmin) {
-                response = await axios.put(`${envVar.API_URL}/auth/users/${editingAdmin.id}`, payload, {
+                response = await axios.put(`${envVar.API_URL}/auth/${editingAdmin.id}`, payload, {
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 });
             } else {
-                response = await axios.post(`${envVar.API_URL}/auth/users`, payload, {
+                response = await axios.post(`${envVar.API_URL}/auth`, payload, {
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 });
             }
