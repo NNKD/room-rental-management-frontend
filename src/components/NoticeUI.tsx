@@ -18,7 +18,7 @@ export default function NoticeUI() {
 
     return message != "" ? (
         <div
-            className="fixed top-[5%] right-[5%] w-fit flex items-center justify-between py-2 pl-2 pr-1 gap-4 bg-white border rounded">
+            className="fixed top-[5%] right-[5%] z-[1000] w-fit flex items-center justify-between py-2 pl-2 pr-1 gap-4 bg-white border rounded">
 
             <MdError
                 className={`text-xl ${type == "error" ? "text-red-500" : 

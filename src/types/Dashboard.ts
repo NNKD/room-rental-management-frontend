@@ -16,6 +16,7 @@ export interface TableHeader<T> {
 }
 
 export interface ApartmentManagementType {
+    id?: number
     name: string;
     slug: ReactNode;
     price: number;
@@ -95,7 +96,7 @@ export interface ApartmentDiscountDTO {
 }
 
 export interface ApartmentImageDTO {
-    id: number;
+    id?: number;
     url: string;
 }
 
@@ -104,6 +105,7 @@ export interface ServiceDTO {
     name: string;
     description: string;
     price: number;
+    rawPrice: number;
     unit: string;
 }
 

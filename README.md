@@ -28,7 +28,9 @@ This project is frontend of **Room Management System**, built using **React + Vi
     ```
 
 ## Env Structure
-VITE_API_URL=
+VITE_API_URL=  
+VITE_CLOUD_NAME=  
+VITE_UPLOAD_PRESET=
 > **Note:** environment variables in vite start with VITE_
 > - Ex: VITE_API_URL=
 > - Get environment variables in src/utils/EnvironmentVariables.ts
