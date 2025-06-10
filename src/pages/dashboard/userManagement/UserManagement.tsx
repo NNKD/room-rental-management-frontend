@@ -5,10 +5,12 @@ import axios, { AxiosError } from "axios";
 import { envVar } from "../../../utils/EnvironmentVariables.ts";
 import { NoticeType } from "../../../types/Context.ts";
 import { useNotice } from "../../../hook/useNotice.ts";
+import { useLoading } from "../../../contexts/LoadingContext.tsx";
 
 export default function UserManagement() {
     const [users, setUsers] = useState<UserManagementDTO[]>([]);
     const { setMessage, setType } = useNotice();
+    const { setApiLoading } = useLoading();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<UserManagementDTO | null>(null);
     const [formData, setFormData] = useState({
@@ -27,6 +29,7 @@ export default function UserManagement() {
 
     const handleGetUsers = async () => {
         try {
+            setApiLoading(true);
             const response = await axios.get(`${envVar.API_URL}/auth/users`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
@@ -40,6 +43,8 @@ export default function UserManagement() {
             const axiosError = error as AxiosError<{ message?: string }>;
             setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
             setType(NoticeType.ERROR);
+        } finally {
+            setApiLoading(false);
         }
     };
 
@@ -117,6 +122,7 @@ export default function UserManagement() {
     const confirmDeleteUser = async () => {
         if (!deletingUserId) return;
         try {
+            setApiLoading(true);
             const response = await axios.delete(`${envVar.API_URL}/auth/${deletingUserId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
@@ -133,8 +139,7 @@ export default function UserManagement() {
             setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
             setType(NoticeType.ERROR);
         } finally {
-            setIsConfirmDeleteModalOpen(false);
-            setDeletingUserId(null);
+            setApiLoading(false);
         }
     };
 
@@ -158,6 +163,7 @@ export default function UserManagement() {
         };
 
         try {
+            setApiLoading(true);
             let response;
             if (editingUser) {
                 response = await axios.put(`${envVar.API_URL}/auth/${editingUser.id}`, payload, {
@@ -190,6 +196,8 @@ export default function UserManagement() {
                 setMessage(errorMessage || "Đã có lỗi xảy ra");
             }
             setType(NoticeType.ERROR);
+        } finally {
+            setApiLoading(false);
         }
     };
 

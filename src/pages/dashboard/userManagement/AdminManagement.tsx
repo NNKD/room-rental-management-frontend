@@ -5,10 +5,12 @@ import axios, { AxiosError } from "axios";
 import { envVar } from "../../../utils/EnvironmentVariables.ts";
 import { NoticeType } from "../../../types/Context.ts";
 import { useNotice } from "../../../hook/useNotice.ts";
+import { useLoading } from "../../../contexts/LoadingContext.tsx";
 
 export default function AdminManagement() {
     const [admins, setAdmins] = useState<UserManagementDTO[]>([]);
     const { setMessage, setType } = useNotice();
+    const { setApiLoading } = useLoading();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAdmin, setEditingAdmin] = useState<UserManagementDTO | null>(null);
     const [formData, setFormData] = useState({
@@ -27,6 +29,7 @@ export default function AdminManagement() {
 
     const handleGetAdmins = async () => {
         try {
+            setApiLoading(true);
             const response = await axios.get(`${envVar.API_URL}/auth/admins`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
@@ -40,6 +43,8 @@ export default function AdminManagement() {
             const axiosError = error as AxiosError<{ message?: string }>;
             setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
             setType(NoticeType.ERROR);
+        } finally {
+            setApiLoading(false);
         }
     };
 
@@ -117,6 +122,7 @@ export default function AdminManagement() {
     const confirmDeleteAdmin = async () => {
         if (!deletingAdminId) return;
         try {
+            setApiLoading(true);
             const response = await axios.delete(`${envVar.API_URL}/auth/${deletingAdminId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
@@ -133,8 +139,7 @@ export default function AdminManagement() {
             setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
             setType(NoticeType.ERROR);
         } finally {
-            setIsConfirmDeleteModalOpen(false);
-            setDeletingAdminId(null);
+            setApiLoading(false);
         }
     };
 
@@ -158,6 +163,7 @@ export default function AdminManagement() {
         };
 
         try {
+            setApiLoading(true);
             let response;
             if (editingAdmin) {
                 response = await axios.put(`${envVar.API_URL}/auth/${editingAdmin.id}`, payload, {
@@ -190,6 +196,8 @@ export default function AdminManagement() {
                 setMessage(errorMessage || "Đã có lỗi xảy ra");
             }
             setType(NoticeType.ERROR);
+        } finally {
+            setApiLoading(false);
         }
     };
 
