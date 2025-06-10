@@ -91,7 +91,7 @@ export default function Home() {
                                 Sống hiện đại dành cho mọi người
                             </h1>
                             <p className="text-gray-700 mb-10">
-                                Chúng tôi cung cấp dịch vụ toàn diện cho việc mua, bán hoặc thuê bất động sản. Chúng tôi
+                                Chúng tôi cung cấp dịch vụ toàn diện cho việc cho thuê bất động sản. Chúng tôi
                                 đã hoạt động tại Việt Nam hơn 15 năm.
                             </p>
                             <div className="text-center mb-6">

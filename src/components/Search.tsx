@@ -255,7 +255,7 @@ export default function Search({namePrevalue, typePrevalue, bedroomPrevalue, pri
             <div className={`flex flex-col lg:flex-row gap-4 ${setName ? "flex-grow" : ""} ${setPrice && setBedroom ? "" : "w-full lg:w-fit" }`}>
 
                 {setName && (
-                    <input placeholder="Search by name" value={localName} className="border bg-transparent border-darkGray rounded py-4 lg:py-2 px-4 outline-none flex-grow" onChange={(e) => handleChangeTextInput(e)}/>
+                    <input placeholder="Tìm kiếm bằng tên" value={localName} className="border bg-transparent border-darkGray rounded py-4 lg:py-2 px-4 outline-none flex-grow" onChange={(e) => handleChangeTextInput(e)}/>
                 )}
 
                 {setType && (
@@ -323,7 +323,7 @@ export default function Search({namePrevalue, typePrevalue, bedroomPrevalue, pri
             select-none cursor-pointer hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
             onClick={() => searchBtn?.()}>
                 <CiSearch className="text-xl" />
-                <span className="font-semibold text-base">Search</span>
+                <span className="font-semibold text-base">Tìm kiếm</span>
             </div>
         </div>
     )
