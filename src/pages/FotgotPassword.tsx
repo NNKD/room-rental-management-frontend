@@ -3,11 +3,13 @@ import { useState, FormEvent } from 'react';
 import { useNotice } from '../hook/useNotice';
 import LoadingPage from '../components/LoadingPage';
 import {NoticeType} from "../types/Context.ts";
+import {useNavigate} from "react-router-dom";
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { setMessage, setType } = useNotice();
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -34,6 +36,9 @@ export default function ForgotPassword() {
 
             setMessage(data.message === 'Operation successful' ? 'Mật khẩu mới đã được gửi tới email của bạn' : data.message)
             setType(NoticeType.SUCCESS)
+            setTimeout(() => {
+                navigate('/login', { replace: true });
+            }, 1500);
         } catch (err: unknown) {
             setMessage(err instanceof Error ? err.message : 'Đã có lỗi xảy ra, vui lòng thử lại')
             setType(NoticeType.ERROR)

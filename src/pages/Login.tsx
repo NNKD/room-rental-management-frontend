@@ -142,10 +142,10 @@ export default function Login() {
                             />
                         </div>
 
-                        <div className="flex items-center text-sm">
-                            <input type="checkbox" id="terms" className="mr-2" disabled={isLoading} />
-                            <label htmlFor="terms">Tôi đồng ý với điều khoản và chính sách bảo mật</label>
-                        </div>
+                        {/*<div className="flex items-center text-sm">*/}
+                        {/*    <input type="checkbox" id="terms" className="mr-2" disabled={isLoading} />*/}
+                        {/*    <label htmlFor="terms">Tôi đồng ý với điều khoản và chính sách bảo mật</label>*/}
+                        {/*</div>*/}
 
                         <button
                             type="submit"

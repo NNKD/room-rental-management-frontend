@@ -105,6 +105,7 @@ export interface ServiceDTO {
     name: string;
     description: string;
     price: number;
+    rawPrice: number;
     unit: string;
 }
 
