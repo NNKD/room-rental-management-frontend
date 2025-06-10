@@ -6,7 +6,7 @@ import {
     ApartmentManagementType,
     ApartmentPriceServiceType, ApartmentTypeDTO,
     ServiceType,
-    TableHeader
+    TableHeader, UserManagementDTO
 } from "../types/Dashboard.ts";
 import {formatCurrency} from "../utils/NumberCalculate.ts";
 import {FaEdit} from "react-icons/fa";
@@ -23,7 +23,7 @@ import {FaEdit} from "react-icons/fa";
  */
 
 
-export default function DynamicTable<T extends ApartmentManagementType | ApartmentTypeDTO | ApartmentPriceServiceType | ServiceType>
+export default function DynamicTable<T extends ApartmentManagementType | ApartmentTypeDTO | ApartmentPriceServiceType | ServiceType | UserManagementDTO>
                                     ({headers, data, hasActionColumn, hasEdit, onEdit, onDelete}: {headers: TableHeader<T>[], data: T[], hasActionColumn: boolean, hasEdit?: boolean, onEdit?: (id: string) => void, onDelete?: (id: string) => void}) {
 
     const [headersTable, setHeadersTable] = useState<TableHeader<T>[]>(headers)

@@ -1,4 +1,4 @@
-import {ReactNode} from "react";
+import {JSX, ReactNode} from "react";
 
 /*
     T is data type Ex: ApartmentManagementType, ApartmentTypeManagementType, ...
@@ -13,6 +13,7 @@ export interface TableHeader<T> {
     sortASC?: boolean;
     center?: boolean;
     isCurrency?: boolean;
+    render?: (row: T) => string | JSX.Element;
 }
 
 export interface ApartmentManagementType {
@@ -109,4 +110,13 @@ export interface ServiceDTO {
     unit: string;
 }
 
+export interface UserManagementDTO {
+    id: number;
+    email: string;
+    username: string;
+    fullname: string;
+    phone: string;
+    role: number;
+    totalRentalContracts: number;
+}
 

@@ -1,5 +1,13 @@
 import SidebarItem from "./SidebarItem.tsx";
-import {FaChartLine, FaFileContract, FaFileInvoiceDollar, FaHome, FaRegSmile} from "react-icons/fa";
+import {
+    FaChartLine,
+    FaFileContract,
+    FaFileInvoiceDollar,
+    FaHome,
+    FaRegSmile,
+    FaSignOutAlt,
+    FaUserFriends, FaUserTie
+} from "react-icons/fa";
 import {MdOutlineWorkspacePremium} from "react-icons/md";
 import {FaGear, FaUsersBetweenLines} from "react-icons/fa6";
 import {useState} from "react";
@@ -11,6 +19,7 @@ export default function Sidebar() {
     const [showServiceSubMenu, setShowServiceSubMenu] = useState(false)
     const [showUpdateSubMenu, setShowUpdateSubMenu] = useState(false)
     const [showBillSubMenu, setShowBillSubMenu] = useState(false)
+    const [showUserManagement, setShowUserManagement] = useState(false)
     const navigate = useNavigate()
 
     return (
@@ -74,9 +83,22 @@ export default function Sidebar() {
 
             <SidebarItem title={"Báo cáo & Thống kê"} Icon={FaChartLine} />
             <SidebarItem title={"Phản hồi cư dân"} Icon={FaRegSmile} />
-            <SidebarItem title={"Quản lý tài khoản"} Icon={FaGear} />
 
+            <div onClick={() => setShowUserManagement(!showUserManagement)}>
+            <SidebarItem title={"Quản lý tài khoản"} Icon={FaGear} isShowSubMenu={showUserManagement}/>
+            </div>
+            {showUserManagement ? (
+                <div className="animate-slide-top-to-bottom-400">
+                    <div onClick={() => navigate("/dashboard/user-management")}>
+                        <SidebarItem title={"Danh sách người thuê"} Icon={FaUserFriends} path={"user-management"} />
+                    </div>
+                    <div onClick={() => navigate("/dashboard/admin-management")}>
+                        <SidebarItem title={"Danh sách quản trị viên"} Icon={FaUserTie} path={"admin-management"}/>
+                    </div>
 
+                </div>
+            ) : ""}
+            <SidebarItem title={"Đăng xuất"} Icon={FaSignOutAlt} />
         </div>
     )
 }
