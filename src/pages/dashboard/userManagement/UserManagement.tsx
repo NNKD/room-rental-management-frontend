@@ -1,7 +1,7 @@
 import DynamicTable from "../../../components/DynamicTable.tsx";
 import { TableHeader, UserManagementDTO } from "../../../types/Dashboard.ts";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { envVar } from "../../../utils/EnvironmentVariables.ts";
 import { NoticeType } from "../../../types/Context.ts";
 import { useNotice } from "../../../hook/useNotice.ts";
@@ -28,22 +28,58 @@ export default function UserManagement() {
     const handleGetUsers = async () => {
         try {
             const response = await axios.get(`${envVar.API_URL}/auth/users`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`, // Thêm nếu cần
-                },
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
-            console.log("API Response:", response.data); // Debug
             if (response.status === 200 && response.data.status === "success") {
                 setUsers(response.data.data);
             } else {
-                setMessage("Không thể lấy danh sách người dùng");
+                setMessage(response.data.message || "Không thể lấy danh sách người dùng");
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
-            console.error("API Error:", error);
-            setMessage("Đã có lỗi xảy ra: " + error);
+            const axiosError = error as AxiosError<{ message?: string }>;
+            setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
             setType(NoticeType.ERROR);
         }
+    };
+
+    const validateForm = () => {
+        const { email, username, fullname, phone, role } = formData;
+
+        if (!email || !username || !fullname || !role) {
+            setMessage("Vui lòng điền đầy đủ thông tin bắt buộc (Email, Tên đăng nhập, Họ và tên, Vai trò)");
+            setType(NoticeType.ERROR);
+            return false;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setMessage("Email không hợp lệ");
+            setType(NoticeType.ERROR);
+            return false;
+        }
+
+        const usernameRegex = /^[a-zA-Z0-9_]+$/;
+        if (!usernameRegex.test(username)) {
+            setMessage("Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới");
+            setType(NoticeType.ERROR);
+            return false;
+        }
+
+        if (phone && !/^\d{10,11}$/.test(phone)) {
+            setMessage("Số điện thoại phải có 10 hoặc 11 chữ số");
+            setType(NoticeType.ERROR);
+            return false;
+        }
+
+        const parsedRole = parseInt(role);
+        if (isNaN(parsedRole) || ![0, 1].includes(parsedRole)) {
+            setMessage("Vai trò phải là Người dùng (0) hoặc Admin (1)");
+            setType(NoticeType.ERROR);
+            return false;
+        }
+
+        return true;
     };
 
     const handleAddUser = () => {
@@ -68,6 +104,12 @@ export default function UserManagement() {
     };
 
     const handleDeleteUser = (id: string) => {
+        const user = users.find((u) => u.id.toString() === id);
+        if (user && user.totalRentalContracts > 0) {
+            setMessage("Không thể xóa người dùng có hợp đồng thuê đang hoạt động");
+            setType(NoticeType.ERROR);
+            return;
+        }
         setDeletingUserId(id);
         setIsConfirmDeleteModalOpen(true);
     };
@@ -75,19 +117,20 @@ export default function UserManagement() {
     const confirmDeleteUser = async () => {
         if (!deletingUserId) return;
         try {
-            const response = await axios.delete(`${envVar.API_URL}/auth/users/${deletingUserId}`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`, // Thêm nếu cần
-                },
+            const response = await axios.delete(`${envVar.API_URL}/auth/${deletingUserId}`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             if (response.status === 200 && response.data.status === "success") {
                 setMessage("Xóa người dùng thành công");
                 setType(NoticeType.SUCCESS);
                 handleGetUsers();
+            } else {
+                setMessage(response.data.message || "Xóa người dùng thất bại");
+                setType(NoticeType.ERROR);
             }
         } catch (error) {
-            console.error(error);
-            setMessage("Đã có lỗi xảy ra: " + error);
+            const axiosError = error as AxiosError<{ message?: string }>;
+            setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
             setType(NoticeType.ERROR);
         } finally {
             setIsConfirmDeleteModalOpen(false);
@@ -102,20 +145,10 @@ export default function UserManagement() {
 
     const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!validateForm()) return;
+
         const { email, username, fullname, phone, role } = formData;
-        if (!email || !username || !fullname || !role) {
-            setMessage("Vui lòng điền đầy đủ thông tin bắt buộc");
-            setType(NoticeType.ERROR);
-            return;
-        }
-
         const parsedRole = parseInt(role);
-        if (isNaN(parsedRole) || parsedRole < 0) {
-            setMessage("Vai trò phải là một số hợp lệ");
-            setType(NoticeType.ERROR);
-            return;
-        }
-
         const payload = {
             email,
             username,
@@ -125,33 +158,37 @@ export default function UserManagement() {
         };
 
         try {
+            let response;
             if (editingUser) {
-                const response = await axios.put(`${envVar.API_URL}/auth/users/${editingUser.id}`, payload, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`, // Thêm nếu cần
-                    },
+                response = await axios.put(`${envVar.API_URL}/auth/${editingUser.id}`, payload, {
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 });
-                if (response.status === 200 && response.data.status === "success") {
-                    setMessage("Cập nhật người dùng thành công");
-                    setType(NoticeType.SUCCESS);
-                }
             } else {
-                const response = await axios.post(`${envVar.API_URL}/auth/users`, payload, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`, // Thêm nếu cần
-                    },
+                response = await axios.post(`${envVar.API_URL}/auth`, payload, {
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 });
-                if (response.status === 200 && response.data.status === "success") {
-                    setMessage("Thêm người dùng thành công");
-                    setType(NoticeType.SUCCESS);
-                }
             }
-            setIsModalOpen(false);
-            setFormData({ email: "", username: "", fullname: "", phone: "", role: "0" });
-            handleGetUsers();
+
+            if (response.status === 200 && response.data.status === "success") {
+                setMessage(editingUser ? "Cập nhật người dùng thành công" : "Thêm người dùng thành công");
+                setType(NoticeType.SUCCESS);
+                setIsModalOpen(false);
+                setFormData({ email: "", username: "", fullname: "", phone: "", role: "0" });
+                handleGetUsers();
+            } else {
+                setMessage(response.data.message || "Thao tác thất bại");
+                setType(NoticeType.ERROR);
+            }
         } catch (error) {
-            console.error(error);
-            setMessage("Đã có lỗi xảy ra: " + error);
+            const axiosError = error as AxiosError<{ message?: string }>;
+            const errorMessage = axiosError.response?.data?.message;
+            if (errorMessage === "userNameExists") {
+                setMessage("Tên đăng nhập đã tồn tại");
+            } else if (errorMessage === "emailExists") {
+                setMessage("Email đã tồn tại");
+            } else {
+                setMessage(errorMessage || "Đã có lỗi xảy ra");
+            }
             setType(NoticeType.ERROR);
         }
     };
@@ -163,16 +200,22 @@ export default function UserManagement() {
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
+        setEditingUser(null);
         setFormData({ email: "", username: "", fullname: "", phone: "", role: "0" });
     };
 
     const tableHeaders: TableHeader<UserManagementDTO>[] = [
-        // { name: "ID", slug: "id", sortASC: true, center: true },
         { name: "Email", slug: "email", sortASC: true, center: true },
         { name: "Tên đăng nhập", slug: "username", sortASC: true, center: true },
         { name: "Họ và tên", slug: "fullname", sortASC: true, center: true },
         { name: "Số điện thoại", slug: "phone", sortASC: true, center: true },
-        // { name: "Vai trò", slug: "role", sortASC: true, center: true },
+        {
+            name: "Vai trò",
+            slug: "role",
+            sortASC: true,
+            center: true,
+            render: (row: UserManagementDTO) => (row.role === 1 ? "Admin" : "User"),
+        },
         { name: "Số hợp đồng thuê", slug: "totalRentalContracts", sortASC: true, center: true },
     ];
 
