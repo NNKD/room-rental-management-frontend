@@ -10,10 +10,11 @@ import DashBoardContent from "../pages/dashboard/DashBoardContent.tsx";
 import ApartmentManagement from "../pages/dashboard/apartment/ApartmentManagement.tsx";
 import ApartmentTypeManagement from "../pages/dashboard/apartment/ApartmentTypeManagement.tsx";
 import ApartmentPriceService from "../pages/dashboard/apartment/ApartmentPriceService.tsx";
-import ProtectedRoute from "../components/ProtectedRoute.tsx";
 import ApartmentDetailDashboard from "../pages/dashboard/apartment/ApartmentDetailDashboard.tsx";
 import ForgotPassword from "../pages/FotgotPassword.tsx";
 import Contact from "../pages/Contact.tsx";
+import UserManagement from "../pages/dashboard/userManagement/UserManagement.tsx";
+import AdminManagement from "../pages/dashboard/userManagement/AdminManagement.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -79,6 +80,14 @@ export const router = createBrowserRouter([
                     {
                         path: "apartment-price-service",
                         element: <ApartmentPriceService />,
+                    },
+                    {
+                        path: "user-management",
+                        element: <UserManagement />,
+                    },
+                    {
+                        path: "admin-management",
+                        element: <AdminManagement />,
                     },
                 ],
             },

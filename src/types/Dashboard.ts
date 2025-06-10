@@ -109,4 +109,13 @@ export interface ServiceDTO {
     unit: string;
 }
 
+export interface UserManagementDTO {
+    id: number;
+    email: string;
+    username: string;
+    fullname: string;
+    phone: string;
+    role: number;
+    totalRentalContracts: number;
+}
 

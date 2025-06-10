@@ -1,5 +1,5 @@
 import DynamicTable from "../../../components/DynamicTable.tsx";
-import {ApartmentPriceServiceType, ServiceDTO, ServiceType, TableHeader} from "../../../types/Dashboard.ts";
+import { ApartmentPriceServiceType, ServiceDTO, ServiceType, TableHeader } from "../../../types/Dashboard.ts";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { envVar } from "../../../utils/EnvironmentVariables.ts";
@@ -18,6 +18,8 @@ export default function ApartmentPriceService() {
         price: "",
         unitSuffix: "",
     });
+    const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
+    const [deletingServiceId, setDeletingServiceId] = useState<string | null>(null);
 
     useEffect(() => {
         handleGetServices();
@@ -31,8 +33,8 @@ export default function ApartmentPriceService() {
                     const rawPrice = Number(s.price);
                     return {
                         ...s,
-                        rawPrice: isNaN(rawPrice) ? 0 : rawPrice, // Xử lý giá trị không hợp lệ
-                        price: formatCurrency(rawPrice), // Định dạng giá
+                        rawPrice: isNaN(rawPrice) ? 0 : rawPrice,
+                        price: formatCurrency(rawPrice),
                     };
                 });
                 setServices(serviceNomalize);
@@ -58,16 +60,22 @@ export default function ApartmentPriceService() {
             setFormData({
                 name: service.name,
                 description: service.description,
-                price: service.rawPrice.toString(), // Sử dụng rawPrice
+                price: service.rawPrice.toString(),
                 unitSuffix,
             });
             setIsModalOpen(true);
         }
     };
 
-    const handleDeleteService = async (id: string) => {
+    const handleDeleteService = (id: string) => {
+        setDeletingServiceId(id);
+        setIsConfirmDeleteModalOpen(true);
+    };
+
+    const confirmDeleteService = async () => {
+        if (!deletingServiceId) return;
         try {
-            const response = await axios.delete(`${envVar.API_URL}/services/${id}`);
+            const response = await axios.delete(`${envVar.API_URL}/services/${deletingServiceId}`);
             if (response.status === 200 && response.data.status === "success") {
                 setMessage("Xóa dịch vụ thành công");
                 setType(NoticeType.SUCCESS);
@@ -77,7 +85,15 @@ export default function ApartmentPriceService() {
             console.error(error);
             setMessage("Đã có lỗi xảy ra: " + error);
             setType(NoticeType.ERROR);
+        } finally {
+            setIsConfirmDeleteModalOpen(false);
+            setDeletingServiceId(null);
         }
+    };
+
+    const handleCancelDelete = () => {
+        setIsConfirmDeleteModalOpen(false);
+        setDeletingServiceId(null);
     };
 
     const handleFormSubmit = async (e: React.FormEvent) => {
@@ -140,7 +156,7 @@ export default function ApartmentPriceService() {
     const tableHeaders: TableHeader<ApartmentPriceServiceType>[] = [
         { name: "Tên dịch vụ", slug: "name", sortASC: true, center: true },
         { name: "Mô tả", slug: "description", sortASC: true, center: true },
-        { name: "Giá (VNĐ)", slug: "price", sortASC: true, center: true }, // Bỏ isCurrency: true
+        { name: "Giá (VNĐ)", slug: "price", sortASC: true, center: true },
         { name: "Đơn vị tính", slug: "unit", sortASC: true, center: true },
     ];
 
@@ -238,6 +254,30 @@ export default function ApartmentPriceService() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+            {isConfirmDeleteModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg w-full max-w-md">
+                        <h3 className="text-xl font-bold mb-4">Xác nhận xóa</h3>
+                        <p className="mb-4">Bạn có chắc chắn muốn xóa dịch vụ này không?</p>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                type="button"
+                                className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 bg-lightGreen"
+                                onClick={handleCancelDelete}
+                            >
+                                Không
+                            </button>
+                            <button
+                                type="button"
+                                className="bg-red-500 text-white px-5 py-2  rounded hover:bg-red-600 "
+                                onClick={confirmDeleteService}
+                            >
+                                Có
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
