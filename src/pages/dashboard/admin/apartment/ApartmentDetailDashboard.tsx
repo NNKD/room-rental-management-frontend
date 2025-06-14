@@ -330,7 +330,8 @@ export default function ApartmentDetailDashboard() {
     }
 
     return (
-        <div className="overflow-auto h-fit max-h-full w-full rounded shadow-[0_0_3px_2px_#ccc]">
+        <div className="overflow-auto h-fit max-h-full w-full rounded shadow-[0_0_3px_2px_#ccc] mt-16 lg:mt-0"
+             style={window.innerWidth < 1024 ? { maxHeight: 'calc(100% - 64px)' } : {maxHeight: '100%'}}>
             <div className="bg-white rounded">
                 <div className="p-4">
                     <div className="flex items-center justify-between">

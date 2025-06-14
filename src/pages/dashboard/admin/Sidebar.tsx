@@ -25,7 +25,7 @@ export default function Sidebar() {
     const navigate = useNavigate()
 
     return (
-        <div className="w-1/5 h-screen p-1 select-none overflow-y-auto">
+        <div className="w-full lg:w-1/5 lg:h-screen p-1 select-none overflow-y-auto">
             <div onClick={() => setShowApartmentSubMenu(!showApartmentSubMenu)}>
                 <SidebarItem title={"Quản lý căn hộ"} Icon={FaHome} isShowSubMenu={showApartmentSubMenu} />
             </div>

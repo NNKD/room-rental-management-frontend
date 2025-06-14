@@ -16,7 +16,7 @@ export default function SidebarUser() {
 
 
     return (
-        <div className="w-1/5 h-screen p-1 select-none overflow-y-auto">
+        <div className="w-full lg:w-1/5 lg:h-screen p-1 select-none overflow-y-auto">
             <SidebarItem title={"Căn hộ"} Icon={FaHome}/>
             <SidebarItem title={"Dịch vụ"} Icon={MdOutlineWorkspacePremium}/>
             <SidebarItem title={"Hợp đồng thuê"} Icon={FaFileContract} />

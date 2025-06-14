@@ -148,7 +148,7 @@ export default function ApartmentTypeManagement() {
 
     return (
         <div className="h-full flex flex-col overflow-hidden">
-            <div className="ml-auto mb-4 bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
+            <div className="lg:ml-auto mb-4 bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
                 onClick={() => {setShowModal(!showModal); setTypeSelect(typeDefault)}}>
                 Thêm loại căn hộ
             </div>
@@ -158,7 +158,7 @@ export default function ApartmentTypeManagement() {
 
             {showModal ? (
                 <div className="fixed top-0 left-0 bottom-0 right-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-white w-1/3 p-4 rounded text-left">
+                    <div className="bg-white lg:w-1/3 p-4 rounded text-left">
                         <div className="ml-auto w-fit h-fit p-2 hover:cursor-pointer hover:text-lightGreen duration-300 transition-all ease-in-out"
                              onClick={() => setShowModal(!showModal)}>
                             <IoIosClose className="text-4xl"/>
