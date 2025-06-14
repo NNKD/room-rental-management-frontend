@@ -4,7 +4,7 @@ import {MdDeleteForever} from "react-icons/md";
 import * as React from "react";
 import {
     ApartmentManagementType,
-    ApartmentPriceServiceType, ApartmentTypeDTO,
+    ApartmentPriceServiceType, ApartmentTypeDTO, RentalContractResponse,
     ServiceType,
     TableHeader, UserManagementDTO
 } from "../types/Dashboard.ts";
@@ -23,7 +23,7 @@ import {FaEdit} from "react-icons/fa";
  */
 
 
-export default function DynamicTable<T extends ApartmentManagementType | ApartmentTypeDTO | ApartmentPriceServiceType | ServiceType | UserManagementDTO>
+export default function DynamicTable<T extends ApartmentManagementType | ApartmentTypeDTO | ApartmentPriceServiceType | ServiceType | UserManagementDTO | RentalContractResponse>
                                     ({headers, data, hasActionColumn, hasEdit, onEdit, onDelete}: {headers: TableHeader<T>[], data: T[], hasActionColumn: boolean, hasEdit?: boolean, onEdit?: (id: string) => void, onDelete?: (id: string) => void}) {
 
     const [headersTable, setHeadersTable] = useState<TableHeader<T>[]>(headers)
