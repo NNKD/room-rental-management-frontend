@@ -6,10 +6,10 @@ import {
     FaHome,
     FaRegSmile,
     FaSignOutAlt,
-    FaUserFriends, FaUserTie
+
 } from "react-icons/fa";
 import {MdOutlineWorkspacePremium} from "react-icons/md";
-import {FaGear, FaUsersBetweenLines} from "react-icons/fa6";
+import {FaGear} from "react-icons/fa6";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 
@@ -66,8 +66,12 @@ export default function Sidebar() {
                 </div>
             ) : ""}
 
-            <SidebarItem title={"Quản lý cư dân"} Icon={FaUsersBetweenLines} />
-            <SidebarItem title={"Hợp đồng thuê"} Icon={FaFileContract} />
+            {/*<SidebarItem title={"Quản lý cư dân"} Icon={FaUsersBetweenLines} />*/}
+
+            <div onClick={() => navigate("/dashboard/rental-contract")}>
+                <SidebarItem title={"Hợp đồng thuê"} Icon={FaFileContract} />
+            </div>
+
 
             <div onClick={() => setShowBillSubMenu(!showBillSubMenu)}>
                 <SidebarItem title={"Quản lý hoá đơn"} Icon={FaFileInvoiceDollar} isShowSubMenu={showBillSubMenu}/>
@@ -90,10 +94,10 @@ export default function Sidebar() {
             {showUserManagement ? (
                 <div className="animate-slide-top-to-bottom-400">
                     <div onClick={() => navigate("/dashboard/user-management")}>
-                        <SidebarItem title={"Danh sách người thuê"} Icon={FaUserFriends} path={"user-management"} />
+                        <SidebarItem title={"Danh sách người dùng"}  path={"user-management"} />
                     </div>
                     <div onClick={() => navigate("/dashboard/admin-management")}>
-                        <SidebarItem title={"Danh sách quản trị viên"} Icon={FaUserTie} path={"admin-management"}/>
+                        <SidebarItem title={"Danh sách quản trị viên"} path={"admin-management"}/>
                     </div>
 
                 </div>

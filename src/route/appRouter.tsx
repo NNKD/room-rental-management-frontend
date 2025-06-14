@@ -15,6 +15,7 @@ import ForgotPassword from "../pages/FotgotPassword.tsx";
 import Contact from "../pages/Contact.tsx";
 import UserManagement from "../pages/dashboard/userManagement/UserManagement.tsx";
 import AdminManagement from "../pages/dashboard/userManagement/AdminManagement.tsx";
+import RentalContract from "../pages/dashboard/RentalContract.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -88,6 +89,10 @@ export const router = createBrowserRouter([
                     {
                         path: "admin-management",
                         element: <AdminManagement />,
+                    },
+                    {
+                        path: "rental-contract",
+                        element: <RentalContract />,
                     },
                 ],
             },
