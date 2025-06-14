@@ -1,14 +1,14 @@
-import DynamicTable from "../../../components/DynamicTable.tsx";
-import {ApartmentTypeDTO, TableHeader} from "../../../types/Dashboard.ts";
+import DynamicTable from "../../../../components/DynamicTable.tsx";
+import {ApartmentTypeDTO, TableHeader} from "../../../../types/Dashboard.ts";
 import axios from "axios";
-import {envVar} from "../../../utils/EnvironmentVariables.ts";
-import {NoticeType} from "../../../types/Context.ts";
-import {useNotice} from "../../../hook/useNotice.ts";
+import {envVar} from "../../../../utils/EnvironmentVariables.ts";
+import {NoticeType} from "../../../../types/Context.ts";
+import {useNotice} from "../../../../hook/useNotice.ts";
 import {useEffect, useMemo, useState} from "react";
 import {IoIosClose} from "react-icons/io";
-import LoadingPage from "../../../components/LoadingPage.tsx";
-import {debounce} from "../../../utils/Debounce.ts";
-import {getToken} from "../../../utils/TokenUtils.ts";
+import LoadingPage from "../../../../components/LoadingPage.tsx";
+import {debounce} from "../../../../utils/Debounce.ts";
+import {getToken} from "../../../../utils/TokenUtils.ts";
 
 export default function ApartmentTypeManagement() {
     const {setMessage, setType} = useNotice()

@@ -1,42 +1,42 @@
-import DynamicTable from "../../../components/DynamicTable.tsx";
-import { TableHeader, UserManagementDTO } from "../../../types/Dashboard.ts";
+import DynamicTable from "../../../../components/DynamicTable.tsx";
+import { TableHeader, UserManagementDTO } from "../../../../types/Dashboard.ts";
 import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
-import { envVar } from "../../../utils/EnvironmentVariables.ts";
-import { NoticeType } from "../../../types/Context.ts";
-import { useNotice } from "../../../hook/useNotice.ts";
-import { useLoading } from "../../../contexts/LoadingContext.tsx";
+import { envVar } from "../../../../utils/EnvironmentVariables.ts";
+import { NoticeType } from "../../../../types/Context.ts";
+import { useNotice } from "../../../../hook/useNotice.ts";
+import { useLoading } from "../../../../contexts/LoadingContext.tsx";
 
-export default function AdminManagement() {
-    const [admins, setAdmins] = useState<UserManagementDTO[]>([]);
+export default function UserManagement() {
+    const [users, setUsers] = useState<UserManagementDTO[]>([]);
     const { setMessage, setType } = useNotice();
     const { setApiLoading } = useLoading();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingAdmin, setEditingAdmin] = useState<UserManagementDTO | null>(null);
+    const [editingUser, setEditingUser] = useState<UserManagementDTO | null>(null);
     const [formData, setFormData] = useState({
         email: "",
         username: "",
         fullname: "",
         phone: "",
-        role: "1",
+        role: "0",
     });
     const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
-    const [deletingAdminId, setDeletingAdminId] = useState<string | null>(null);
+    const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
 
     useEffect(() => {
-        handleGetAdmins();
+        handleGetUsers();
     }, []);
 
-    const handleGetAdmins = async () => {
+    const handleGetUsers = async () => {
         try {
             setApiLoading(true);
-            const response = await axios.get(`${envVar.API_URL}/auth/admins`, {
+            const response = await axios.get(`${envVar.API_URL}/auth/users`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             if (response.status === 200 && response.data.status === "success") {
-                setAdmins(response.data.data);
+                setUsers(response.data.data);
             } else {
-                setMessage(response.data.message || "Không thể lấy danh sách admin");
+                setMessage(response.data.message || "Không thể lấy danh sách người dùng");
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
@@ -78,8 +78,8 @@ export default function AdminManagement() {
         }
 
         const parsedRole = parseInt(role);
-        if (isNaN(parsedRole) || parsedRole !== 1) {
-            setMessage("Vai trò phải là Admin (1)");
+        if (isNaN(parsedRole) || ![0, 1].includes(parsedRole)) {
+            setMessage("Vai trò phải là Người dùng (0) hoặc Admin (1)");
             setType(NoticeType.ERROR);
             return false;
         }
@@ -87,51 +87,51 @@ export default function AdminManagement() {
         return true;
     };
 
-    const handleAddAdmin = () => {
-        setEditingAdmin(null);
-        setFormData({ email: "", username: "", fullname: "", phone: "", role: "1" });
+    const handleAddUser = () => {
+        setEditingUser(null);
+        setFormData({ email: "", username: "", fullname: "", phone: "", role: "0" });
         setIsModalOpen(true);
     };
 
-    const handleEditAdmin = (id: string) => {
-        const admin = admins.find((a) => a.id.toString() === id);
-        if (admin) {
-            setEditingAdmin(admin);
+    const handleEditUser = (id: string) => {
+        const user = users.find((u) => u.id.toString() === id);
+        if (user) {
+            setEditingUser(user);
             setFormData({
-                email: admin.email,
-                username: admin.username,
-                fullname: admin.fullname,
-                phone: admin.phone || "",
-                role: admin.role.toString(),
+                email: user.email,
+                username: user.username,
+                fullname: user.fullname,
+                phone: user.phone || "",
+                role: user.role.toString(),
             });
             setIsModalOpen(true);
         }
     };
 
-    const handleDeleteAdmin = (id: string) => {
-        const admin = admins.find((a) => a.id.toString() === id);
-        if (admin && admin.totalRentalContracts > 0) {
-            setMessage("Không thể xóa admin có hợp đồng thuê đang hoạt động");
+    const handleDeleteUser = (id: string) => {
+        const user = users.find((u) => u.id.toString() === id);
+        if (user && user.totalRentalContracts > 0) {
+            setMessage("Không thể xóa người dùng có hợp đồng thuê đang hoạt động");
             setType(NoticeType.ERROR);
             return;
         }
-        setDeletingAdminId(id);
+        setDeletingUserId(id);
         setIsConfirmDeleteModalOpen(true);
     };
 
-    const confirmDeleteAdmin = async () => {
-        if (!deletingAdminId) return;
+    const confirmDeleteUser = async () => {
+        if (!deletingUserId) return;
         try {
             setApiLoading(true);
-            const response = await axios.delete(`${envVar.API_URL}/auth/${deletingAdminId}`, {
+            const response = await axios.delete(`${envVar.API_URL}/auth/${deletingUserId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             if (response.status === 200 && response.data.status === "success") {
-                setMessage("Xóa admin thành công");
+                setMessage("Xóa người dùng thành công");
                 setType(NoticeType.SUCCESS);
-                handleGetAdmins();
+                handleGetUsers();
             } else {
-                setMessage(response.data.message || "Xóa admin thất bại");
+                setMessage(response.data.message || "Xóa người dùng thất bại");
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
@@ -145,7 +145,7 @@ export default function AdminManagement() {
 
     const handleCancelDelete = () => {
         setIsConfirmDeleteModalOpen(false);
-        setDeletingAdminId(null);
+        setDeletingUserId(null);
     };
 
     const handleFormSubmit = async (e: React.FormEvent) => {
@@ -165,8 +165,8 @@ export default function AdminManagement() {
         try {
             setApiLoading(true);
             let response;
-            if (editingAdmin) {
-                response = await axios.put(`${envVar.API_URL}/auth/${editingAdmin.id}`, payload, {
+            if (editingUser) {
+                response = await axios.put(`${envVar.API_URL}/auth/${editingUser.id}`, payload, {
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 });
             } else {
@@ -176,11 +176,11 @@ export default function AdminManagement() {
             }
 
             if (response.status === 200 && response.data.status === "success") {
-                setMessage(editingAdmin ? "Cập nhật admin thành công" : "Thêm admin thành công");
+                setMessage(editingUser ? "Cập nhật người dùng thành công" : "Thêm người dùng thành công");
                 setType(NoticeType.SUCCESS);
                 setIsModalOpen(false);
-                setFormData({ email: "", username: "", fullname: "", phone: "", role: "1" });
-                handleGetAdmins();
+                setFormData({ email: "", username: "", fullname: "", phone: "", role: "0" });
+                handleGetUsers();
             } else {
                 setMessage(response.data.message || "Thao tác thất bại");
                 setType(NoticeType.ERROR);
@@ -208,8 +208,8 @@ export default function AdminManagement() {
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        setEditingAdmin(null);
-        setFormData({ email: "", username: "", fullname: "", phone: "", role: "1" });
+        setEditingUser(null);
+        setFormData({ email: "", username: "", fullname: "", phone: "", role: "0" });
     };
 
     const tableHeaders: TableHeader<UserManagementDTO>[] = [
@@ -217,33 +217,40 @@ export default function AdminManagement() {
         { name: "Tên đăng nhập", slug: "username", sortASC: true, center: true },
         { name: "Họ và tên", slug: "fullname", sortASC: true, center: true },
         { name: "Số điện thoại", slug: "phone", sortASC: true, center: true },
+        {
+            name: "Vai trò",
+            slug: "role",
+            sortASC: true,
+            center: true,
+            render: (row: UserManagementDTO) => (row.role === 1 ? "Admin" : "User"),
+        },
         { name: "Số hợp đồng thuê", slug: "totalRentalContracts", sortASC: true, center: true },
     ];
 
     return (
         <div className="h-full flex flex-col overflow-hidden p-4">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">Quản lý Admin</h2>
+                <h2 className="text-2xl font-bold">Quản lý Người dùng</h2>
                 <button
                     className="bg-lightGreen text-white px-4 py-2 rounded hover:bg-green-600"
-                    onClick={handleAddAdmin}
+                    onClick={handleAddUser}
                 >
-                    Thêm Admin
+                    Thêm Người dùng
                 </button>
             </div>
             <DynamicTable
                 headers={tableHeaders}
-                data={admins}
+                data={users}
                 hasActionColumn={true}
                 hasEdit={true}
-                onEdit={handleEditAdmin}
-                onDelete={handleDeleteAdmin}
+                onEdit={handleEditUser}
+                onDelete={handleDeleteUser}
             />
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-md w-full max-w-md">
                         <h3 className="text-xl font-bold mb-4">
-                            {editingAdmin ? "Sửa Admin" : "Thêm Admin"}
+                            {editingUser ? "Sửa Người dùng" : "Thêm Người dùng"}
                         </h3>
                         <form onSubmit={handleFormSubmit}>
                             <div className="mb-4">
@@ -297,8 +304,8 @@ export default function AdminManagement() {
                                     onChange={handleInputChange}
                                     className="w-full border border-gray-300 p-2 rounded"
                                     required
-                                    disabled
                                 >
+                                    <option value="0">Người dùng</option>
                                     <option value="1">Admin</option>
                                 </select>
                             </div>
@@ -314,7 +321,7 @@ export default function AdminManagement() {
                                     type="submit"
                                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                                 >
-                                    {editingAdmin ? "Cập nhật" : "Thêm"}
+                                    {editingUser ? "Cập nhật" : "Thêm"}
                                 </button>
                             </div>
                         </form>
@@ -325,7 +332,7 @@ export default function AdminManagement() {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-md w-full max-w-md">
                         <h3 className="text-xl font-bold mb-4">Xác nhận xóa</h3>
-                        <p className="mb-4">Bạn có chắc chắn muốn xóa admin này không?</p>
+                        <p className="mb-4">Bạn có chắc chắn muốn xóa người dùng này không?</p>
                         <div className="flex justify-end gap-2">
                             <button
                                 type="button"
@@ -337,7 +344,7 @@ export default function AdminManagement() {
                             <button
                                 type="button"
                                 className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                                onClick={confirmDeleteAdmin}
+                                onClick={confirmDeleteUser}
                             >
                                 Có
                             </button>

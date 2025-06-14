@@ -5,16 +5,18 @@ import ApartmentList from "../pages/ApartmentList.tsx";
 import ApartmentDetail from "../pages/ApartmentDetail.tsx";
 import Login from "../pages/Login.tsx";
 import Amenities from "../pages/Amenities.tsx";
-import DashBoardLayout from "../pages/dashboard/DashBoardLayout.tsx";
+import DashBoardLayout from "../pages/dashboard/admin/DashBoardLayout.tsx";
 import DashBoardContent from "../pages/dashboard/DashBoardContent.tsx";
-import ApartmentManagement from "../pages/dashboard/apartment/ApartmentManagement.tsx";
-import ApartmentTypeManagement from "../pages/dashboard/apartment/ApartmentTypeManagement.tsx";
-import ApartmentPriceService from "../pages/dashboard/apartment/ApartmentPriceService.tsx";
-import ApartmentDetailDashboard from "../pages/dashboard/apartment/ApartmentDetailDashboard.tsx";
+import ApartmentManagement from "../pages/dashboard/admin/apartment/ApartmentManagement.tsx";
+import ApartmentTypeManagement from "../pages/dashboard/admin/apartment/ApartmentTypeManagement.tsx";
+import ApartmentPriceService from "../pages/dashboard/admin/apartment/ApartmentPriceService.tsx";
+import ApartmentDetailDashboard from "../pages/dashboard/admin/apartment/ApartmentDetailDashboard.tsx";
 import ForgotPassword from "../pages/FotgotPassword.tsx";
 import Contact from "../pages/Contact.tsx";
-import UserManagement from "../pages/dashboard/userManagement/UserManagement.tsx";
-import AdminManagement from "../pages/dashboard/userManagement/AdminManagement.tsx";
+import UserManagement from "../pages/dashboard/admin/userManagement/UserManagement.tsx";
+import AdminManagement from "../pages/dashboard/admin/userManagement/AdminManagement.tsx";
+import ProtectedRoute from "../components/ProtectedRoute.tsx";
+import DashBoardUserLayout from "../pages/dashboard/user/DashBoardUserLayout.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -56,9 +58,9 @@ export const router = createBrowserRouter([
             {
                 path: "dashboard",
                 element: (
-                    // <ProtectedRoute>
+                    <ProtectedRoute>
                         <DashBoardLayout />
-                    // </ProtectedRoute>
+                    </ProtectedRoute>
                 ),
                 children: [
                     {
@@ -88,6 +90,20 @@ export const router = createBrowserRouter([
                     {
                         path: "admin-management",
                         element: <AdminManagement />,
+                    },
+                ],
+            },
+            {
+                path: "dashboard-user",
+                element: (
+                    <ProtectedRoute>
+                        <DashBoardUserLayout/>
+                    </ProtectedRoute>
+                ),
+                children: [
+                    {
+                        index: true,
+                        element: <DashBoardContent />,
                     },
                 ],
             },

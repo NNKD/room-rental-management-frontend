@@ -1,12 +1,12 @@
-import DynamicTable from "../../../components/DynamicTable.tsx";
-import {ApartmentManagementType, TableHeader} from "../../../types/Dashboard.ts";
+import DynamicTable from "../../../../components/DynamicTable.tsx";
+import {ApartmentManagementType, TableHeader} from "../../../../types/Dashboard.ts";
 import {useEffect, useState} from "react";
-import {useNotice} from "../../../hook/useNotice.ts";
-import {NoticeType} from "../../../types/Context.ts";
+import {useNotice} from "../../../../hook/useNotice.ts";
+import {NoticeType} from "../../../../types/Context.ts";
 import axios from "axios";
-import {envVar} from "../../../utils/EnvironmentVariables.ts";
+import {envVar} from "../../../../utils/EnvironmentVariables.ts";
 import {Link} from "react-router-dom";
-import {getToken} from "../../../utils/TokenUtils.ts";
+import {getToken} from "../../../../utils/TokenUtils.ts";
 
 export default function ApartmentManagement() {
     const [apartments, setApartments] = useState<ApartmentManagementType[]>([])

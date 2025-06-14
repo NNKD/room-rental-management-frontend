@@ -1,4 +1,4 @@
-import SidebarItem from "./SidebarItem.tsx";
+import SidebarItem from "../../../components/SidebarItem.tsx";
 import {
     FaChartLine,
     FaFileContract,
@@ -12,6 +12,7 @@ import {MdOutlineWorkspacePremium} from "react-icons/md";
 import {FaGear, FaUsersBetweenLines} from "react-icons/fa6";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {useAuth} from "../../../hook/useAuth.ts";
 
 
 export default function Sidebar() {
@@ -20,6 +21,7 @@ export default function Sidebar() {
     const [showUpdateSubMenu, setShowUpdateSubMenu] = useState(false)
     const [showBillSubMenu, setShowBillSubMenu] = useState(false)
     const [showUserManagement, setShowUserManagement] = useState(false)
+    const {logout} = useAuth();
     const navigate = useNavigate()
 
     return (
@@ -98,7 +100,10 @@ export default function Sidebar() {
 
                 </div>
             ) : ""}
-            <SidebarItem title={"Đăng xuất"} Icon={FaSignOutAlt} />
+
+            <div onClick={logout}>
+                <SidebarItem title={"Đăng xuất"} Icon={FaSignOutAlt} />
+            </div>
         </div>
     )
 }
