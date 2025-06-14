@@ -1,12 +1,5 @@
 import {JSX, ReactNode} from "react";
 
-/*
-    T is data type Ex: ApartmentManagementType, ApartmentTypeManagementType, ...
-    slug: field name of T
-    sortASC = true => has sort in column
-    center = true => data text center
-    isCurrency = true => formatNumberCurrency(data)
- */
 export interface TableHeader<T> {
     name: string;
     slug: keyof T;
@@ -15,9 +8,43 @@ export interface TableHeader<T> {
     isCurrency?: boolean;
     render?: (row: T) => string | JSX.Element;
 }
+export interface RentalContractResponse {
+    id: number;
+    name: string;
+    description?: string;
+    price: number;
+    status: string;
+    startDate: string;
+    endDate: string;
+    createdAt: string;
+    userId: number;
+    fullname: string;
+    phone: string;
+    email: string;
+    apartmentId: number;
+}
+
+export interface UserResponse {
+    id: number;
+    email: string;
+    username: string;
+    fullname: string;
+    phone: string;
+    role: number;
+    totalRentalContracts: number;
+}
+
+export interface ApartmentListResponse {
+    id: number;
+    name: string;
+    slug: string;
+    type: string;
+    bedroom: number;
+    price: number;
+}
 
 export interface ApartmentManagementType {
-    id?: number
+    id?: number;
     name: string;
     slug: ReactNode;
     price: number;
@@ -33,6 +60,7 @@ export interface ApartmentTypeManagementType {
     area: number;
     price: string;
 }
+
 export interface ApartmentPriceServiceType {
     id: number;
     name: string;
@@ -49,7 +77,6 @@ export interface ServiceType {
     unit: string;
 }
 
-// Có trùng, sửa lại sau
 export interface ApartmentDTO {
     id?: number;
     name: string;
@@ -62,7 +89,7 @@ export interface ApartmentDTO {
     status: ApartmentStatusDTO;
     discounts: ApartmentDiscountDTO[];
     images: ApartmentImageDTO[];
-    information: ApartmentInformationDTO
+    information: ApartmentInformationDTO;
 }
 
 export interface ApartmentInformationDTO {
@@ -82,7 +109,6 @@ export interface ApartmentTypeDTO {
     id?: number;
     name: string;
     description: string;
-
 }
 
 export interface ApartmentStatusDTO {
@@ -119,4 +145,3 @@ export interface UserManagementDTO {
     role: number;
     totalRentalContracts: number;
 }
-

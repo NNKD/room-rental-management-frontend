@@ -217,13 +217,6 @@ export default function UserManagement() {
         { name: "Tên đăng nhập", slug: "username", sortASC: true, center: true },
         { name: "Họ và tên", slug: "fullname", sortASC: true, center: true },
         { name: "Số điện thoại", slug: "phone", sortASC: true, center: true },
-        {
-            name: "Vai trò",
-            slug: "role",
-            sortASC: true,
-            center: true,
-            render: (row: UserManagementDTO) => (row.role === 1 ? "Admin" : "User"),
-        },
         { name: "Số hợp đồng thuê", slug: "totalRentalContracts", sortASC: true, center: true },
     ];
 

@@ -17,6 +17,7 @@ import UserManagement from "../pages/dashboard/admin/userManagement/UserManageme
 import AdminManagement from "../pages/dashboard/admin/userManagement/AdminManagement.tsx";
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
 import DashBoardUserLayout from "../pages/dashboard/user/DashBoardUserLayout.tsx";
+import RentalContract from "../pages/dashboard/admin/RentalContract.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -90,6 +91,10 @@ export const router = createBrowserRouter([
                     {
                         path: "admin-management",
                         element: <AdminManagement />,
+                    },
+                    {
+                        path: "rental-contract",
+                        element: <RentalContract />,
                     },
                 ],
             },
