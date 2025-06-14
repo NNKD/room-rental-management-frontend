@@ -8,6 +8,7 @@ import {useEffect, useMemo, useState} from "react";
 import {IoIosClose} from "react-icons/io";
 import LoadingPage from "../../../components/LoadingPage.tsx";
 import {debounce} from "../../../utils/Debounce.ts";
+import {getToken} from "../../../utils/TokenUtils.ts";
 
 export default function ApartmentTypeManagement() {
     const {setMessage, setType} = useNotice()
@@ -17,6 +18,7 @@ export default function ApartmentTypeManagement() {
 
     const typeDefault = {id: 0, name: "", description: ""};
     const [typeSelect, setTypeSelect] = useState<ApartmentTypeDTO>(typeDefault)
+    const token = getToken()
 
     const headers: TableHeader<ApartmentTypeDTO>[] = [
         {name: 'Loại phòng', slug: 'name'},
@@ -29,7 +31,11 @@ export default function ApartmentTypeManagement() {
 
     const handleGetApartmentType = async () => {
         try {
-            const response = await axios.get(`${envVar.API_URL}/dashboard/types`);
+            const response = await axios.get(`${envVar.API_URL}/dashboard/types`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
             if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
 
@@ -51,7 +57,11 @@ export default function ApartmentTypeManagement() {
     const handleAddOrUpdateType = async () => {
         setLoading(true)
         try {
-            const response = await axios.post(`${envVar.API_URL}/dashboard/types`, typeSelect);
+            const response = await axios.post(`${envVar.API_URL}/dashboard/types`, typeSelect, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
             if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
                 setLoading(false)
@@ -76,7 +86,11 @@ export default function ApartmentTypeManagement() {
     const handleDeleteType = async (id: string) => {
         setLoading(true)
         try {
-            const response = await axios.delete(`${envVar.API_URL}/dashboard/types/${id}`);
+            const response = await axios.delete(`${envVar.API_URL}/dashboard/types/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
             if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
                 setLoading(false)
@@ -104,7 +118,11 @@ export default function ApartmentTypeManagement() {
     const handleCheckNameType = async (name: string) => {
 
         try {
-            const response = await axios.get(`${envVar.API_URL}/dashboard/types/check-name?name=${name}`);
+            const response = await axios.get(`${envVar.API_URL}/dashboard/types/check-name?name=${name}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
             if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
                 if (response.data.data == false) {

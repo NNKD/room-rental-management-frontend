@@ -73,6 +73,8 @@ export default function Login() {
             setMessage('Đăng nhập thành công! Đang chuyển hướng...');
             setType(NoticeType.SUCCESS);
 
+
+
             login(token, { username: username.trim() });
 
             setTimeout(() => {

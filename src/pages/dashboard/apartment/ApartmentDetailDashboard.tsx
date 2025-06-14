@@ -13,6 +13,7 @@ import UploadWidget from "../../../components/UploadWidget.tsx"
 import LoadingPage from "../../../components/LoadingPage.tsx";
 import extractPublicId from "../../../utils/StringProcess.ts";
 import {debounce} from "../../../utils/Debounce.ts";
+import {getToken} from "../../../utils/TokenUtils.ts";
 
 export default function ApartmentDetailDashboard() {
     const {slug} = useParams();
@@ -27,6 +28,7 @@ export default function ApartmentDetailDashboard() {
     const {setMessage, setType} = useNotice()
     const [durationMonth, setDurationMonth] = useState(1)
     const [loading, setLoading] = useState(false)
+    const token = getToken();
 
     const defaultApartmentDetail: ApartmentDTO = {
         name: "",
@@ -89,7 +91,11 @@ export default function ApartmentDetailDashboard() {
 
     const handleGetDetail = async () => {
         try {
-            const response = await axios.get(`${envVar.API_URL}/dashboard/apartments/${slug}`);
+            const response = await axios.get(`${envVar.API_URL}/dashboard/apartments/${slug}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
             if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
                 console.log(response.data.data)
@@ -108,7 +114,11 @@ export default function ApartmentDetailDashboard() {
     }
     const handleGetAllType = async () => {
         try {
-            const response = await axios.get(`${envVar.API_URL}/dashboard/types`);
+            const response = await axios.get(`${envVar.API_URL}/dashboard/types`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
             if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
                 console.log(response.data.data)
@@ -128,7 +138,11 @@ export default function ApartmentDetailDashboard() {
 
     const handleGetAllStatus = async () => {
         try {
-            const response = await axios.get(`${envVar.API_URL}/dashboard/statuses`);
+            const response = await axios.get(`${envVar.API_URL}/dashboard/statuses`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
             if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
                 console.log(response.data.data)
@@ -242,7 +256,11 @@ export default function ApartmentDetailDashboard() {
 
     const handleAddOrUpdateApartment = async () => {
         try {
-            const response = await axios.post(`${envVar.API_URL}/dashboard/apartments`, apartmentDetail);
+            const response = await axios.post(`${envVar.API_URL}/dashboard/apartments`, apartmentDetail, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
             if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
                 setLoading(false)
@@ -288,7 +306,11 @@ export default function ApartmentDetailDashboard() {
 
     const handleDeleteImgOnCloudinary = async () => {
         try {
-            const response = await axios.post(`${envVar.API_URL}/cloudinary/delete-images`, imagesDeleteCloudinary);
+            const response = await axios.post(`${envVar.API_URL}/cloudinary/delete-images`, imagesDeleteCloudinary, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
             if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
                 console.log(response.data.data)
