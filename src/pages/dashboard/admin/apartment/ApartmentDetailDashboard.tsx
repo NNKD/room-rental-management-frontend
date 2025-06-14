@@ -1,19 +1,19 @@
 import {IoIosArrowBack, IoIosArrowForward, IoMdArrowBack} from "react-icons/io";
 import {Link, useParams} from "react-router-dom";
 import {useEffect, useMemo, useRef, useState} from "react";
-import ModalZoomImage from "../../../components/modal/ModalZoomImage.tsx";
+import ModalZoomImage from "../../../../components/modal/ModalZoomImage.tsx";
 import {IoCloseCircle} from "react-icons/io5";
 import axios from "axios";
-import {envVar} from "../../../utils/EnvironmentVariables.ts";
-import {ApartmentDTO, ApartmentImageDTO, ApartmentStatusDTO, ApartmentTypeDTO} from "../../../types/Dashboard.ts";
-import {NoticeType} from "../../../types/Context.ts";
-import {useNotice} from "../../../hook/useNotice.ts";
-import {calPriceDiscount, formatCurrency} from "../../../utils/NumberCalculate.ts";
-import UploadWidget from "../../../components/UploadWidget.tsx"
-import LoadingPage from "../../../components/LoadingPage.tsx";
-import extractPublicId from "../../../utils/StringProcess.ts";
-import {debounce} from "../../../utils/Debounce.ts";
-import {getToken} from "../../../utils/TokenUtils.ts";
+import {envVar} from "../../../../utils/EnvironmentVariables.ts";
+import {ApartmentDTO, ApartmentImageDTO, ApartmentStatusDTO, ApartmentTypeDTO} from "../../../../types/Dashboard.ts";
+import {NoticeType} from "../../../../types/Context.ts";
+import {useNotice} from "../../../../hook/useNotice.ts";
+import {calPriceDiscount, formatCurrency} from "../../../../utils/NumberCalculate.ts";
+import UploadWidget from "../../../../components/UploadWidget.tsx"
+import LoadingPage from "../../../../components/LoadingPage.tsx";
+import extractPublicId from "../../../../utils/StringProcess.ts";
+import {debounce} from "../../../../utils/Debounce.ts";
+import {getToken} from "../../../../utils/TokenUtils.ts";
 
 export default function ApartmentDetailDashboard() {
     const {slug} = useParams();
@@ -330,7 +330,8 @@ export default function ApartmentDetailDashboard() {
     }
 
     return (
-        <div className="overflow-auto h-fit max-h-full w-full rounded shadow-[0_0_3px_2px_#ccc]">
+        <div className="overflow-auto h-fit max-h-full w-full rounded shadow-[0_0_3px_2px_#ccc] mt-16 lg:mt-0"
+             style={window.innerWidth < 1024 ? { maxHeight: 'calc(100% - 64px)' } : {maxHeight: '100%'}}>
             <div className="bg-white rounded">
                 <div className="p-4">
                     <div className="flex items-center justify-between">

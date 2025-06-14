@@ -1,11 +1,11 @@
-import DynamicTable from "../../../components/DynamicTable.tsx";
-import { ApartmentPriceServiceType, ServiceDTO, ServiceType, TableHeader } from "../../../types/Dashboard.ts";
+import DynamicTable from "../../../../components/DynamicTable.tsx";
+import { ApartmentPriceServiceType, ServiceDTO, ServiceType, TableHeader } from "../../../../types/Dashboard.ts";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { envVar } from "../../../utils/EnvironmentVariables.ts";
-import { NoticeType } from "../../../types/Context.ts";
-import { formatCurrency } from "../../../utils/NumberCalculate.ts";
-import { useNotice } from "../../../hook/useNotice.ts";
+import { envVar } from "../../../../utils/EnvironmentVariables.ts";
+import { NoticeType } from "../../../../types/Context.ts";
+import { formatCurrency } from "../../../../utils/NumberCalculate.ts";
+import { useNotice } from "../../../../hook/useNotice.ts";
 
 export default function ApartmentPriceService() {
     const [services, setServices] = useState<ServiceDTO[]>([]);
@@ -163,9 +163,8 @@ export default function ApartmentPriceService() {
     return (
         <div className="h-full flex flex-col overflow-hidden p-4">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">Quản lý Giá Dịch Vụ Tòa Nhà</h2>
                 <button
-                    className="bg-lightGreen text-white px-4 py-2 rounded hover:bg-green-600"
+                    className="bg-lightGreen text-black font-bold px-4 py-2 rounded hover:bg-green-600"
                     onClick={handleAddService}
                 >
                     Thêm Dịch Vụ

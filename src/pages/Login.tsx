@@ -1,4 +1,3 @@
-// src/pages/Login.tsx
 import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hook/useAuth.ts';
@@ -6,6 +5,7 @@ import { useNotice } from '../hook/useNotice';
 import LoadingPage from '../components/LoadingPage';
 import { NoticeType } from "../types/Context.ts";
 import {envVar} from "../utils/EnvironmentVariables.ts";
+import axios from "axios";
 
 export default function Login() {
     const [username, setUsername] = useState<string>('');
@@ -15,12 +15,45 @@ export default function Login() {
     const { login, isAuthenticated } = useAuth();
     const { setMessage, setType } = useNotice();
     const navigate = useNavigate();
+    const [role, setRole] = useState<number | null>(null)
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate('/dashboard', { replace: true });
+            if (role == 1) {
+                navigate('/dashboard', { replace: true });
+            }else if (role == 0) {
+                navigate('/dashboard-user', { replace: true });
+            }
         }
     }, [isAuthenticated, navigate]);
+
+    useEffect(() => {
+        if (role == 1) {
+            navigate('/dashboard', { replace: true });
+        }else if (role == 0) {
+            navigate('/dashboard-user', { replace: true });
+        }
+    }, [role]);
+
+
+    const handleGetRole = async (token: string) => {
+        try {
+            const response = await axios.get(`${envVar.API_URL}/dashboard/users/me`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+
+            if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
+                setRole(response.data.data.role);
+            }
+
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -70,23 +103,17 @@ export default function Login() {
                 throw new Error('Không nhận được token từ server');
             }
 
-            setMessage('Đăng nhập thành công! Đang chuyển hướng...');
+            setMessage('Đăng nhập thành công!');
             setType(NoticeType.SUCCESS);
-
-
+            handleGetRole(token);
 
             login(token, { username: username.trim() });
-
-            setTimeout(() => {
-                navigate('/dashboard', { replace: true });
-            }, 1500);
 
         } catch (error) {
             console.error('Login error:', error);
             const errorMessage = error instanceof Error ? error.message : 'Có lỗi xảy ra khi đăng nhập';
             setMessage(errorMessage);
             setType(NoticeType.ERROR);
-        } finally {
             setIsLoading(false);
         }
     };
