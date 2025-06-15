@@ -6,8 +6,9 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider = ({ children } : {children: ReactNode}) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [token, setToken] = useState<string | null>(null);
-    const [user, setUser] = useState<unknown | null>(null);
+    const [username, setUsername] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isLogout, setIsLogout] = useState(false)
 
     useEffect(() => {
         const savedToken = localStorage.getItem('jwt_token');
@@ -20,7 +21,7 @@ export const AuthProvider = ({ children } : {children: ReactNode}) => {
 
                 if (tokenPayload.exp > currentTime) {
                     setToken(savedToken);
-                    setUser(savedUser ? JSON.parse(savedUser) : null);
+                    setUsername(savedUser);
                     setIsAuthenticated(true);
                 } else {
                     // Token hết hạn
@@ -37,19 +38,19 @@ export const AuthProvider = ({ children } : {children: ReactNode}) => {
         setLoading(false);
     }, []);
 
-    const login = (newToken: string, userData?: unknown) => {
+    const login = (newToken: string, userData?: string) => {
         setToken(newToken);
-        setUser(userData);
+        setUsername(userData || "");
         setIsAuthenticated(true);
+        setIsLogout(false)
         localStorage.setItem('jwt_token', newToken);
-        if (userData) {
-            localStorage.setItem('user_data', JSON.stringify(userData));
-        }
+        localStorage.setItem('user_data', userData || "");
     };
 
     const logout = () => {
         setToken(null);
-        setUser(null);
+        setUsername(null);
+        setIsLogout(true)
         setIsAuthenticated(false);
         localStorage.removeItem('jwt_token');
         localStorage.removeItem('user_data');
@@ -58,10 +59,11 @@ export const AuthProvider = ({ children } : {children: ReactNode}) => {
     const value = {
         isAuthenticated,
         token,
-        user,
+        username,
         login,
         logout,
         loading,
+        isLogout,
     };
 
     return (

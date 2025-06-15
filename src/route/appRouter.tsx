@@ -18,6 +18,8 @@ import AdminManagement from "../pages/dashboard/admin/userManagement/AdminManage
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
 import DashBoardUserLayout from "../pages/dashboard/user/DashBoardUserLayout.tsx";
 import RentalContract from "../pages/dashboard/admin/RentalContract.tsx";
+import UserApartmentManagement from "../pages/dashboard/user/UserApartmentManagement.tsx";
+import UserApartmentDetail from "../pages/dashboard/user/UserApartmentDetail.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -109,6 +111,14 @@ export const router = createBrowserRouter([
                     {
                         index: true,
                         element: <DashBoardContent />,
+                    },
+                    {
+                        path: "apartments",
+                        element: <UserApartmentManagement />,
+                    },
+                    {
+                        path: "apartments/:slug",
+                        element: <UserApartmentDetail />,
                     },
                 ],
             },

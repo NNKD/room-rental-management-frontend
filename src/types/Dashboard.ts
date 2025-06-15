@@ -145,3 +145,23 @@ export interface UserManagementDTO {
     role: number;
     totalRentalContracts: number;
 }
+
+export interface RentalContractsDTO {
+    id?: number;
+    name?: string;
+    description?: string;
+    price?: number;
+    status?: string;
+    startDate?: string;
+    endDate?: string;
+    createdAt?: string;
+}
+
+export interface UserApartmentDTO {
+    id?: number
+    name: ReactNode;
+    slug: string;
+    type: string;
+    startDate: string;
+    endDate: string;
+}

@@ -9,15 +9,19 @@ import {
 import {MdOutlineWorkspacePremium} from "react-icons/md";
 import {FaGear} from "react-icons/fa6";
 import {useAuth} from "../../../hook/useAuth.ts";
+import {useNavigate} from "react-router-dom";
 
 
 export default function SidebarUser() {
     const {logout} = useAuth()
+    const navigate = useNavigate()
 
 
     return (
         <div className="w-full lg:w-1/5 lg:h-screen p-1 select-none overflow-y-auto">
-            <SidebarItem title={"Căn hộ"} Icon={FaHome}/>
+            <div onClick={() => navigate("apartments")}>
+                <SidebarItem title={"Căn hộ"} Icon={FaHome} path={"apartments"}/>
+            </div>
             <SidebarItem title={"Dịch vụ"} Icon={MdOutlineWorkspacePremium}/>
             <SidebarItem title={"Hợp đồng thuê"} Icon={FaFileContract} />
             <SidebarItem title={"Quản lý hoá đơn"} Icon={FaFileInvoiceDollar}/>

@@ -1,10 +1,13 @@
 import {ReactNode} from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import {Navigate, useLocation} from 'react-router-dom';
 import {useAuth} from "../hook/useAuth.ts";
+import {useNotice} from "../hook/useNotice.ts";
+import {NoticeType} from "../types/Context.ts";
 
 const ProtectedRoute = ({ children }: {children: ReactNode}) => {
-    const { isAuthenticated, loading } = useAuth();
+    const { isAuthenticated, loading, isLogout } = useAuth();
     const location = useLocation();
+    const {setMessage, setType} = useNotice();
 
     if (loading) {
         return (
@@ -15,6 +18,11 @@ const ProtectedRoute = ({ children }: {children: ReactNode}) => {
     }
 
     if (!isAuthenticated) {
+        if (isLogout) {
+            return <Navigate to="/home" replace />;
+        }
+        setMessage("Đăng nhập để tiếp tục");
+        setType(NoticeType.WARNING);
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
