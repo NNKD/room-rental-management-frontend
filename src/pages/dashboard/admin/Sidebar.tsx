@@ -6,108 +6,110 @@ import {
     FaHome,
     FaRegSmile,
     FaSignOutAlt,
-
 } from "react-icons/fa";
-import {MdOutlineWorkspacePremium} from "react-icons/md";
-import {FaGear} from "react-icons/fa6";
-import {useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {useAuth} from "../../../hook/useAuth.ts";
-
+import { MdOutlineWorkspacePremium } from "react-icons/md";
+import { FaGear } from "react-icons/fa6";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../hook/useAuth.ts";
 
 export default function Sidebar() {
-    const [showApartmentSubMenu, setShowApartmentSubMenu] = useState(false)
-    const [showServiceSubMenu, setShowServiceSubMenu] = useState(false)
-    const [showUpdateSubMenu, setShowUpdateSubMenu] = useState(false)
-    const [showBillSubMenu, setShowBillSubMenu] = useState(false)
-    const [showUserManagement, setShowUserManagement] = useState(false)
-    const {logout} = useAuth();
-    const navigate = useNavigate()
+    const [showApartmentSubMenu, setShowApartmentSubMenu] = useState(false);
+    const [showServiceSubMenu, setShowServiceSubMenu] = useState(false);
+    const [showUpdateSubMenu, setShowUpdateSubMenu] = useState(false);
+    const [showBillSubMenu, setShowBillSubMenu] = useState(false);
+    const [showUserManagement, setShowUserManagement] = useState(false);
+    const { logout } = useAuth();
+    const navigate = useNavigate();
 
     return (
-        <div className="w-full lg:w-1/5 lg:h-screen p-1 select-none overflow-y-auto">
+        <div className="w-full lg:w-1/5 h-screen p-1 select-none overflow-y-auto">
             <div onClick={() => setShowApartmentSubMenu(!showApartmentSubMenu)}>
-                <SidebarItem title={"Quản lý căn hộ"} Icon={FaHome} isShowSubMenu={showApartmentSubMenu} />
+                <SidebarItem title="Quản lý căn hộ" Icon={FaHome} isShowSubMenu={showApartmentSubMenu} />
             </div>
-
-            {showApartmentSubMenu ? (
+            {showApartmentSubMenu && (
                 <div className="animate-slide-top-to-bottom-400">
                     <div onClick={() => navigate("apartment-management")}>
-                        <SidebarItem title={"Căn hộ"} path={"apartment-management"} />
+                        <SidebarItem title="Căn hộ" path="apartment-management" />
                     </div>
                     <div onClick={() => navigate("apartment-type-management")}>
-                        <SidebarItem title={"Loại căn hộ"} path={"apartment-type-management"}/>
+                        <SidebarItem title="Loại căn hộ" path="apartment-type-management" />
                     </div>
                 </div>
-            ) : ""}
-
+            )}
 
             <div onClick={() => setShowServiceSubMenu(!showServiceSubMenu)}>
-                <SidebarItem title={"Quản lý dịch vụ"} Icon={MdOutlineWorkspacePremium} isShowSubMenu={showServiceSubMenu} />
+                <SidebarItem title="Quản lý dịch vụ" Icon={MdOutlineWorkspacePremium} isShowSubMenu={showServiceSubMenu} />
             </div>
-
-            {showServiceSubMenu ? (
+            {showServiceSubMenu && (
                 <div className="animate-slide-top-to-bottom-400">
                     <div onClick={() => navigate("/dashboard/apartment-price-service")}>
-                        <SidebarItem title={"Bảng giá dịch vụ"} path={"apartment-price-service"} />
+                        <SidebarItem title="Bảng giá dịch vụ" path="apartment-price-service" />
                     </div>
-                    <SidebarItem title={"Nợ mua hàng"} />
-
+                    <div onClick={() => navigate("/dashboard/debt-purchase")}>
+                        <SidebarItem title="Nợ mua hàng" path="debt-purchase" />
+                    </div>
                     <div onClick={() => setShowUpdateSubMenu(!showUpdateSubMenu)}>
-                        <SidebarItem title={"Cập nhật chỉ số"} isShowSubMenu={showUpdateSubMenu} />
+                        <SidebarItem title="Cập nhật chỉ số" isShowSubMenu={showUpdateSubMenu} />
                     </div>
-
-                    {showUpdateSubMenu ? (
+                    {showUpdateSubMenu && (
                         <div className="animate-slide-top-to-bottom-400">
-                            <SidebarItem title={"Điện"} />
-                            <SidebarItem title={"Nước"} />
-                            <SidebarItem title={"Giặt là"} />
+                            <div onClick={() => navigate("/dashboard/service-index/electricity")}>
+                                <SidebarItem title="Điện" path="service-index/electricity" />
+                            </div>
+                            <div onClick={() => navigate("/dashboard/service-index/water")}>
+                                <SidebarItem title="Nước" path="service-index/water" />
+                            </div>
+                            <div onClick={() => navigate("/dashboard/service-index/laundry")}>
+                                <SidebarItem title="Giặt là" path="service-index/laundry" />
+                            </div>
                         </div>
-                    ) : ""}
-
+                    )}
                 </div>
-            ) : ""}
-
-            {/*<SidebarItem title={"Quản lý cư dân"} Icon={FaUsersBetweenLines} />*/}
+            )}
 
             <div onClick={() => navigate("/dashboard/rental-contract")}>
-                <SidebarItem title={"Hợp đồng thuê"} Icon={FaFileContract} />
+                <SidebarItem title="Hợp đồng thuê" Icon={FaFileContract} />
             </div>
-
 
             <div onClick={() => setShowBillSubMenu(!showBillSubMenu)}>
-                <SidebarItem title={"Quản lý hoá đơn"} Icon={FaFileInvoiceDollar} isShowSubMenu={showBillSubMenu}/>
+                <SidebarItem title="Quản lý hóa đơn" Icon={FaFileInvoiceDollar} isShowSubMenu={showBillSubMenu} />
             </div>
-
-            {showBillSubMenu ? (
+            {showBillSubMenu && (
                 <div className="animate-slide-top-to-bottom-400">
-                    <SidebarItem title={"Tạo hoá đơn hàng tháng"} />
-                    <SidebarItem title={"Hoá đơn"} />
+                    <div onClick={() => navigate("/dashboard/bill-list")}>
+                        <SidebarItem title="Hóa đơn" path="bill-list" />
+                    </div>
+                    <div onClick={() => navigate("/dashboard/bill-create")}>
+                        <SidebarItem title="Tạo hóa đơn hàng tháng" path="bill-create" />
+                    </div>
                 </div>
-            ) : ""}
+            )}
 
-
-            <SidebarItem title={"Báo cáo & Thống kê"} Icon={FaChartLine} />
-            <SidebarItem title={"Phản hồi cư dân"} Icon={FaRegSmile} />
+            <div onClick={() => navigate("/dashboard/reports")}>
+                <SidebarItem title="Báo cáo & Thống kê" Icon={FaChartLine} />
+            </div>
+            <div onClick={() => navigate("/dashboard/resident-feedback")}>
+                <SidebarItem title="Phản hồi cư dân" Icon={FaRegSmile} />
+            </div>
 
             <div onClick={() => setShowUserManagement(!showUserManagement)}>
-            <SidebarItem title={"Quản lý tài khoản"} Icon={FaGear} isShowSubMenu={showUserManagement}/>
+                <SidebarItem title="Quản lý tài khoản" Icon={FaGear} isShowSubMenu={showUserManagement} />
             </div>
-            {showUserManagement ? (
+            {showUserManagement && (
                 <div className="animate-slide-top-to-bottom-400">
                     <div onClick={() => navigate("/dashboard/user-management")}>
-                        <SidebarItem title={"Danh sách người dùng"}  path={"user-management"} />
+                        <SidebarItem title="Danh sách người dùng" path="user-management" />
                     </div>
                     <div onClick={() => navigate("/dashboard/admin-management")}>
-                        <SidebarItem title={"Danh sách quản trị viên"} path={"admin-management"}/>
+                        <SidebarItem title="Danh sách quản trị viên" path="admin-management" />
                     </div>
-
                 </div>
-            ) : ""}
+            )}
 
             <div onClick={logout}>
-                <SidebarItem title={"Đăng xuất"} Icon={FaSignOutAlt} />
+                <SidebarItem title="Đăng xuất" Icon={FaSignOutAlt} />
             </div>
         </div>
-    )
+    );
 }

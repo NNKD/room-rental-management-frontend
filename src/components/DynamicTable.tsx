@@ -1,33 +1,52 @@
-import {GoTriangleDown, GoTriangleUp} from "react-icons/go";
-import {ReactElement, useEffect, useState} from "react";
-import {MdDeleteForever} from "react-icons/md";
+import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
+import { ReactElement, useEffect, useState } from "react";
+import { MdDeleteForever } from "react-icons/md";
 import * as React from "react";
 import {
     ApartmentManagementType,
-    ApartmentPriceServiceType, ApartmentTypeDTO, RentalContractResponse,
+    ApartmentPriceServiceType,
+    ApartmentTypeDTO,
+    BillResponseDTO,
+    RentalContractResponse,
     ServiceType,
-    TableHeader, UserManagementDTO
+    TableHeader,
+    UserManagementDTO,
 } from "../types/Dashboard.ts";
-import {formatCurrency} from "../utils/NumberCalculate.ts";
-import {FaEdit} from "react-icons/fa";
-
+import { formatCurrency } from "../utils/NumberCalculate.ts";
+import { FaEdit } from "react-icons/fa";
 
 /*
     headers: header of the table
-    T:  type of data. Ex: ApartmentManagementType, ApartmentTypeManagementType
+    T: type of data. Ex: ApartmentManagementType, ApartmentTypeManagementType
     data: data of the table. A lot of types of data. Ex: ApartmentManagementType, ApartmentTypeManagementType
     hasActionColumn: true => show column "Hành động". False => hide this column
     hasEdit: true => edit icon
     onEdit: function, use when click on edit icon
     onDelete: function, use when click on delete icon
+    customAction: function, use to render custom action button (e.g., "Chọn")
  */
 
-
-export default function DynamicTable<T extends ApartmentManagementType | ApartmentTypeDTO | ApartmentPriceServiceType | ServiceType | UserManagementDTO | RentalContractResponse>
-                                    ({headers, data, hasActionColumn, hasEdit, onEdit, onDelete}: {headers: TableHeader<T>[], data: T[], hasActionColumn: boolean, hasEdit?: boolean, onEdit?: (id: string) => void, onDelete?: (id: string) => void}) {
-
-    const [headersTable, setHeadersTable] = useState<TableHeader<T>[]>(headers)
-    const [dataTable, setDataTable] = useState<T[]>(data)
+export default function DynamicTable<T extends BillResponseDTO | ApartmentManagementType | ApartmentTypeDTO | ApartmentPriceServiceType | ServiceType | UserManagementDTO | RentalContractResponse>(
+    {
+        headers,
+        data,
+        hasActionColumn,
+        hasEdit,
+        onEdit,
+        onDelete,
+        customAction, // Thêm prop customAction
+    }: {
+        headers: TableHeader<T>[];
+        data: T[];
+        hasActionColumn: boolean;
+        hasEdit?: boolean;
+        onEdit?: (id: string) => void;
+        onDelete?: (id: string) => void;
+        customAction?: (row: T) => React.ReactNode; // Hàm render tùy chỉnh cho hành động
+    }
+) {
+    const [headersTable, setHeadersTable] = useState<TableHeader<T>[]>(headers);
+    const [dataTable, setDataTable] = useState<T[]>(data);
 
     useEffect(() => {
         setHeadersTable(headers);
@@ -40,14 +59,14 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
     // get column sort and type and call function handleSortData
     const handleChangeSortType = (column: string, isASC: boolean) => {
         // change sortASC of the column which was clicked. And reset other columns
-        const sortedHeaders = headersTable.map((header) =>{
-            if (!('sortASC' in header)) return header;
-            return header.slug == column ? {...header, sortASC: !header.sortASC} : {...header, sortASC: true};
-        })
+        const sortedHeaders = headersTable.map((header) => {
+            if (!("sortASC" in header)) return header;
+            return header.slug === column ? { ...header, sortASC: !header.sortASC } : { ...header, sortASC: true };
+        });
 
-        setHeadersTable(sortedHeaders)
-        handleSortData(column, isASC)
-    }
+        setHeadersTable(sortedHeaders);
+        handleSortData(column, isASC);
+    };
 
     /*
         Sort Data
@@ -56,39 +75,38 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
         check 3 type data value. Number, String, Date
      */
     const handleSortData = (column: string, isASC: boolean) => {
-        if (!column) return
+        if (!column) return;
 
         const sortedData = [...dataTable].sort((a, b) => {
-            let valueA: unknown = a[column as keyof T]
-            let valueB: unknown = b[column as keyof T]
+            let valueA: unknown = a[column as keyof T];
+            let valueB: unknown = b[column as keyof T];
 
             if (valueA == null || valueB == null) return 0;
 
             let result = 0;
 
-
             // Check if is a React Element get data-sort from props to compare. Ex: <div data-sort="123"> Text </div>
             if (React.isValidElement(valueA) && React.isValidElement(valueB)) {
-                const valueAElement = valueA as ReactElement<{"data-sort": string}>;
-                const valueBElement = valueB as ReactElement<{"data-sort": string}>;
+                const valueAElement = valueA as ReactElement<{ "data-sort": string }>;
+                const valueBElement = valueB as ReactElement<{ "data-sort": string }>;
 
-                valueA = valueAElement.props["data-sort"]
-                valueB = valueBElement.props["data-sort"]
+                valueA = valueAElement.props["data-sort"];
+                valueB = valueBElement.props["data-sort"];
             }
 
             if (typeof valueA === "number" && typeof valueB === "number") {
-                result = valueA - valueB
-            }else if (typeof valueA === "string" && typeof valueB === "string") {
+                result = valueA - valueB;
+            } else if (typeof valueA === "string" && typeof valueB === "string") {
                 result = valueA.localeCompare(valueB);
-            }else if (valueA instanceof Date && valueB instanceof Date) {
-                result = valueA.getTime() - valueB.getTime()
+            } else if (valueA instanceof Date && valueB instanceof Date) {
+                result = valueA.getTime() - valueB.getTime();
             }
 
             return isASC ? result : -result;
-        })
+        });
 
-        setDataTable(sortedData)
-    }
+        setDataTable(sortedData);
+    };
 
     // render different type of data. JSX, Date, object, string, number,...
     const handleRenderTableValue = (value: unknown): React.ReactNode => {
@@ -96,53 +114,50 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
         if (value instanceof Date) return value.toLocaleDateString();
         return String(value ?? "");
     };
+
     return (
         <div className="relative overflow-auto h-fit max-h-full w-full rounded-t-xl">
             <table className="table-auto border border-separate border-spacing-0 border-zinc-300 rounded-t-xl w-screen">
                 <thead>
-                    <tr>
+                <tr>
+                    <th className="sticky top-0 border border-zinc-300 bg-lightGreen p-4 z-50 w-[10%]">
+                        <div>STT</div>
+                    </th>
 
-                        <th className="sticky top-0 border border-zinc-300 bg-lightGreen p-4 z-50 w-[10%]">
+                    {headersTable.map((header, index) => (
+                        // Make header stick on top of the table.
+                        <th key={index} className="sticky top-0 border border-zinc-300 bg-lightGreen p-4 z-50">
                             <div>
-                                STT
+                                {header.name}
+
+                                {/* Show column sort icon */}
+                                {!("sortASC" in header) ? null : (
+                                    <div className="absolute top-1/2 right-[2%] -translate-y-1/2 h-full flex flex-col items-center justify-between">
+                                        <div
+                                            className={`p-1 ${!header.sortASC ? "text-zinc-300 cursor-pointer hover:text-black" : "text-black pointer-events-none"}`}
+                                            onClick={() => handleChangeSortType(String(header.slug), true)}
+                                        >
+                                            <GoTriangleUp className="text-xl" />
+                                        </div>
+                                        <div
+                                            className={`p-1 cursor-pointer ${!header.sortASC ? "text-black pointer-events-none" : "text-zinc-300 cursor-pointer hover:text-black"}`}
+                                            onClick={() => handleChangeSortType(String(header.slug), false)}
+                                        >
+                                            <GoTriangleDown className="text-xl" />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </th>
+                    ))}
 
-                        {headersTable.map((header, index) => (
-                            // Make header stick on top of the table.
-                            <th key={index}
-                                className="sticky top-0 border border-zinc-300 bg-lightGreen p-4 z-50">
-                                <div>
-                                    {header.name}
-
-                                    {/* Show column sort icon */}
-                                    {!(header.sortASC == null || undefined) ? (
-                                        <div className="absolute top-1/2 right-[2%] -translate-y-1/2 h-full flex flex-col items-center justify-between">
-                                            <div className={`p-1
-                                                         ${!header.sortASC ? "text-zinc-300 cursor-pointer hover:text-black" : "text-black pointer-events-none"} `}
-                                                 onClick={() => handleChangeSortType(String(header.slug), true)}>
-                                                <GoTriangleUp className="text-xl"/>
-                                            </div>
-                                            <div className={`p-1 cursor-pointer
-                                                         ${!header.sortASC ? "text-black pointer-events-none" : "text-zinc-300 cursor-pointer hover:text-black"} `}
-                                                 onClick={() => handleChangeSortType(String(header.slug), false)}>
-                                                <GoTriangleDown className="text-xl"/>
-                                            </div>
-                                        </div>
-                                    ) : ""}
-                                </div>
-                            </th>
-                        ))}
-
-                        {/*Stick column on the right of the table*/}
-                        {hasActionColumn ? (
-                            <th className="sticky top-0 right-0 border border-zinc-300 bg-lightGreen p-4 z-50 w-[10%]">
-                                Hành động
-                            </th>
-                        ) : ""}
-
-                    </tr>
-
+                    {/* Stick column on the right of the table */}
+                    {hasActionColumn ? (
+                        <th className="sticky top-0 right-0 border border-zinc-300 bg-lightGreen p-4 z-50 w-[10%]">
+                            Hành động
+                        </th>
+                    ) : ""}
+                </tr>
                 </thead>
                 <tbody>
                 {dataTable.map((row, index) => (
@@ -152,45 +167,46 @@ export default function DynamicTable<T extends ApartmentManagementType | Apartme
                         </td>
 
                         {headersTable.map((header, index) => (
-                            <td key={index}
-                                className={`border border-zinc-300 p-4 
-                                            ${(index % 2 == 0) ? "bg-zinc-100" : "bg-white"}
-                                            ${header.center ? "text-center" : ""}`}>
-
-                                {header.isCurrency ? formatCurrency(Number(row[header.slug])) : handleRenderTableValue(row[header.slug])}
-
+                            <td
+                                key={index}
+                                className={`border border-zinc-300 p-4 ${(index % 2 === 0 ? "bg-zinc-100" : "bg-white")}${header.center ? " text-center" : ""}`}
+                            >
+                                {header.isCurrency
+                                    ? formatCurrency(Number(row[header.slug]))
+                                    : header.render
+                                        ? header.render(row)
+                                        : handleRenderTableValue(row[header.slug])}
                             </td>
                         ))}
 
-                        {/*Stick column on the right of the table*/}
+                        {/* Stick column on the right of the table */}
                         {hasActionColumn ? (
-                            <td className={`border border-zinc-300 p-4 bg-white sticky right-0
-                                        ${(headers.length % 2 == 0) ? "bg-zinc-100" : "bg-white"}`}>
+                            <td className={`border border-zinc-300 p-4 bg-white sticky right-0 ${(headers.length % 2 === 0 ? "bg-zinc-100" : "bg-white")}`}>
                                 <div className="flex items-center justify-evenly">
+                                    {hasEdit ? (
+                                        <div className="group p-1 cursor-pointer" onClick={() => onEdit?.(String(row.id))}>
+                                            <FaEdit className="text-2xl hover:text-lightGreen transition-all duration-300 ease-in-out" />
+                                        </div>
+                                    ) : null}
 
-                                    {
-                                        hasEdit ? (
-                                            <div className="group p-1 cursor-pointer" onClick={() => onEdit?.(String(row.id))}>
-                                                <FaEdit className="text-2xl hover:text-lightGreen transition-all duration-300 ease-in-out"/>
-                                            </div>
-                                        ) : ""
-                                    }
+                                    {onDelete ? (
+                                        <div className="group p-1 cursor-pointer" onClick={() => onDelete(String(row.id))}>
+                                            <MdDeleteForever className="text-2xl hover:text-lightGreen transition-all duration-300 ease-in-out" />
+                                        </div>
+                                    ) : null}
 
-
-                                    <div className="group p-1 cursor-pointer" onClick={() => onDelete?.(String(row.id))}>
-                                        <MdDeleteForever className="text-2xl hover:text-lightGreen transition-all duration-300 ease-in-out" />
-                                    </div>
+                                    {customAction && (
+                                        <div className="group p-1 cursor-pointer">
+                                            {customAction(row)}
+                                        </div>
+                                    )}
                                 </div>
-
                             </td>
                         ) : ""}
-
                     </tr>
                 ))}
-
                 </tbody>
             </table>
         </div>
-
-    )
+    );
 }

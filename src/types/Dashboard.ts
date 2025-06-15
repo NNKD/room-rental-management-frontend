@@ -145,3 +145,21 @@ export interface UserManagementDTO {
     role: number;
     totalRentalContracts: number;
 }
+
+export interface ServiceDetailDTO {
+    name: string;
+    quantity: number;
+    price: number;
+    totalPrice: number;
+}
+
+export interface BillResponseDTO {
+    id: number;
+    name: string;
+    rentalAmount: number;
+    serviceDetails: ServiceDetailDTO[];
+    totalAmount: number;
+    createdAt: string;
+    dueDate: string;
+    status: string;
+}
