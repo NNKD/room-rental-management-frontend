@@ -1,4 +1,4 @@
-import SidebarItem from "./SidebarItem.tsx";
+import SidebarItem from "../../../components/SidebarItem.tsx";
 import {
     FaChartLine,
     FaFileContract,
