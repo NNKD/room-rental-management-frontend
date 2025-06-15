@@ -1,11 +1,11 @@
-import DynamicTable from "../../components/DynamicTable.tsx";
-import { TableHeader, RentalContractResponse, UserResponse, ApartmentStatusDTO } from "../../types/Dashboard.ts";
+import DynamicTable from "../../../components/DynamicTable.tsx";
+import { TableHeader, RentalContractResponse, UserResponse, ApartmentStatusDTO } from "../../../types/Dashboard.ts";
 import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
-import { envVar } from "../../utils/EnvironmentVariables.ts";
-import { NoticeType } from "../../types/Context.ts";
-import { useNotice } from "../../hook/useNotice.ts";
-import { useLoading } from "../../contexts/LoadingContext.tsx";
+import { envVar } from "../../../utils/EnvironmentVariables.ts";
+import { NoticeType } from "../../../types/Context.ts";
+import { useNotice } from "../../../hook/useNotice.ts";
+import { useLoading } from "../../../contexts/LoadingContext.tsx";
 
 export default function RentalContract() {
     const [contracts, setContracts] = useState<RentalContractResponse[]>([]);

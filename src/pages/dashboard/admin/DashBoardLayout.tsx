@@ -1,4 +1,4 @@
-import Sidebar from "./admin/Sidebar.tsx";
+import Sidebar from "./Sidebar.tsx";
 import {Outlet} from "react-router-dom";
 
 export default function DashBoardLayout() {

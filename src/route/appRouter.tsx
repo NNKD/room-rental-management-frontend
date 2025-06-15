@@ -5,19 +5,19 @@ import ApartmentList from "../pages/ApartmentList.tsx";
 import ApartmentDetail from "../pages/ApartmentDetail.tsx";
 import Login from "../pages/Login.tsx";
 import Amenities from "../pages/Amenities.tsx";
-import DashBoardLayout from "../pages/dashboard/DashBoardLayout.tsx";
-import DashBoardContent from "../pages/dashboard/DashBoardContent.tsx";
-import ApartmentManagement from "../pages/dashboard/apartment/ApartmentManagement.tsx";
-import ApartmentTypeManagement from "../pages/dashboard/apartment/ApartmentTypeManagement.tsx";
-import ApartmentPriceService from "../pages/dashboard/apartment/ApartmentPriceService.tsx";
-import ApartmentDetailDashboard from "../pages/dashboard/apartment/ApartmentDetailDashboard.tsx";
+import DashBoardLayout from "../pages/dashboard/admin/DashBoardLayout.tsx";
+import DashBoardContent from "../pages/dashboard/admin/DashBoardContent.tsx";
+import ApartmentManagement from "../pages/dashboard/admin/apartment/ApartmentManagement.tsx";
+import ApartmentTypeManagement from "../pages/dashboard/admin/apartment/ApartmentTypeManagement.tsx";
+import ApartmentPriceService from "../pages/dashboard/admin/apartment/ApartmentPriceService.tsx";
+import ApartmentDetailDashboard from "../pages/dashboard/admin/apartment/ApartmentDetailDashboard.tsx";
 import ForgotPassword from "../pages/FotgotPassword.tsx";
 import Contact from "../pages/Contact.tsx";
 import UserManagement from "../pages/dashboard/userManagement/UserManagement.tsx";
 import AdminManagement from "../pages/dashboard/userManagement/AdminManagement.tsx";
-import RentalContract from "../pages/dashboard/RentalContract.tsx";
-import BillList from "../pages/dashboard/billing/BillList.tsx"; // Thêm file mới
-import BillCreate from "../pages/dashboard/billing/BillCreate.tsx"; // Thêm file mới
+import RentalContract from "../pages/dashboard/admin/RentalContract.tsx";
+import BillList from "../pages/dashboard/admin/billing/BillList.tsx"; // Thêm file mới
+import BillCreate from "../pages/dashboard/admin/billing/BillCreate.tsx"; // Thêm file mới
 
 export const router = createBrowserRouter([
     {

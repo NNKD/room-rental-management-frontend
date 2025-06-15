@@ -1,19 +1,19 @@
 import {IoIosArrowBack, IoIosArrowForward, IoMdArrowBack} from "react-icons/io";
 import {Link, useParams} from "react-router-dom";
 import {useEffect, useMemo, useRef, useState} from "react";
-import ModalZoomImage from "../../../components/modal/ModalZoomImage.tsx";
+import ModalZoomImage from "../../../../components/modal/ModalZoomImage.tsx";
 import {IoCloseCircle} from "react-icons/io5";
 import axios from "axios";
-import {envVar} from "../../../utils/EnvironmentVariables.ts";
-import {ApartmentDTO, ApartmentImageDTO, ApartmentStatusDTO, ApartmentTypeDTO} from "../../../types/Dashboard.ts";
-import {NoticeType} from "../../../types/Context.ts";
-import {useNotice} from "../../../hook/useNotice.ts";
-import {calPriceDiscount, formatCurrency} from "../../../utils/NumberCalculate.ts";
-import UploadWidget from "../../../components/UploadWidget.tsx"
-import LoadingPage from "../../../components/LoadingPage.tsx";
-import extractPublicId from "../../../utils/StringProcess.ts";
-import {debounce} from "../../../utils/Debounce.ts";
-import {getToken} from "../../../utils/TokenUtils.ts";
+import {envVar} from "../../../../utils/EnvironmentVariables.ts";
+import {ApartmentDTO, ApartmentImageDTO, ApartmentStatusDTO, ApartmentTypeDTO} from "../../../../types/Dashboard.ts";
+import {NoticeType} from "../../../../types/Context.ts";
+import {useNotice} from "../../../../hook/useNotice.ts";
+import {calPriceDiscount, formatCurrency} from "../../../../utils/NumberCalculate.ts";
+import UploadWidget from "../../../../components/UploadWidget.tsx"
+import LoadingPage from "../../../../components/LoadingPage.tsx";
+import extractPublicId from "../../../../utils/StringProcess.ts";
+import {debounce} from "../../../../utils/Debounce.ts";
+import {getToken} from "../../../../utils/TokenUtils.ts";
 
 export default function ApartmentDetailDashboard() {
     const {slug} = useParams();
