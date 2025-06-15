@@ -1,10 +1,10 @@
-import Sidebar from "./Sidebar.tsx";
 import {Outlet} from "react-router-dom";
-import {FaBars} from "react-icons/fa";
+import SidebarUser from "./SidebarUser.tsx";
 import {useEffect, useState} from "react";
+import {FaBars} from "react-icons/fa";
 import {IoClose} from "react-icons/io5";
 
-export default function DashBoardLayout() {
+export default function DashBoardUserLayout() {
     const [showSidebar, setShowSidebar] = useState(false)
     const [isDesktop, setIsDesktop] = useState(true)
 
@@ -25,7 +25,7 @@ export default function DashBoardLayout() {
     }
 
     return (
-        <div className="flex h-screen ">
+        <div className="flex h-screen">
             {!isDesktop ? (
                 <div>
                     {!showSidebar ? (
@@ -41,15 +41,14 @@ export default function DashBoardLayout() {
                                 <div className="ml-auto p-2 w-fit" onClick={() => setShowSidebar(!showSidebar)}>
                                     <IoClose className="text-2xl"/>
                                 </div>
-                                <Sidebar/>
+                                <SidebarUser/>
                             </div>
                         </div>
                     ) : ""}
                 </div>
             ) : (
-                <Sidebar/>
+                <SidebarUser/>
             )}
-
 
             <div className="w-full lg:w-4/5 p-6 text-center bg-[#f6f6f6]">
                 <Outlet/>

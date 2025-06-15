@@ -1,13 +1,8 @@
-// components/ProtectedRoute.tsx
-import React from 'react';
+import {ReactNode} from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import {useAuth} from "../hook/useAuth.ts";
 
-interface ProtectedRouteProps {
-    children: React.ReactNode;
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+const ProtectedRoute = ({ children }: {children: ReactNode}) => {
     const { isAuthenticated, loading } = useAuth();
     const location = useLocation();
 
