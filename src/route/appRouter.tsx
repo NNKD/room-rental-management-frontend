@@ -16,6 +16,8 @@ import Contact from "../pages/Contact.tsx";
 import UserManagement from "../pages/dashboard/userManagement/UserManagement.tsx";
 import AdminManagement from "../pages/dashboard/userManagement/AdminManagement.tsx";
 import RentalContract from "../pages/dashboard/RentalContract.tsx";
+import BillList from "../pages/dashboard/billing/BillList.tsx"; // Thêm file mới
+import BillCreate from "../pages/dashboard/billing/BillCreate.tsx"; // Thêm file mới
 
 export const router = createBrowserRouter([
     {
@@ -58,7 +60,7 @@ export const router = createBrowserRouter([
                 path: "dashboard",
                 element: (
                     // <ProtectedRoute>
-                        <DashBoardLayout />
+                    <DashBoardLayout />
                     // </ProtectedRoute>
                 ),
                 children: [
@@ -94,9 +96,16 @@ export const router = createBrowserRouter([
                         path: "rental-contract",
                         element: <RentalContract />,
                     },
+                    {
+                        path: "bill-list",
+                        element: <BillList />, // Thêm route cho danh sách hóa đơn
+                    },
+                    {
+                        path: "bill-create",
+                        element: <BillCreate />, // Thêm route cho tạo hóa đơn
+                    },
                 ],
             },
         ],
     },
-
 ]);
