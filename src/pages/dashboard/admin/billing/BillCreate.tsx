@@ -57,7 +57,7 @@ export default function BillCreate() {
             });
             console.log("API Services Response:", response.data);
             if (response.status === 200 && response.data.status === "success") {
-                const mappedServices: ServiceDTO[] = response.data.data.map((service: any) => ({
+                const mappedServices: ServiceDTO[] = response.data.data.map((service: ServiceDTO) => ({
                     id: service.id,
                     name: service.name,
                     description: service.description,

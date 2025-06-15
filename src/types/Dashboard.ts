@@ -163,3 +163,18 @@ export interface BillResponseDTO {
     dueDate: string;
     status: string;
 }
+export interface ApartmentDetailDashboardType {
+    id: number;
+    name: string;
+    description: string;
+    price: string; // Đã format bằng formatCurrency
+    type: string;
+    status: string;
+    user: string | null;
+    images: string[];
+    services: {
+        name: string;
+        price: string; // Đã format bằng formatCurrency
+        unit: string;
+    }[];
+}

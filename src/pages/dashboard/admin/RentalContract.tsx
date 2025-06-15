@@ -1,11 +1,11 @@
-import DynamicTable from "../../../../components/DynamicTable.tsx";
-import { ApartmentPriceServiceType, ServiceDTO, ServiceType, TableHeader } from "../../../../types/Dashboard.ts";
+import DynamicTable from "../../../components/DynamicTable.tsx";
+import { ApartmentPriceServiceType, ServiceDTO, ServiceType, TableHeader } from "../../../types/Dashboard.ts";
 import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
-import { envVar } from "../../../../utils/EnvironmentVariables.ts";
-import { NoticeType } from "../../../../types/Context.ts";
-import { formatCurrency } from "../../../../utils/NumberCalculate.ts";
-import { useNotice } from "../../../../hook/useNotice.ts";
+import { envVar } from "../../../utils/EnvironmentVariables.ts";
+import { NoticeType } from "../../../types/Context.ts";
+import { formatCurrency } from "../../../utils/NumberCalculate.ts";
+import { useNotice } from "../../../hook/useNotice.ts";
 
 export default function ApartmentPriceService() {
     const [services, setServices] = useState<ServiceDTO[]>([]);
