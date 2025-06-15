@@ -34,10 +34,10 @@ export default function RentalContract() {
             setApiLoading(true);
             const [usersRes, apartmentsRes] = await Promise.all([
                 axios.get(`${envVar.API_URL}/auth/all-users`, {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                    headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` },
                 }),
                 axios.get(`${envVar.API_URL}/apartments/available?status=1`, {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                    headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` },
                 }),
             ]);
             console.log("Users response:", usersRes.data.data);
@@ -73,8 +73,8 @@ export default function RentalContract() {
     const handleGetContracts = async () => {
         try {
             setApiLoading(true);
-            const response = await axios.get(`${envVar.API_URL}/rental-contracts`, {
-headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            const response = await axios.get(`${envVar.API_URL}/dashboard/rental-contracts`, {
+headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` },
 });
 console.log("API rental-contracts response:", response.data.data);
 if (response.status === 200 && response.data.status === "success") {
@@ -238,8 +238,8 @@ const confirmDeleteContract = async () => {
     if (!deletingContractId) return;
     try {
         setApiLoading(true);
-        const response = await axios.delete(`${envVar.API_URL}/rental-contracts/${deletingContractId}`, {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        const response = await axios.delete(`${envVar.API_URL}/dashboard/rental-contracts/${deletingContractId}`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` },
         });
         if (response.status === 200 && response.data.status === "success") {
             setMessage(response.data.message || "Xóa hợp đồng thành công");
@@ -290,12 +290,12 @@ const handleFormSubmit = async (e: React.FormEvent) => {
         setApiLoading(true);
         let response;
         if (editingContract) {
-            response = await axios.put(`${envVar.API_URL}/rental-contracts/${editingContract.id}`, payload, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            response = await axios.put(`${envVar.API_URL}/dashboard/rental-contracts/${editingContract.id}`, payload, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` },
             });
         } else {
-            response = await axios.post(`${envVar.API_URL}/rental-contracts`, payload, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            response = await axios.post(`${envVar.API_URL}/dashboard/rental-contracts`, payload, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` },
             });
         }
 
