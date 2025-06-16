@@ -43,12 +43,12 @@ export default function ChangePass() {
         setApiLoading(true);
         try {
             const response = await axios.put(`${envVar.API_URL}/dashboard-user/me/account/update-pass`, {
-                pass: pass,
-                newPass: newPass,
+                    pass: pass,
+                    newPass: newPass,
                 },
-            {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
             console.log(response.data)
             if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
                 setMessage(response.data.data);

@@ -7,6 +7,7 @@ import { NoticeType } from "../../../../types/Context.ts";
 import { formatCurrency } from "../../../../utils/NumberCalculate.ts";
 import { useNotice } from "../../../../hook/useNotice.ts";
 import { getToken } from "../../../../utils/TokenUtils.ts";
+import { useTranslation } from "react-i18next";
 
 export default function ApartmentPriceService() {
     const [services, setServices] = useState<ServiceDTO[]>([]);
@@ -23,6 +24,7 @@ export default function ApartmentPriceService() {
     const [deletingServiceId, setDeletingServiceId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const token = getToken();
+    const { t } = useTranslation();
 
     useEffect(() => {
         handleGetServices();
@@ -47,7 +49,7 @@ export default function ApartmentPriceService() {
             }
         } catch (error: unknown) {
             const axiosError = error as AxiosError<{ message?: string }>;
-            setMessage(axiosError.response?.data?.message || "Không thể lấy danh sách dịch vụ");
+            setMessage(axiosError.response?.data?.message || t("cannot_fetch_services"));
             setType(NoticeType.ERROR);
         } finally {
             setLoading(false);
@@ -88,13 +90,13 @@ export default function ApartmentPriceService() {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
-                setMessage("Xóa dịch vụ thành công");
+                setMessage(t("service_deleted_success"));
                 setType(NoticeType.SUCCESS);
                 handleGetServices();
             }
         } catch (error: unknown) {
             const axiosError = error as AxiosError<{ message?: string }>;
-            setMessage(axiosError.response?.data?.message || "Không thể xóa dịch vụ");
+            setMessage(axiosError.response?.data?.message || t("cannot_delete_service"));
             setType(NoticeType.ERROR);
         } finally {
             setLoading(false);
@@ -112,14 +114,14 @@ export default function ApartmentPriceService() {
         e.preventDefault();
         const { name, description, price, unitSuffix } = formData;
         if (!name || !description || !price || !unitSuffix) {
-            setMessage("Vui lòng điền đầy đủ thông tin");
+            setMessage(t("please_fill_all_fields"));
             setType(NoticeType.ERROR);
             return;
         }
 
         const parsedPrice = parseFloat(price);
         if (isNaN(parsedPrice) || parsedPrice < 0) {
-            setMessage("Giá phải là một số hợp lệ và không âm");
+            setMessage(t("price_must_be_valid"));
             setType(NoticeType.ERROR);
             return;
         }
@@ -138,7 +140,7 @@ export default function ApartmentPriceService() {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
-                    setMessage("Cập nhật dịch vụ thành công");
+                    setMessage(t("service_updated_success"));
                     setType(NoticeType.SUCCESS);
                 }
             } else {
@@ -146,7 +148,7 @@ export default function ApartmentPriceService() {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
-                    setMessage("Thêm dịch vụ thành công");
+                    setMessage(t("service_added_success"));
                     setType(NoticeType.SUCCESS);
                 }
             }
@@ -155,7 +157,7 @@ export default function ApartmentPriceService() {
             handleGetServices();
         } catch (error: unknown) {
             const axiosError = error as AxiosError<{ message?: string }>;
-            setMessage(axiosError.response?.data?.message || "Không thể lưu dịch vụ");
+            setMessage(axiosError.response?.data?.message || t("cannot_save_service"));
             setType(NoticeType.ERROR);
         } finally {
             setLoading(false);
@@ -174,14 +176,14 @@ export default function ApartmentPriceService() {
     };
 
     const tableHeaders: TableHeader<ApartmentPriceServiceType>[] = [
-        { name: "Tên dịch vụ", slug: "name", sortASC: true, center: true },
-        { name: "Mô tả", slug: "description", sortASC: true, center: true },
-        { name: "Giá (VNĐ)", slug: "price", sortASC: true, center: true },
-        { name: "Đơn vị tính", slug: "unit", sortASC: true, center: true },
+        { name: t("service_name"), slug: "name", sortASC: true, center: true },
+        { name: t("description"), slug: "description", sortASC: true, center: true },
+        { name: t("price_vnd"), slug: "price", sortASC: true, center: true },
+        { name: t("unit"), slug: "unit", sortASC: true, center: true },
     ];
 
     if (loading) {
-        return <div className="flex justify-center items-center h-full">Đang tải...</div>;
+        return <div className="flex justify-center items-center h-full">{t("loading")}...</div>;
     }
 
     return (
@@ -191,7 +193,7 @@ export default function ApartmentPriceService() {
                     className="bg-lightGreen text-black font-bold px-4 py-2 rounded hover:bg-green-600"
                     onClick={handleAddService}
                 >
-                    Thêm Dịch Vụ
+                    {t("add_service")}
                 </button>
             </div>
             <DynamicTable
@@ -206,11 +208,11 @@ export default function ApartmentPriceService() {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg w-full max-w-md">
                         <h3 className="text-xl font-bold mb-4">
-                            {editingService ? "Sửa Dịch Vụ" : "Thêm Dịch Vụ"}
+                            {editingService ? t("edit_service") : t("add_service")}
                         </h3>
                         <form onSubmit={handleFormSubmit}>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Tên dịch vụ</label>
+                                <label className="block text-sm font-medium mb-1">{t("service_name")}</label>
                                 <input
                                     type="text"
                                     name="name"
@@ -221,7 +223,7 @@ export default function ApartmentPriceService() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Mô tả</label>
+                                <label className="block text-sm font-medium mb-1">{t("description")}</label>
                                 <textarea
                                     name="description"
                                     value={formData.description}
@@ -232,7 +234,7 @@ export default function ApartmentPriceService() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Giá</label>
+                                <label className="block text-sm font-medium mb-1">{t("price")}</label>
                                 <input
                                     type="number"
                                     name="price"
@@ -245,7 +247,7 @@ export default function ApartmentPriceService() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Đơn vị</label>
+                                <label className="block text-sm font-medium mb-1">{t("unit")}</label>
                                 <div className="flex items-center">
                                     <span className="inline-block bg-gray-100 border border-gray-300 p-2 rounded-l text-gray-700">
                                         VNĐ
@@ -256,7 +258,7 @@ export default function ApartmentPriceService() {
                                         value={formData.unitSuffix}
                                         onChange={handleInputChange}
                                         className="w-full border border-gray-300 p-2 rounded-r border-l-0"
-                                        placeholder="tháng, lần, ..."
+                                        placeholder={t("unit_placeholder")}
                                         required
                                     />
                                 </div>
@@ -267,13 +269,13 @@ export default function ApartmentPriceService() {
                                     className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
                                     onClick={handleCloseModal}
                                 >
-                                    Hủy
+                                    {t("cancel")}
                                 </button>
                                 <button
                                     type="submit"
                                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                                 >
-                                    {editingService ? "Cập nhật" : "Thêm"}
+                                    {editingService ? t("update") : t("add")}
                                 </button>
                             </div>
                         </form>
@@ -283,22 +285,22 @@ export default function ApartmentPriceService() {
             {isConfirmDeleteModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg w-full max-w-md">
-                        <h3 className="text-xl font-bold mb-4">Xác nhận xóa</h3>
-                        <p className="mb-4">Bạn có chắc chắn muốn xóa dịch vụ này không?</p>
+                        <h3 className="text-xl font-bold mb-4">{t("confirm_delete")}</h3>
+                        <p className="mb-4">{t("confirm_delete_service_message")}</p>
                         <div className="flex justify-end gap-2">
                             <button
                                 type="button"
                                 className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
                                 onClick={handleCancelDelete}
                             >
-                                Không
+                                {t("no")}
                             </button>
                             <button
                                 type="button"
                                 className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                                 onClick={confirmDeleteService}
                             >
-                                Có
+                                {t("yes")}
                             </button>
                         </div>
                     </div>
