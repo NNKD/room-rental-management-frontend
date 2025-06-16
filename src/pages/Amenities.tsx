@@ -92,10 +92,10 @@ export default function Amenities() {
                     </div>
                     <div className="w-full lg:w-3/5 flex items-center justify-between gap-4">
                         <div>
-                            <img src="https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//sp1.png" />
+                            <img src="https://res.cloudinary.com/dtahzcvaf/image/upload/f_webp/v1750077689/sp1_x0in31.png" />
                         </div>
                         <div>
-                            <img src="https://ipzhywqybsdvoshfxaij.supabase.co/storage/v1/object/public/images//sp2.png" />
+                            <img src="https://res.cloudinary.com/dtahzcvaf/image/upload/f_webp/v1750077688/sp2_neyzjv.png" />
                         </div>
                     </div>
                 </div>

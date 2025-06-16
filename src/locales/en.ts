@@ -400,6 +400,10 @@ const en: Translation = {
         confirm_delete: "Confirm Delete",
         update: "Update",
         payment: "Payment",
+        bill_name: "Bill Name",
+        service: "Service",
+        quantity: "Quantity",
+        total_price: "Total Price",
     },
 };
 

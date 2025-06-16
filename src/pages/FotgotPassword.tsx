@@ -93,13 +93,15 @@ export default function ForgotPassword() {
                             disabled={isLoading}
                         />
 
-                        <button
-                            type="submit"
-                            className="w-full bg-pink-500 text-white py-2 rounded-full font-semibold hover:bg-pink-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                            disabled={isLoading}
-                        >
-                            {t("send_request")}
-                        </button>
+                        <div className="w-fit mx-auto mt-6">
+                            <button
+                                type="submit"
+                                className="mx-auto bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out mt-10"
+                                disabled={isLoading}
+                            >
+                                {t("send_request")}
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
