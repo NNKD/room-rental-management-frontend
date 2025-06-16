@@ -107,7 +107,7 @@ export default function Login() {
             setType(NoticeType.SUCCESS);
             handleGetRole(token);
 
-            login(token, { username: username.trim() });
+            login(token, username.trim());
 
         } catch (error) {
             console.error('Login error:', error);

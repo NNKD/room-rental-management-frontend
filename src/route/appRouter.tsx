@@ -20,6 +20,8 @@ import BillList from "../pages/dashboard/admin/billing/BillList.tsx";
 import BillCreate from "../pages/dashboard/admin/billing/BillCreate.tsx";
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
 import DashBoardUserLayout from "../pages/dashboard/user/DashBoardUserLayout.tsx";
+import UserApartmentManagement from "../pages/dashboard/user/UserApartmentManagement.tsx";
+import UserApartmentDetail from "../pages/dashboard/user/UserApartmentDetail.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -112,7 +114,7 @@ export const router = createBrowserRouter([
                 path: "dashboard-user",
                 element: (
                     <ProtectedRoute>
-                        <DashBoardUserLayout />
+                        <DashBoardUserLayout/>
                     </ProtectedRoute>
                 ),
                 children: [
@@ -120,8 +122,17 @@ export const router = createBrowserRouter([
                         index: true,
                         element: <DashBoardContent />,
                     },
+                    {
+                        path: "apartments",
+                        element: <UserApartmentManagement />,
+                    },
+                    {
+                        path: "apartments/:slug",
+                        element: <UserApartmentDetail />,
+                    },
                 ],
             },
         ],
     },
+
 ]);

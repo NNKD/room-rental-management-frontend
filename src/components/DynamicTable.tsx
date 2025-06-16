@@ -9,7 +9,7 @@ import {
     BillResponseDTO,
     RentalContractResponse,
     ServiceType,
-    TableHeader,
+    TableHeader, UserApartmentDTO,
     UserManagementDTO,
 } from "../types/Dashboard.ts";
 import { formatCurrency } from "../utils/NumberCalculate.ts";
@@ -26,7 +26,7 @@ import { FaEdit } from "react-icons/fa";
     customAction: function, use to render custom action button (e.g., "Chọn")
  */
 
-export default function DynamicTable<T extends BillResponseDTO | ApartmentManagementType | ApartmentTypeDTO | ApartmentPriceServiceType | ServiceType | UserManagementDTO | RentalContractResponse>(
+export default function DynamicTable<T extends BillResponseDTO | ApartmentManagementType | ApartmentTypeDTO | ApartmentPriceServiceType | ServiceType | UserManagementDTO | RentalContractResponse | UserApartmentDTO>(
     {
         headers,
         data,

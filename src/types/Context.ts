@@ -1,10 +1,11 @@
 export interface AuthContextType {
     isAuthenticated: boolean;
     token: string | null;
-    user: unknown | null;
-    login: (token: string, userData?: unknown) => void;
+    username: string | null;
+    login: (token: string, userData?: string) => void;
     logout: () => void;
     loading: boolean;
+    isLogout: boolean;
 }
 
 

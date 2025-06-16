@@ -35,3 +35,22 @@ export interface ApartmentDetailType {
     discounts: ApartmentDiscount[];
     images: ApartmentImage[];
 }
+
+export interface UserApartmentDetailType {
+    rentalContractName: string;
+    rentalContractPrice: number;
+    rentalContractStatus: string;
+    rentalContractStartDate: string;
+    rentalContractEndDate: string;
+    rentalContractCreatedAt: string;
+    apartmentName: string;
+    apartmentType: string;
+    apartmentFloor: number;
+    apartmentWidth: number;
+    apartmentHeight: number;
+    apartmentBalcony: number;
+    apartmentTerrace: number;
+    userFullName: string;
+    userPhone: string;
+    userEmail: string;
+}
