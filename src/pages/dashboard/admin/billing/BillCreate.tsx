@@ -6,6 +6,7 @@ import { useNotice } from "../../../../hook/useNotice.ts";
 import { useLoading } from "../../../../contexts/LoadingContext.tsx";
 import DynamicTable from "../../../../components/DynamicTable.tsx";
 import { TableHeader, RentalContractResponse, ServiceDTO } from "../../../../types/Dashboard.ts";
+import { useTranslation } from "react-i18next";
 
 // Interface cho dịch vụ đã chọn để hiển thị trong bảng
 interface SelectedServiceDisplay {
@@ -29,6 +30,7 @@ export default function BillCreate() {
     const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
     const { setMessage, setType } = useNotice();
     const { setApiLoading } = useLoading();
+    const { t } = useTranslation();
 
     // Lấy danh sách hợp đồng đang hoạt động
     const fetchActiveContracts = async () => {
@@ -47,12 +49,12 @@ export default function BillCreate() {
                     }));
                 setContracts(activeContracts);
             } else {
-                setMessage(response.data.message || "Không thể lấy danh sách hợp đồng");
+                setMessage(response.data.message || t("cannot_fetch_contracts"));
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
             const axiosError = error as AxiosError<{ status: string; code?: string; message?: string }>;
-            setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
+            setMessage(axiosError.response?.data?.message || t("unknown_error"));
             setType(NoticeType.ERROR);
         } finally {
             setApiLoading(false);
@@ -66,7 +68,6 @@ export default function BillCreate() {
             const response = await axios.get(`${envVar.API_URL}/services`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` },
             });
-            console.log("API Services Response:", response.data);
             if (response.status === 200 && response.data.status === "success") {
                 const mappedServices: ServiceDTO[] = response.data.data.map((service: ServiceDTO) => ({
                     id: service.id,
@@ -78,13 +79,12 @@ export default function BillCreate() {
                 }));
                 setServices(mappedServices);
             } else {
-                setMessage(response.data.message || "Không thể lấy danh sách dịch vụ");
+                setMessage(response.data.message || t("cannot_fetch_services"));
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
             const axiosError = error as AxiosError<{ status: string; code?: string; message?: string }>;
-            console.error("API Services Error:", axiosError);
-            setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
+            setMessage(axiosError.response?.data?.message || t("unknown_error"));
             setType(NoticeType.ERROR);
         } finally {
             setApiLoading(false);
@@ -146,12 +146,12 @@ export default function BillCreate() {
     const handleCreateBill = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!formData.rentalContractId) {
-            setMessage("Vui lòng chọn hợp đồng thuê");
+            setMessage(t("please_select_contract"));
             setType(NoticeType.ERROR);
             return;
         }
         if (selectedServices.length === 0) {
-            setMessage("Vui lòng chọn ít nhất một dịch vụ");
+            setMessage(t("please_select_service"));
             setType(NoticeType.ERROR);
             return;
         }
@@ -173,20 +173,19 @@ export default function BillCreate() {
                 { headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` } }
             );
             if (response.status === 200 && response.data.status === "success") {
-                setMessage("Tạo hóa đơn thành công");
+                setMessage(t("bill_created_success"));
                 setType(NoticeType.SUCCESS);
                 setFormData({ rentalContractId: "" });
                 setSelectedServices([]);
             } else {
-                // Chuẩn hóa thông báo lỗi từ backend
-                const errorMessage = getErrorMessage(response.data.code) || response.data.message || "Tạo hóa đơn thất bại";
+                const errorMessage = getErrorMessage(response.data.code) || response.data.message || t("bill_create_failed");
                 setMessage(errorMessage);
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
             const axiosError = error as AxiosError<{ status: string; code?: string; message?: string }>;
             const errorData = axiosError.response?.data;
-            const errorMessage = getErrorMessage(errorData?.code) || errorData?.message || "Đã có lỗi xảy ra";
+            const errorMessage = getErrorMessage(errorData?.code) || errorData?.message || t("unknown_error");
             setMessage(errorMessage);
             setType(NoticeType.ERROR);
         } finally {
@@ -198,11 +197,11 @@ export default function BillCreate() {
     const getErrorMessage = (code?: string): string | undefined => {
         switch (code) {
             case "invalidInput":
-                return "Dữ liệu đầu vào không hợp lệ";
+                return t("invalid_input");
             case "invalidContract":
-                return "Hợp đồng không tồn tại";
+                return t("invalid_contract");
             case "serverError":
-                return "Lỗi server, vui lòng thử lại sau";
+                return t("server_error");
             default:
                 return undefined;
         }
@@ -214,18 +213,18 @@ export default function BillCreate() {
     };
 
     const contractTableHeaders: TableHeader<RentalContractResponse>[] = [
-        { name: "Tên căn hộ", slug: "name", sortASC: true, center: true },
-        { name: "Người thuê", slug: "fullname", sortASC: true, center: true },
-        { name: "Loại hợp đồng", slug: "description", sortASC: true, center: true },
+        { name: t("apartment_name"), slug: "name", sortASC: true, center: true },
+        { name: t("tenant"), slug: "fullname", sortASC: true, center: true },
+        { name: t("contract_type"), slug: "description", sortASC: true, center: true },
         {
-            name: "Ngày bắt đầu",
+            name: t("start_date"),
             slug: "startDate",
             sortASC: true,
             center: true,
             render: (row) => new Date(row.startDate).toLocaleDateString("vi-VN"),
         },
         {
-            name: "Ngày kết thúc",
+            name: t("end_date"),
             slug: "endDate",
             sortASC: true,
             center: true,
@@ -234,18 +233,18 @@ export default function BillCreate() {
     ];
 
     const serviceTableHeaders: TableHeader<ServiceDTO>[] = [
-        { name: "Tên dịch vụ", slug: "name", sortASC: true, center: true },
-        { name: "Mô tả", slug: "description", sortASC: true, center: true },
+        { name: t("service_name"), slug: "name", sortASC: true, center: true },
+        { name: t("description"), slug: "description", sortASC: true, center: true },
         {
-            name: "Giá",
+            name: t("price"),
             slug: "price",
             sortASC: true,
             center: true,
             render: (row) => `${row.price.toLocaleString()} VNĐ`,
         },
-        { name: "Đơn vị", slug: "unit", sortASC: true, center: true },
+        { name: t("unit"), slug: "unit", sortASC: true, center: true },
         {
-            name: "Số lượng",
+            name: t("quantity"),
             slug: "id",
             sortASC: false,
             center: true,
@@ -262,25 +261,25 @@ export default function BillCreate() {
     ];
 
     const selectedServiceTableHeaders: TableHeader<SelectedServiceDisplay>[] = [
-        { name: "Tên dịch vụ", slug: "name", sortASC: true, center: true },
-        { name: "Mô tả", slug: "description", sortASC: true, center: true },
+        { name: t("service_name"), slug: "name", sortASC: true, center: true },
+        { name: t("description"), slug: "description", sortASC: true, center: true },
         {
-            name: "Đơn giá",
+            name: t("unit_price"),
             slug: "price",
             sortASC: true,
             center: true,
             render: (row) => `${row.price.toLocaleString()} VNĐ`,
         },
-        { name: "Đơn vị", slug: "unit", sortASC: true, center: true },
+        { name: t("unit"), slug: "unit", sortASC: true, center: true },
         {
-            name: "Số lượng",
+            name: t("quantity"),
             slug: "quantity",
             sortASC: true,
             center: true,
             render: (row) => <span className="font-semibold text-blue-600">{row.quantity}</span>,
         },
         {
-            name: "Thành tiền",
+            name: t("total_price"),
             slug: "totalPrice",
             sortASC: true,
             center: true,
@@ -293,16 +292,16 @@ export default function BillCreate() {
     return (
         <div className="h-full flex flex-col overflow-hidden p-4">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">Tạo Hóa đơn Hàng Tháng</h2>
+                <h2 className="text-2xl font-bold">{t("create_monthly_bill")}</h2>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Form tạo hóa đơn */}
                 <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h3 className="text-lg font-semibold mb-4">Thông tin hóa đơn</h3>
+                    <h3 className="text-lg font-semibold mb-4">{t("bill_information")}</h3>
                     <form onSubmit={handleCreateBill}>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium mb-1">ID Hợp đồng thuê</label>
+                            <label className="block text-sm font-medium mb-1">{t("rental_contract_id")}</label>
                             <div className="flex items-center gap-2">
                                 <input
                                     type="text"
@@ -311,14 +310,14 @@ export default function BillCreate() {
                                     onChange={handleInputChange}
                                     className="w-full border border-gray-300 p-2 rounded"
                                     readOnly
-                                    placeholder="Chưa chọn hợp đồng"
+                                    placeholder={t("no_contract_selected")}
                                 />
                                 <button
                                     type="button"
                                     className="bg-lightGreen text-white px-6 py-2 rounded hover:bg-lightGreenHover whitespace-nowrap"
                                     onClick={() => setIsContractModalOpen(true)}
                                 >
-                                    {formData.rentalContractId ? "Chọn lại" : "Chọn hợp đồng"}
+                                    {formData.rentalContractId ? t("reselect") : t("select_contract")}
                                 </button>
                             </div>
                         </div>
@@ -327,7 +326,7 @@ export default function BillCreate() {
                         {selectedServices.length > 0 && (
                             <div className="mb-4 p-4 bg-gray-50 rounded-lg">
                                 <div className="flex justify-between items-center text-lg font-semibold">
-                                    <span>Tổng tiền:</span>
+                                    <span>{t("total_amount")}:</span>
                                     <span className="text-green-600">{getTotalAmount().toLocaleString()} VNĐ</span>
                                 </div>
                             </div>
@@ -342,14 +341,14 @@ export default function BillCreate() {
                                     setSelectedServices([]);
                                 }}
                             >
-                                Hủy
+                                {t("cancel")}
                             </button>
                             <button
                                 type="submit"
                                 className="bg-lightGreen text-white px-4 py-2 rounded hover:bg-lightGreenHover"
                                 disabled={!formData.rentalContractId || selectedServices.length === 0}
                             >
-                                Tạo Hóa đơn
+                                {t("create_bill")}
                             </button>
                         </div>
                     </form>
@@ -358,14 +357,14 @@ export default function BillCreate() {
                 {/* Bảng dịch vụ đã chọn */}
                 <div className="bg-white p-6 rounded-lg shadow-md">
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold">Dịch vụ đã chọn</h3>
+                        <h3 className="text-lg font-semibold">{t("selected_services")}</h3>
                         <button
                             type="button"
                             className="bg-lightGreen text-white px-4 py-2 rounded hover:bg-lightGreenHover"
                             onClick={() => setIsServiceModalOpen(true)}
                             disabled={!formData.rentalContractId}
                         >
-                            {selectedServices.length > 0 ? "Cập nhật dịch vụ" : "Chọn dịch vụ"}
+                            {selectedServices.length > 0 ? t("update_services") : t("select_services")}
                         </button>
                     </div>
 
@@ -382,17 +381,15 @@ export default function BillCreate() {
                                         className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-sm"
                                         onClick={() => handleRemoveService(row.id)}
                                     >
-                                        Xóa
+                                        {t("remove")}
                                     </button>
                                 )}
                             />
                         </div>
                     ) : (
                         <div className="text-center py-8 text-gray-500">
-                            <p>Chưa có dịch vụ nào được chọn</p>
-                            {!formData.rentalContractId && (
-                                <p className="text-sm mt-2">Vui lòng chọn hợp đồng trước</p>
-                            )}
+                            <p>{t("no_services_selected")}</p>
+                            {!formData.rentalContractId && <p className="text-sm mt-2">{t("please_select_contract_first")}</p>}
                         </div>
                     )}
                 </div>
@@ -402,7 +399,7 @@ export default function BillCreate() {
             {isContractModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-md w-full max-w-6xl max-h-[90vh] overflow-y-auto">
-                        <h3 className="text-xl font-bold mb-4">Chọn Hợp đồng</h3>
+                        <h3 className="text-xl font-bold mb-4">{t("select_contract")}</h3>
                         <DynamicTable
                             headers={contractTableHeaders}
                             data={contracts}
@@ -414,7 +411,7 @@ export default function BillCreate() {
                                     className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
                                     onClick={() => handleSelectContract(row.id.toString())}
                                 >
-                                    Chọn
+                                    {t("select")}
                                 </button>
                             )}
                         />
@@ -424,7 +421,7 @@ export default function BillCreate() {
                                 className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
                                 onClick={() => setIsContractModalOpen(false)}
                             >
-                                Đóng
+                                {t("close")}
                             </button>
                         </div>
                     </div>
@@ -435,7 +432,7 @@ export default function BillCreate() {
             {isServiceModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-md w-full max-w-6xl max-h-[90vh] overflow-y-auto">
-                        <h3 className="text-xl font-bold mb-4">Chọn Dịch vụ</h3>
+                        <h3 className="text-xl font-bold mb-4">{t("select_services")}</h3>
                         <DynamicTable
                             headers={serviceTableHeaders}
                             data={services}
@@ -447,7 +444,7 @@ export default function BillCreate() {
                                 className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
                                 onClick={() => setIsServiceModalOpen(false)}
                             >
-                                Đóng
+                                {t("close")}
                             </button>
                             <button
                                 type="button"
@@ -455,7 +452,7 @@ export default function BillCreate() {
                                 onClick={() => setIsServiceModalOpen(false)}
                                 disabled={selectedServices.length === 0}
                             >
-                                Xác nhận
+                                {t("confirm")}
                             </button>
                         </div>
                     </div>

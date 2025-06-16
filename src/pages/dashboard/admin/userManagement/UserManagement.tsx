@@ -6,6 +6,7 @@ import { envVar } from "../../../../utils/EnvironmentVariables.ts";
 import { NoticeType } from "../../../../types/Context.ts";
 import { useNotice } from "../../../../hook/useNotice.ts";
 import { useLoading } from "../../../../contexts/LoadingContext.tsx";
+import { useTranslation } from "react-i18next";
 
 export default function UserManagement() {
     const [users, setUsers] = useState<UserManagementDTO[]>([]);
@@ -22,6 +23,7 @@ export default function UserManagement() {
     });
     const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
     const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+    const { t } = useTranslation();
 
     useEffect(() => {
         handleGetUsers();
@@ -36,12 +38,12 @@ export default function UserManagement() {
             if (response.status === 200 && response.data.status === "success") {
                 setUsers(response.data.data);
             } else {
-                setMessage(response.data.message || "Không thể lấy danh sách người dùng");
+                setMessage(response.data.message || t("cannot_fetch_users"));
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
             const axiosError = error as AxiosError<{ message?: string }>;
-            setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
+            setMessage(axiosError.response?.data?.message || t("unknown_error"));
             setType(NoticeType.ERROR);
         } finally {
             setApiLoading(false);
@@ -52,34 +54,34 @@ export default function UserManagement() {
         const { email, username, fullname, phone, role } = formData;
 
         if (!email || !username || !fullname || !role) {
-            setMessage("Vui lòng điền đầy đủ thông tin bắt buộc (Email, Tên đăng nhập, Họ và tên, Vai trò)");
+            setMessage(t("please_fill_required_fields"));
             setType(NoticeType.ERROR);
             return false;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            setMessage("Email không hợp lệ");
+            setMessage(t("invalid_email"));
             setType(NoticeType.ERROR);
             return false;
         }
 
         const usernameRegex = /^[a-zA-Z0-9_]+$/;
         if (!usernameRegex.test(username)) {
-            setMessage("Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới");
+            setMessage(t("invalid_username"));
             setType(NoticeType.ERROR);
             return false;
         }
 
         if (phone && !/^\d{10,11}$/.test(phone)) {
-            setMessage("Số điện thoại phải có 10 hoặc 11 chữ số");
+            setMessage(t("invalid_phone_number"));
             setType(NoticeType.ERROR);
             return false;
         }
 
         const parsedRole = parseInt(role);
         if (isNaN(parsedRole) || ![0, 1].includes(parsedRole)) {
-            setMessage("Vai trò phải là Người dùng (0) hoặc Admin (1)");
+            setMessage(t("invalid_role"));
             setType(NoticeType.ERROR);
             return false;
         }
@@ -111,7 +113,7 @@ export default function UserManagement() {
     const handleDeleteUser = (id: string) => {
         const user = users.find((u) => u.id.toString() === id);
         if (user && user.totalRentalContracts > 0) {
-            setMessage("Không thể xóa người dùng có hợp đồng thuê đang hoạt động");
+            setMessage(t("cannot_delete_user_with_contracts"));
             setType(NoticeType.ERROR);
             return;
         }
@@ -127,16 +129,16 @@ export default function UserManagement() {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             if (response.status === 200 && response.data.status === "success") {
-                setMessage("Xóa người dùng thành công");
+                setMessage(t("user_deleted_success"));
                 setType(NoticeType.SUCCESS);
                 handleGetUsers();
             } else {
-                setMessage(response.data.message || "Xóa người dùng thất bại");
+                setMessage(response.data.message || t("user_delete_failed"));
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
             const axiosError = error as AxiosError<{ message?: string }>;
-            setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
+            setMessage(axiosError.response?.data?.message || t("unknown_error"));
             setType(NoticeType.ERROR);
         } finally {
             setApiLoading(false);
@@ -176,24 +178,24 @@ export default function UserManagement() {
             }
 
             if (response.status === 200 && response.data.status === "success") {
-                setMessage(editingUser ? "Cập nhật người dùng thành công" : "Thêm người dùng thành công");
+                setMessage(editingUser ? t("user_updated_success") : t("user_added_success"));
                 setType(NoticeType.SUCCESS);
                 setIsModalOpen(false);
                 setFormData({ email: "", username: "", fullname: "", phone: "", role: "0" });
                 handleGetUsers();
             } else {
-                setMessage(response.data.message || "Thao tác thất bại");
+                setMessage(response.data.message || t("operation_failed"));
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
             const axiosError = error as AxiosError<{ message?: string }>;
             const errorMessage = axiosError.response?.data?.message;
             if (errorMessage === "userNameExists") {
-                setMessage("Tên đăng nhập đã tồn tại");
+                setMessage(t("username_exists"));
             } else if (errorMessage === "emailExists") {
-                setMessage("Email đã tồn tại");
+                setMessage(t("email_exists"));
             } else {
-                setMessage(errorMessage || "Đã có lỗi xảy ra");
+                setMessage(errorMessage || t("unknown_error"));
             }
             setType(NoticeType.ERROR);
         } finally {
@@ -213,22 +215,22 @@ export default function UserManagement() {
     };
 
     const tableHeaders: TableHeader<UserManagementDTO>[] = [
-        { name: "Email", slug: "email", sortASC: true, center: true },
-        { name: "Tên đăng nhập", slug: "username", sortASC: true, center: true },
-        { name: "Họ và tên", slug: "fullname", sortASC: true, center: true },
-        { name: "Số điện thoại", slug: "phone", sortASC: true, center: true },
-        { name: "Số hợp đồng thuê", slug: "totalRentalContracts", sortASC: true, center: true },
+        { name: t("email"), slug: "email", sortASC: true, center: true },
+        { name: t("username"), slug: "username", sortASC: true, center: true },
+        { name: t("fullname"), slug: "fullname", sortASC: true, center: true },
+        { name: t("phone"), slug: "phone", sortASC: true, center: true },
+        { name: t("total_rental_contracts"), slug: "totalRentalContracts", sortASC: true, center: true },
     ];
 
     return (
         <div className="h-full flex flex-col overflow-hidden p-4">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">Quản lý Người dùng</h2>
+                <h2 className="text-2xl font-bold">{t("user_management")}</h2>
                 <button
                     className="bg-lightGreen text-white px-4 py-2 rounded hover:bg-green-600"
                     onClick={handleAddUser}
                 >
-                    Thêm Người dùng
+                    {t("add_user")}
                 </button>
             </div>
             <DynamicTable
@@ -243,11 +245,11 @@ export default function UserManagement() {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-md w-full max-w-md">
                         <h3 className="text-xl font-bold mb-4">
-                            {editingUser ? "Sửa Người dùng" : "Thêm Người dùng"}
+                            {editingUser ? t("edit_user") : t("add_user")}
                         </h3>
                         <form onSubmit={handleFormSubmit}>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Email</label>
+                                <label className="block text-sm font-medium mb-1">{t("email")}</label>
                                 <input
                                     type="email"
                                     name="email"
@@ -258,7 +260,7 @@ export default function UserManagement() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Tên đăng nhập</label>
+                                <label className="block text-sm font-medium mb-1">{t("username")}</label>
                                 <input
                                     type="text"
                                     name="username"
@@ -269,7 +271,7 @@ export default function UserManagement() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Họ và tên</label>
+                                <label className="block text-sm font-medium mb-1">{t("fullname")}</label>
                                 <input
                                     type="text"
                                     name="fullname"
@@ -280,7 +282,7 @@ export default function UserManagement() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Số điện thoại</label>
+                                <label className="block text-sm font-medium mb-1">{t("phone")}</label>
                                 <input
                                     type="text"
                                     name="phone"
@@ -290,7 +292,7 @@ export default function UserManagement() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Vai trò</label>
+                                <label className="block text-sm font-medium mb-1">{t("role")}</label>
                                 <select
                                     name="role"
                                     value={formData.role}
@@ -298,8 +300,8 @@ export default function UserManagement() {
                                     className="w-full border border-gray-300 p-2 rounded"
                                     required
                                 >
-                                    <option value="0">Người dùng</option>
-                                    <option value="1">Admin</option>
+                                    <option value="0">{t("user")}</option>
+                                    <option value="1">{t("admin")}</option>
                                 </select>
                             </div>
                             <div className="flex justify-end gap-2">
@@ -308,13 +310,13 @@ export default function UserManagement() {
                                     className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
                                     onClick={handleCloseModal}
                                 >
-                                    Hủy
+                                    {t("cancel")}
                                 </button>
                                 <button
                                     type="submit"
                                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                                 >
-                                    {editingUser ? "Cập nhật" : "Thêm"}
+                                    {editingUser ? t("update") : t("add")}
                                 </button>
                             </div>
                         </form>
@@ -324,22 +326,22 @@ export default function UserManagement() {
             {isConfirmDeleteModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-md w-full max-w-md">
-                        <h3 className="text-xl font-bold mb-4">Xác nhận xóa</h3>
-                        <p className="mb-4">Bạn có chắc chắn muốn xóa người dùng này không?</p>
+                        <h3 className="text-xl font-bold mb-4">{t("confirm_delete")}</h3>
+                        <p className="mb-4">{t("confirm_delete_user_message")}</p>
                         <div className="flex justify-end gap-2">
                             <button
                                 type="button"
                                 className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
                                 onClick={handleCancelDelete}
                             >
-                                Không
+                                {t("no")}
                             </button>
                             <button
                                 type="button"
                                 className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                                 onClick={confirmDeleteUser}
                             >
-                                Có
+                                {t("yes")}
                             </button>
                         </div>
                     </div>

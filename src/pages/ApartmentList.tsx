@@ -7,7 +7,7 @@ import {
     MdKeyboardArrowLeft,
     MdKeyboardArrowRight,
     MdKeyboardDoubleArrowLeft,
-    MdKeyboardDoubleArrowRight
+    MdKeyboardDoubleArrowRight,
 } from "react-icons/md";
 import { ApartmentListItem } from "../types/Apartment.ts";
 import SkeletonApartmentItem from "../components/skeleton-loading/SkeletonApartmentItem.tsx";
@@ -16,6 +16,7 @@ import { useSearchParams } from "react-router-dom";
 import { useNotice } from "../hook/useNotice.ts";
 import { NoticeType } from "../types/Context.ts";
 import { debounce } from "../utils/Debounce.ts";
+import { useTranslation } from "react-i18next";
 
 export default function ApartmentList() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -37,8 +38,8 @@ export default function ApartmentList() {
     const [loading, setLoading] = useState(true);
     const abortControllerRef = useRef<AbortController | null>(null);
     const { setMessage, setType } = useNotice();
+    const { t } = useTranslation();
 
-    // Khởi tạo giá trị tìm kiếm từ query params
     useEffect(() => {
         setNameSearch(name);
         setTypeSearch(type);
@@ -52,17 +53,15 @@ export default function ApartmentList() {
         }
     }, [name, type, bedroom, priceMin, priceMax]);
 
-    // Cập nhật query params khi thay đổi bộ lọc
     useEffect(() => {
         handleSetSearchParams();
     }, [nameSearch, typeSearch, bedroomSearch, priceSearch]);
 
-    // Gọi API khi query params thay đổi (dùng debounce để giảm tần suất gọi)
     const debouncedFetchApartments = useMemo(() => {
         return debounce(() => {
             handleGetApartments();
         }, 300);
-    }, [searchParams]); // Dependency là searchParams
+    }, [searchParams]);
 
     useEffect(() => {
         debouncedFetchApartments();
@@ -122,7 +121,7 @@ export default function ApartmentList() {
                     bedroom,
                     priceMin,
                     priceMax,
-                    sort
+                    sort,
                 }).filter(([, v]) => v !== "")
             ).toString();
 
@@ -138,18 +137,18 @@ export default function ApartmentList() {
             console.log("Raw response:", text);
 
             if (!response.ok) {
-                throw new Error(`Lỗi HTTP! trạng thái: ${response.status}`);
+                throw new Error(t("http_error") + `: ${response.status}`);
             }
 
             const data = JSON.parse(text);
             if (data.status === "success" && data.statusCode === 200) {
                 setPages(data.data);
             } else {
-                throw new Error("Dữ liệu phản hồi không hợp lệ");
+                throw new Error(t("invalid_response_data"));
             }
         } catch (error) {
             setType(NoticeType.ERROR);
-            setMessage(`Đang có lỗi xảy ra: ${error}`);
+            setMessage(t("error_occurred") + `: ${error}`);
         } finally {
             setLoading(false);
         }
@@ -164,7 +163,7 @@ export default function ApartmentList() {
 
     const handleShowPage = () => {
         const startPage = Math.max(1, currentPage - 1);
-        const endPage = Math.min(currentPage + 1, (pages?.totalPages || currentPage));
+        const endPage = Math.min(currentPage + 1, pages?.totalPages || currentPage);
         setPageArray(Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index));
     };
 
@@ -181,17 +180,17 @@ export default function ApartmentList() {
                 newPage = currentPage + 1;
                 break;
             case 2:
-                newPage = (pages?.totalPages || currentPage);
+                newPage = pages?.totalPages || currentPage;
                 break;
             default:
-                newPage = (pageNumber ?? 1);
+                newPage = pageNumber ?? 1;
                 break;
         }
 
         const currentParams = Object.fromEntries(searchParams.entries());
         const updateParams = {
             ...currentParams,
-            page: newPage.toString()
+            page: newPage.toString(),
         };
         setSearchParams(updateParams);
     };
@@ -212,32 +211,32 @@ export default function ApartmentList() {
                 />
 
                 <div className="flex items-center justify-between w-full border-t border-lightGray mt-8 pt-8">
-                    <p className="text-xl">{pages?.totalElements || 0} kết quả</p>
+                    <p className="text-xl">{pages?.totalElements || 0} {t("results")}</p>
                     <div className="border outline-none border-darkGray rounded py-4 lg:py-2 px-4">
                         <select
                             className="outline-none pr-2 text-darkGray select-none cursor-pointer"
                             value={sort}
                             onChange={(e) => setSearchParams({ ...Object.fromEntries(searchParams.entries()), sort: e.target.value })}
                         >
-                            <option value="" disabled>Sắp xếp</option>
-                            <option value="asc">Giá tăng dần</option>
-                            <option value="desc">Giá giảm dần</option>
+                            <option value="" disabled>{t("sort_by")}</option>
+                            <option value="asc">{t("price_ascending")}</option>
+                            <option value="desc">{t("price_descending")}</option>
                         </select>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-6 gap-y-12 mt-6 justify-between">
                     {loading ? (
-                        Array(6).fill(0).map((_, index) => (
-                            <SkeletonApartmentItem key={index} />
-                        ))
+                        Array(6)
+                            .fill(0)
+                            .map((_, index) => <SkeletonApartmentItem key={index} />)
                     ) : apartments.length > 0 ? (
                         apartments.map((apartment: ApartmentListItem) => (
                             <ApartmentItem key={apartment.id || apartment.slug} apartment={apartment} />
                         ))
                     ) : (
                         <div>
-                            <p>Không có kết quả phù hợp</p>
+                            <p>{t("no_results")}</p>
                         </div>
                     )}
                 </div>
@@ -245,33 +244,48 @@ export default function ApartmentList() {
                 {pages?.totalElements ? (
                     <div className="flex flex-wrap mt-8 gap-3 md:gap-6 mx-auto w-fit select-none">
                         <MdKeyboardDoubleArrowLeft
-                            className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2
-                                ${currentPage === 1 ? "text-lightGray border-lightGray pointer-events-none" : "text-lightGreen border-lightGreen cursor-pointer hover:bg-lightGreen hover:text-white duration-300 ease-in-out"}`}
+                            className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2 ${
+                                currentPage === 1
+                                    ? "text-lightGray border-lightGray pointer-events-none"
+                                    : "text-lightGreen border-lightGreen cursor-pointer hover:bg-lightGreen hover:text-white duration-300 ease-in-out"
+                            }`}
                             onClick={() => handleChangePage(-2, 0)}
                         />
                         <MdKeyboardArrowLeft
-                            className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2
-                                ${currentPage === 1 ? "text-lightGray border-lightGray pointer-events-none" : "text-lightGreen border-lightGreen cursor-pointer hover:bg-lightGreen hover:text-white duration-300 ease-in-out"}`}
+                            className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2 ${
+                                currentPage === 1
+                                    ? "text-lightGray border-lightGray pointer-events-none"
+                                    : "text-lightGreen border-lightGreen cursor-pointer hover:bg-lightGreen hover:text-white duration-300 ease-in-out"
+                            }`}
                             onClick={() => handleChangePage(-1, 0)}
                         />
                         {pageArray.map((pageNumber: number) => (
                             <span
                                 key={pageNumber}
-                                className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-xl md:text-2xl border-2 text-center
-                                ${currentPage === pageNumber ? "text-white border-lightGreen bg-lightGreen pointer-events-none" : "text-lightGreen border-lightGreen cursor-pointer hover:bg-lightGreen hover:text-white duration-300 ease-in-out"}`}
+                                className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-xl md:text-2xl border-2 text-center ${
+                                    currentPage === pageNumber
+                                        ? "text-white border-lightGreen bg-lightGreen pointer-events-none"
+                                        : "text-lightGreen border-lightGreen cursor-pointer hover:bg-lightGreen hover:text-white duration-300 ease-in-out"
+                                }`}
                                 onClick={() => handleChangePage(0, pageNumber)}
                             >
                                 {pageNumber}
                             </span>
                         ))}
                         <MdKeyboardArrowRight
-                            className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2
-                                ${currentPage === pages?.totalPages ? "text-lightGray border-lightGray pointer-events-none" : "text-lightGreen border-lightGreen cursor-pointer hover:bg-lightGreen hover:text-white duration-300 ease-in-out"}`}
+                            className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2 ${
+                                currentPage === pages?.totalPages
+                                    ? "text-lightGray border-lightGray pointer-events-none"
+                                    : "text-lightGreen border-lightGreen cursor-pointer hover:bg-lightGreen hover:text-white duration-300 ease-in-out"
+                            }`}
                             onClick={() => handleChangePage(1, 0)}
                         />
                         <MdKeyboardDoubleArrowRight
-                            className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2
-                                ${currentPage === pages?.totalPages ? "text-lightGray border-lightGray pointer-events-none" : "text-lightGreen border-lightGreen cursor-pointer hover:bg-lightGreen hover:text-white duration-300 ease-in-out"}`}
+                            className={`w-[30px] h-[30px] md:w-[36px] md:h-[36px] text-3xl md:text-4xl border-2 ${
+                                currentPage === pages?.totalPages
+                                    ? "text-lightGray border-lightGray pointer-events-none"
+                                    : "text-lightGreen border-lightGreen cursor-pointer hover:bg-lightGreen hover:text-white duration-300 ease-in-out"
+                            }`}
                             onClick={() => handleChangePage(2, 0)}
                         />
                     </div>

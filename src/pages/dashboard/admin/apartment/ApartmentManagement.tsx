@@ -7,19 +7,21 @@ import axios, { AxiosError } from "axios";
 import { envVar } from "../../../../utils/EnvironmentVariables.ts";
 import { Link } from "react-router-dom";
 import { getToken } from "../../../../utils/TokenUtils.ts";
+import { useTranslation } from "react-i18next";
 
 export default function ApartmentManagement() {
     const [apartments, setApartments] = useState<ApartmentManagementType[]>([]);
     const { setMessage, setType } = useNotice();
     const [loading, setLoading] = useState(false);
     const token = getToken();
+    const { t } = useTranslation();
 
     const headers: TableHeader<ApartmentManagementType>[] = [
-        { name: "Phòng số", slug: "name", sortASC: true },
-        { name: "Giá (VNĐ)", slug: "price", isCurrency: true, sortASC: true },
-        { name: "Loại phòng", slug: "type" },
-        { name: "Trạng thái", slug: "status" },
-        { name: "Người thuê", slug: "user", sortASC: true },
+        { name: t("room_number"), slug: "name", sortASC: true },
+        { name: t("price_vnd"), slug: "price", isCurrency: true, sortASC: true },
+        { name: t("room_type"), slug: "type" },
+        { name: t("status"), slug: "status" },
+        { name: t("tenant"), slug: "user", sortASC: true },
     ];
 
     useEffect(() => {
@@ -37,31 +39,23 @@ export default function ApartmentManagement() {
                     ...a,
                     price: a.price,
                     name: (
-                        <Link
-                            to={`/dashboard/apartment-management/${a.slug}`}
-                            className="underline text-blue-500"
-                            data-sort={a.name}
-                        >
+                        <Link to={`/dashboard/apartment-management/${a.slug}`} className="underline text-blue-500" data-sort={a.name}>
                             {a.name}
                         </Link>
                     ),
                     user: a.userEmail ? (
-                        <Link
-                            to={`/users/${a.userEmail}`}
-                            className="underline text-blue-500"
-                            data-sort={a.user}
-                        >
+                        <Link to={`/users/${a.userEmail}`} className="underline text-blue-500" data-sort={a.user}>
                             {a.user}
                         </Link>
                     ) : (
-                        "Chưa có"
+                        t("no_tenant")
                     ),
                 }));
                 setApartments(apartmentsNormalize);
             }
         } catch (error: unknown) {
             const axiosError = error as AxiosError<{ message?: string }>;
-            setMessage(axiosError.response?.data?.message || "Không thể lấy danh sách căn hộ");
+            setMessage(axiosError.response?.data?.message || t("cannot_fetch_apartments"));
             setType(NoticeType.ERROR);
         } finally {
             setLoading(false);
@@ -77,11 +71,11 @@ export default function ApartmentManagement() {
             if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
                 setApartments((prev) => prev.filter((a) => a.id !== Number(id)));
                 setType(NoticeType.SUCCESS);
-                setMessage("Xóa căn hộ thành công");
+                setMessage(t("apartment_deleted_success"));
             }
         } catch (error: unknown) {
             const axiosError = error as AxiosError<{ message?: string }>;
-            setMessage(axiosError.response?.data?.message || "Không thể xóa căn hộ");
+            setMessage(axiosError.response?.data?.message || t("cannot_delete_apartment"));
             setType(NoticeType.ERROR);
         } finally {
             setLoading(false);
@@ -89,7 +83,7 @@ export default function ApartmentManagement() {
     };
 
     if (loading) {
-        return <div className="flex justify-center items-center h-full">Đang tải...</div>;
+        return <div className="flex justify-center items-center h-full">{t("loading")}...</div>;
     }
 
     return (
@@ -98,14 +92,9 @@ export default function ApartmentManagement() {
                 to="/dashboard/apartment-management/add"
                 className="lg:ml-auto mb-4 bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
             >
-                Thêm căn hộ
+                {t("add_apartment")}
             </Link>
-            <DynamicTable
-                headers={headers}
-                data={apartments}
-                hasActionColumn={true}
-                onDelete={handleDeleteApartment}
-            />
+            <DynamicTable headers={headers} data={apartments} hasActionColumn={true} onDelete={handleDeleteApartment} />
         </div>
     );
 }
