@@ -39,7 +39,7 @@ export default function DashBoardUserLayout() {
                             className="lg:hidden absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-30 z-[60]"
                             onClick={() => setShowSidebar(!showSidebar)}
                         >
-                            <div className="absolute bg-white top-0 right-0 bottom-0" onClick={(e) => e.stopPropagation()}>
+                            <div className="absolute w-2/3 bg-white top-0 right-0 bottom-0" onClick={(e) => e.stopPropagation()}>
                                 <div className="ml-auto p-2 w-fit" onClick={() => setShowSidebar(!showSidebar)}>
                                     <IoClose className="text-2xl" />
                                 </div>

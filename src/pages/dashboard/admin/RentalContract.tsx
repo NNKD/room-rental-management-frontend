@@ -407,9 +407,9 @@ export default function RentalContract() {
     return (
         <div className="h-full flex flex-col overflow-hidden p-4">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">{t("rental_contract_management")}</h2>
+                {/*<h2 className="text-2xl font-bold">{t("rental_contract_management")}</h2>*/}
                 <button
-                    className="bg-lightGreen text-white px-4 py-2 rounded hover:bg-green-600"
+                    className="lg:ml-auto bg-lightGreen text-black font-bold px-4 py-2 rounded hover:bg-green-600"
                     onClick={handleAddContract}
                 >
                     {t("add_contract")}
@@ -425,7 +425,7 @@ export default function RentalContract() {
             />
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-md w-full max-w-md">
+                    <div className="bg-white p-6 rounded-md w-full max-w-md h-[90vh] overflow-y-auto">
                         <h3 className="text-xl font-bold mb-4">{editingContract ? t("edit_contract") : t("add_contract")}</h3>
                         <form onSubmit={handleFormSubmit}>
                             {editingContract && (
@@ -551,7 +551,7 @@ export default function RentalContract() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                    className=" bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
                                 >
                                     {editingContract ? t("update") : t("add")}
                                 </button>

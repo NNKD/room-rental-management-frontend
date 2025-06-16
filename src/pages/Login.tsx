@@ -168,13 +168,15 @@ export default function Login() {
                             />
                         </div>
 
-                        <button
-                            type="submit"
-                            className="w-full bg-pink-500 text-white py-2 rounded-full font-semibold hover:bg-pink-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? t("logging_in") : t("login")}
-                        </button>
+                        <div className="mx-auto w-fit">
+                            <button
+                                type="submit"
+                                className="mx-auto bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? t("logging_in") : t("login")}
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>

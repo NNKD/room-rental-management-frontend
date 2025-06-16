@@ -301,7 +301,7 @@ export default function BillCreate() {
                     <h3 className="text-lg font-semibold mb-4">{t("bill_information")}</h3>
                     <form onSubmit={handleCreateBill}>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium mb-1">{t("rental_contract_id")}</label>
+                            <label className="text-left mb-4 block text-sm font-medium mb-1">{t("rental_contract_id")}</label>
                             <div className="flex items-center gap-2">
                                 <input
                                     type="text"
@@ -314,7 +314,7 @@ export default function BillCreate() {
                                 />
                                 <button
                                     type="button"
-                                    className="bg-lightGreen text-white px-6 py-2 rounded hover:bg-lightGreenHover whitespace-nowrap"
+                                    className="bg-lightGreen text-black font-bold px-6 py-2 rounded hover:bg-lightGreenHover whitespace-nowrap"
                                     onClick={() => setIsContractModalOpen(true)}
                                 >
                                     {formData.rentalContractId ? t("reselect") : t("select_contract")}
@@ -345,7 +345,7 @@ export default function BillCreate() {
                             </button>
                             <button
                                 type="submit"
-                                className="bg-lightGreen text-white px-4 py-2 rounded hover:bg-lightGreenHover"
+                                className="bg-lightGreen text-black font-bold px-4 py-2 rounded hover:bg-lightGreenHover"
                                 disabled={!formData.rentalContractId || selectedServices.length === 0}
                             >
                                 {t("create_bill")}
@@ -360,7 +360,7 @@ export default function BillCreate() {
                         <h3 className="text-lg font-semibold">{t("selected_services")}</h3>
                         <button
                             type="button"
-                            className="bg-lightGreen text-white px-4 py-2 rounded hover:bg-lightGreenHover"
+                            className="bg-lightGreen text-black font-bold px-4 py-2 rounded hover:bg-lightGreenHover"
                             onClick={() => setIsServiceModalOpen(true)}
                             disabled={!formData.rentalContractId}
                         >
