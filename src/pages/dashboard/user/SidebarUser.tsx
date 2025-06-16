@@ -29,6 +29,9 @@ export default function SidebarUser() {
             <div onClick={() => navigate("account")}>
                 <SidebarItem title={"Quản lý tài khoản"} Icon={FaGear} path={"account"}/>
             </div>
+            <div onClick={() => navigate("change-pass")}>
+                <SidebarItem title={"Đổi mật khẩu"} Icon={FaGear} path={"change-pass"}/>
+            </div>
 
             <div onClick={logout}>
                 <SidebarItem title={"Đăng xuất"} Icon={FaSignOutAlt} />
