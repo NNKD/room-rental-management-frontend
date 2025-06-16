@@ -18,7 +18,15 @@ export default function Sidebar() {
     const [showUserManagement, setShowUserManagement] = useState(false);
     const { logout } = useAuth();
     const navigate = useNavigate();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+
+    const toggleLanguage = () => {
+        const newLang = i18n.language === "vi" ? "en" : "vi";
+        console.log("Changing language to:", newLang);
+        i18n.changeLanguage(newLang, (err) => {
+            if (err) console.error("Error changing language:", err);
+        });
+    };
 
     return (
         <div className="w-full lg:w-1/5 h-screen p-1 select-none overflow-y-auto">
@@ -35,16 +43,12 @@ export default function Sidebar() {
                     </div>
                 </div>
             )}
-
             <div onClick={() => navigate("/dashboard/apartment-price-service")}>
                 <SidebarItem title={t("service_management")} Icon={MdOutlineWorkspacePremium} path={"apartment-price-service"} />
             </div>
-
-
             <div onClick={() => navigate("/dashboard/rental-contract")}>
                 <SidebarItem title={t("rental_contract")} Icon={FaFileContract} path={"rental-contract"} />
             </div>
-
             <div onClick={() => setShowBillSubMenu(!showBillSubMenu)}>
                 <SidebarItem title={t("bill_management")} Icon={FaFileInvoiceDollar} isShowSubMenu={showBillSubMenu} />
             </div>
@@ -58,9 +62,6 @@ export default function Sidebar() {
                     </div>
                 </div>
             )}
-
-
-
             <div onClick={() => setShowUserManagement(!showUserManagement)}>
                 <SidebarItem title={t("account_management")} Icon={FaGear} isShowSubMenu={showUserManagement} />
             </div>
@@ -74,9 +75,16 @@ export default function Sidebar() {
                     </div>
                 </div>
             )}
-
             <div onClick={logout}>
                 <SidebarItem title={t("logout")} Icon={FaSignOutAlt} />
+            </div>
+            <div className="mt-4">
+                <button
+                    className="w-full px-4 py-2 text-base font-semibold text-white bg-blue-600 rounded-full hover:bg-blue-700 transition duration-200 shadow-lg"
+                    onClick={toggleLanguage}
+                >
+                    {i18n.language === "vi" ? "VN" : "EN"}
+                </button>
             </div>
         </div>
     );
