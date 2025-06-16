@@ -141,23 +141,25 @@ export default function UserBillManagement() {
 
     return (
         <div className="h-full flex flex-col overflow-hidden relative">
-            <h1 className="mb-8 font-bold text-2xl mt-16 lg:mt-0">{t("my_bill_management")}</h1>
+            <h1 className="text-left mb-8 font-bold text-2xl mt-16 lg:mt-0">{t("my_bill_management")}</h1>
             <DynamicTable headers={headers} data={bills} hasActionColumn={false} />
 
             {/* Modal chi tiết hóa đơn */}
             {showModal && selectedBill && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white text-left rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
                         <div className="p-6">
                             {/* Header modal */}
-                            <div className="flex justify-between items-start border-b pb-4">
-                                <h2 className="text-2xl font-bold">{selectedBill.name}</h2>
+                            <div className="ml-auto w-fit mb-4">
                                 <button
                                     onClick={() => setShowModal(false)}
-                                    className="text-gray-500 hover:text-gray-700 text-2xl"
+                                    className="text-gray-500 hover:text-gray-700 text-4xl"
                                 >
                                     ×
                                 </button>
+                            </div>
+                            <div className="flex justify-between items-start border-b pb-4">
+                                <h2 className="text-xl font-bold">{selectedBill.name}</h2>
                             </div>
 
                             {/* Nội dung modal */}

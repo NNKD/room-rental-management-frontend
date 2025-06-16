@@ -233,7 +233,7 @@ export default function BillList() {
     return (
         <div className="h-full flex flex-col overflow-hidden p-4">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">{t("bill_list")}</h2>
+                {/*<h2 className="text-2xl font-bold">{t("bill_list")}</h2>*/}
             </div>
             {bills.length > 0 ? (
                 <DynamicTable

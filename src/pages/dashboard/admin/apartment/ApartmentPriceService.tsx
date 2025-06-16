@@ -190,7 +190,7 @@ export default function ApartmentPriceService() {
         <div className="h-full flex flex-col overflow-hidden p-4">
             <div className="flex justify-end items-center mb-4">
                 <button
-                    className="bg-lightGreen text-black font-bold px-4 py-2 rounded hover:bg-green-600"
+                    className="mr-auto bg-lightGreen text-black font-bold px-4 py-2 rounded hover:bg-green-600"
                     onClick={handleAddService}
                 >
                     {t("add_service")}
@@ -273,7 +273,7 @@ export default function ApartmentPriceService() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                    className="bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
                                 >
                                     {editingService ? t("update") : t("add")}
                                 </button>

@@ -225,9 +225,9 @@ export default function UserManagement() {
     return (
         <div className="h-full flex flex-col overflow-hidden p-4">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">{t("user_management")}</h2>
+                {/*<h2 className="text-2xl font-bold">{t("user_management")}</h2>*/}
                 <button
-                    className="bg-lightGreen text-white px-4 py-2 rounded hover:bg-green-600"
+                    className="bg-lightGreen text-black font-bold px-4 py-2 rounded hover:bg-lightGreenHover"
                     onClick={handleAddUser}
                 >
                     {t("add_user")}
@@ -314,7 +314,7 @@ export default function UserManagement() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                    className="bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
                                 >
                                     {editingUser ? t("update") : t("add")}
                                 </button>

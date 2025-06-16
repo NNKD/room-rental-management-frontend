@@ -40,7 +40,7 @@ export default function DashBoardLayout() {
                             onClick={() => setShowSidebar(!showSidebar)}
                         >
                             <div
-                                className="absolute bg-white top-0 right-0 bottom-0"
+                                className="absolute bg-white w-2/3 top-0 right-0 bottom-0"
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 <div className="ml-auto p-2 w-fit" onClick={() => setShowSidebar(!showSidebar)}>
