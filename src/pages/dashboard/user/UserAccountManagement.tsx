@@ -1,11 +1,10 @@
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useState} from "react";
 import axios, {AxiosError} from "axios";
 import {envVar} from "../../../utils/EnvironmentVariables.ts";
 import {NoticeType} from "../../../types/Context.ts";
 import {useNotice} from "../../../hook/useNotice.ts";
 import {getToken} from "../../../utils/TokenUtils.ts";
 import {useLoading} from "../../../contexts/LoadingContext.tsx";
-import {debounce} from "../../../utils/Debounce.ts";
 
 export default function UserAccountManagement() {
     const [email, setEmail] = useState("")
@@ -20,7 +19,9 @@ export default function UserAccountManagement() {
         handleGetUser()
     }, [])
 
+
     const handleGetUser = async () => {
+        setApiLoading(true);
         try {
             const response = await axios.get(`${envVar.API_URL}/dashboard-user/me/account`, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -36,37 +37,14 @@ export default function UserAccountManagement() {
 
         } catch (error: unknown) {
             const axiosError = error as AxiosError<{ message?: string }>;
-            setMessage(axiosError.response?.data?.message || "Không thể lấy danh sách căn hộ");
+            setMessage(axiosError.response?.data?.message || "Không thể lấy dữ liệu");
             setType(NoticeType.ERROR);
         } finally {
             setApiLoading(false);
         }
     }
 
-    const debounceCheckName = useMemo(() => {
-        return debounce((name: string) => handleUpdateUsername(name), 500)
-    }, [])
 
-    const handleUpdateUsername = async (username: string) => {
-        try {
-            const response = await axios.put(`${envVar.API_URL}/dashboard-user/me/account/update-username`, username,
-            {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
-                setMessage(response.data.data);
-                setType(NoticeType.SUCCESS);
-            }
-
-        } catch (error: unknown) {
-            const axiosError = error as AxiosError<{ message?: string }>;
-            setMessage(axiosError.response?.data?.message || "Không thể lấy danh sách căn hộ");
-            setType(NoticeType.ERROR);
-        } finally {
-            setApiLoading(false);
-        }
-    }
 
     return (
         <div className="text-left">
@@ -75,7 +53,7 @@ export default function UserAccountManagement() {
                 <p className="text-base">Họ tên: {fullname}</p>
                 <p className="text-base">Email: {email}</p>
                 <p className="text-base">Số điện thoại: {phone}</p>
-                <input type="text" value={username} className="w-full outline-none border-none px-2 py-1" onChange={(e) => {setUsername(e.target.value); debounceCheckName(e.target.value)}} />
+                <p className="text-base">Tên đăng nhập: {username}</p>
             </div>
         </div>
     )

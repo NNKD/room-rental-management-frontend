@@ -40,6 +40,7 @@ export default function ChangePass() {
     }
 
     const handleUpdatePass = async () => {
+        setApiLoading(true);
         try {
             const response = await axios.put(`${envVar.API_URL}/dashboard-user/me/account/update-pass`, {
                 pass: pass,
@@ -48,15 +49,18 @@ export default function ChangePass() {
             {
                 headers: { Authorization: `Bearer ${token}` },
             });
-
+            console.log(response.data)
             if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
                 setMessage(response.data.data);
                 setType(NoticeType.SUCCESS);
+            }else {
+                setMessage(response.data.message);
+                setType(NoticeType.ERROR);
             }
 
         } catch (error: unknown) {
             const axiosError = error as AxiosError<{ message?: string }>;
-            setMessage(axiosError.response?.data?.message || "Không thể lấy danh sách căn hộ");
+            setMessage(axiosError.response?.data?.message || "Lỗi xảy ra");
             setType(NoticeType.ERROR);
         } finally {
             setApiLoading(false);
