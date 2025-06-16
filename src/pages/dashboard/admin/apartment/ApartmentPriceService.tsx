@@ -1,11 +1,12 @@
 import DynamicTable from "../../../../components/DynamicTable.tsx";
 import { ApartmentPriceServiceType, ServiceDTO, ServiceType, TableHeader } from "../../../../types/Dashboard.ts";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { envVar } from "../../../../utils/EnvironmentVariables.ts";
 import { NoticeType } from "../../../../types/Context.ts";
 import { formatCurrency } from "../../../../utils/NumberCalculate.ts";
 import { useNotice } from "../../../../hook/useNotice.ts";
+import { getToken } from "../../../../utils/TokenUtils.ts";
 
 export default function ApartmentPriceService() {
     const [services, setServices] = useState<ServiceDTO[]>([]);
@@ -20,16 +21,21 @@ export default function ApartmentPriceService() {
     });
     const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
     const [deletingServiceId, setDeletingServiceId] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const token = getToken();
 
     useEffect(() => {
         handleGetServices();
     }, []);
 
     const handleGetServices = async () => {
+        setLoading(true);
         try {
-            const response = await axios.get(`${envVar.API_URL}/services`);
+            const response = await axios.get(`${envVar.API_URL}/services`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
             if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
-                const serviceNomalize = response.data.data.map((s: ServiceType) => {
+                const serviceNormalize = response.data.data.map((s: ServiceType) => {
                     const rawPrice = Number(s.price);
                     return {
                         ...s,
@@ -37,12 +43,14 @@ export default function ApartmentPriceService() {
                         price: formatCurrency(rawPrice),
                     };
                 });
-                setServices(serviceNomalize);
+                setServices(serviceNormalize);
             }
-        } catch (error) {
-            console.error(error);
-            setMessage("Đã có lỗi xảy ra: " + error);
+        } catch (error: unknown) {
+            const axiosError = error as AxiosError<{ message?: string }>;
+            setMessage(axiosError.response?.data?.message || "Không thể lấy danh sách dịch vụ");
             setType(NoticeType.ERROR);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -74,18 +82,22 @@ export default function ApartmentPriceService() {
 
     const confirmDeleteService = async () => {
         if (!deletingServiceId) return;
+        setLoading(true);
         try {
-            const response = await axios.delete(`${envVar.API_URL}/services/${deletingServiceId}`);
-            if (response.status === 200 && response.data.status === "success") {
+            const response = await axios.delete(`${envVar.API_URL}/services/${deletingServiceId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
                 setMessage("Xóa dịch vụ thành công");
                 setType(NoticeType.SUCCESS);
                 handleGetServices();
             }
-        } catch (error) {
-            console.error(error);
-            setMessage("Đã có lỗi xảy ra: " + error);
+        } catch (error: unknown) {
+            const axiosError = error as AxiosError<{ message?: string }>;
+            setMessage(axiosError.response?.data?.message || "Không thể xóa dịch vụ");
             setType(NoticeType.ERROR);
         } finally {
+            setLoading(false);
             setIsConfirmDeleteModalOpen(false);
             setDeletingServiceId(null);
         }
@@ -119,16 +131,21 @@ export default function ApartmentPriceService() {
             unit: `VNĐ/${unitSuffix}`,
         };
 
+        setLoading(true);
         try {
             if (editingService) {
-                const response = await axios.put(`${envVar.API_URL}/services/${editingService.id}`, payload);
-                if (response.status === 200 && response.data.status === "success") {
+                const response = await axios.put(`${envVar.API_URL}/services/${editingService.id}`, payload, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
                     setMessage("Cập nhật dịch vụ thành công");
                     setType(NoticeType.SUCCESS);
                 }
             } else {
-                const response = await axios.post(`${envVar.API_URL}/services`, payload);
-                if (response.status === 200 && response.data.status === "success") {
+                const response = await axios.post(`${envVar.API_URL}/services`, payload, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
                     setMessage("Thêm dịch vụ thành công");
                     setType(NoticeType.SUCCESS);
                 }
@@ -136,10 +153,12 @@ export default function ApartmentPriceService() {
             setIsModalOpen(false);
             setFormData({ name: "", description: "", price: "", unitSuffix: "" });
             handleGetServices();
-        } catch (error) {
-            console.error(error);
-            setMessage("Đã có lỗi xảy ra: " + error);
+        } catch (error: unknown) {
+            const axiosError = error as AxiosError<{ message?: string }>;
+            setMessage(axiosError.response?.data?.message || "Không thể lưu dịch vụ");
             setType(NoticeType.ERROR);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -151,6 +170,7 @@ export default function ApartmentPriceService() {
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setFormData({ name: "", description: "", price: "", unitSuffix: "" });
+        setEditingService(null);
     };
 
     const tableHeaders: TableHeader<ApartmentPriceServiceType>[] = [
@@ -160,9 +180,13 @@ export default function ApartmentPriceService() {
         { name: "Đơn vị tính", slug: "unit", sortASC: true, center: true },
     ];
 
+    if (loading) {
+        return <div className="flex justify-center items-center h-full">Đang tải...</div>;
+    }
+
     return (
         <div className="h-full flex flex-col overflow-hidden p-4">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-end items-center mb-4">
                 <button
                     className="bg-lightGreen text-black font-bold px-4 py-2 rounded hover:bg-green-600"
                     onClick={handleAddService}
@@ -264,14 +288,14 @@ export default function ApartmentPriceService() {
                         <div className="flex justify-end gap-2">
                             <button
                                 type="button"
-                                className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 bg-lightGreen"
+                                className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
                                 onClick={handleCancelDelete}
                             >
                                 Không
                             </button>
                             <button
                                 type="button"
-                                className="bg-red-500 text-white px-5 py-2  rounded hover:bg-red-600 "
+                                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                                 onClick={confirmDeleteService}
                             >
                                 Có

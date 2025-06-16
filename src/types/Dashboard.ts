@@ -146,17 +146,6 @@ export interface UserManagementDTO {
     totalRentalContracts: number;
 }
 
-export interface RentalContractsDTO {
-    id?: number;
-    name?: string;
-    description?: string;
-    price?: number;
-    status?: string;
-    startDate?: string;
-    endDate?: string;
-    createdAt?: string;
-}
-
 export interface UserApartmentDTO {
     id?: number
     name: ReactNode;
@@ -164,4 +153,37 @@ export interface UserApartmentDTO {
     type: string;
     startDate: string;
     endDate: string;
+}
+
+export interface ServiceDetailDTO {
+    name: string;
+    quantity: number;
+    price: number;
+    totalPrice: number;
+}
+
+export interface BillResponseDTO {
+    id: number;
+    name: string;
+    rentalAmount: number;
+    serviceDetails: ServiceDetailDTO[];
+    totalAmount: number;
+    createdAt: string;
+    dueDate: string;
+    status: string;
+}
+export interface ApartmentDetailDashboardType {
+    id: number;
+    name: string;
+    description: string;
+    price: string; // Đã format bằng formatCurrency
+    type: string;
+    status: string;
+    user: string | null;
+    images: string[];
+    services: {
+        name: string;
+        price: string; // Đã format bằng formatCurrency
+        unit: string;
+    }[];
 }

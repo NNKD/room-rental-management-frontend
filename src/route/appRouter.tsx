@@ -15,9 +15,11 @@ import ForgotPassword from "../pages/FotgotPassword.tsx";
 import Contact from "../pages/Contact.tsx";
 import UserManagement from "../pages/dashboard/admin/userManagement/UserManagement.tsx";
 import AdminManagement from "../pages/dashboard/admin/userManagement/AdminManagement.tsx";
+import RentalContract from "../pages/dashboard/admin/RentalContract.tsx";
+import BillList from "../pages/dashboard/admin/billing/BillList.tsx";
+import BillCreate from "../pages/dashboard/admin/billing/BillCreate.tsx";
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
 import DashBoardUserLayout from "../pages/dashboard/user/DashBoardUserLayout.tsx";
-import RentalContract from "../pages/dashboard/admin/RentalContract.tsx";
 import UserApartmentManagement from "../pages/dashboard/user/UserApartmentManagement.tsx";
 import UserApartmentDetail from "../pages/dashboard/user/UserApartmentDetail.tsx";
 
@@ -97,6 +99,14 @@ export const router = createBrowserRouter([
                     {
                         path: "rental-contract",
                         element: <RentalContract />,
+                    },
+                    {
+                        path: "bill-list",
+                        element: <BillList />,
+                    },
+                    {
+                        path: "bill-create",
+                        element: <BillCreate />,
                     },
                 ],
             },
