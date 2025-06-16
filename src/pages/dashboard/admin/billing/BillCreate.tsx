@@ -7,6 +7,17 @@ import { useLoading } from "../../../../contexts/LoadingContext.tsx";
 import DynamicTable from "../../../../components/DynamicTable.tsx";
 import { TableHeader, RentalContractResponse, ServiceDTO } from "../../../../types/Dashboard.ts";
 
+// Interface cho dịch vụ đã chọn để hiển thị trong bảng
+interface SelectedServiceDisplay {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    unit: string;
+    quantity: number;
+    totalPrice: number;
+}
+
 export default function BillCreate() {
     const [formData, setFormData] = useState({
         rentalContractId: "",
@@ -85,6 +96,29 @@ export default function BillCreate() {
         fetchServices();
     }, []);
 
+    // Tạo dữ liệu cho bảng dịch vụ đã chọn
+    const getSelectedServicesForTable = (): SelectedServiceDisplay[] => {
+        return selectedServices.map((selectedService) => {
+            const service = services.find((s) => s.id === selectedService.id);
+            if (!service) return null;
+
+            return {
+                id: service.id,
+                name: service.name,
+                description: service.description,
+                price: service.price,
+                unit: service.unit,
+                quantity: selectedService.quantity,
+                totalPrice: service.price * selectedService.quantity,
+            };
+        }).filter(Boolean) as SelectedServiceDisplay[];
+    };
+
+    // Tính tổng tiền
+    const getTotalAmount = (): number => {
+        return getSelectedServicesForTable().reduce((total, service) => total + service.totalPrice, 0);
+    };
+
     const handleSelectContract = (id: string) => {
         setFormData((prev) => ({ ...prev, rentalContractId: id }));
         setIsContractModalOpen(false);
@@ -102,6 +136,11 @@ export default function BillCreate() {
             }
             return [...prev, { id: serviceId, quantity }];
         });
+    };
+
+    // Xóa dịch vụ khỏi danh sách đã chọn
+    const handleRemoveService = (serviceId: number) => {
+        setSelectedServices((prev) => prev.filter((s) => s.id !== serviceId));
     };
 
     const handleCreateBill = async (e: React.FormEvent) => {
@@ -206,74 +245,149 @@ export default function BillCreate() {
         },
     ];
 
+    // Headers cho bảng dịch vụ đã chọn
+    const selectedServiceTableHeaders: TableHeader<SelectedServiceDisplay>[] = [
+        { name: "Tên dịch vụ", slug: "name", sortASC: true, center: true },
+        { name: "Mô tả", slug: "description", sortASC: true, center: true },
+        {
+            name: "Đơn giá",
+            slug: "price",
+            sortASC: true,
+            center: true,
+            render: (row) => `${row.price.toLocaleString()} VNĐ`,
+        },
+        { name: "Đơn vị", slug: "unit", sortASC: true, center: true },
+        {
+            name: "Số lượng",
+            slug: "quantity",
+            sortASC: true,
+            center: true,
+            render: (row) => (
+                <span className="font-semibold text-blue-600">{row.quantity}</span>
+            ),
+        },
+        {
+            name: "Thành tiền",
+            slug: "totalPrice",
+            sortASC: true,
+            center: true,
+            render: (row) => (
+                <span className="font-semibold text-green-600">
+                    {row.totalPrice.toLocaleString()} VNĐ
+                </span>
+            ),
+        },
+    ];
+
     return (
         <div className="h-full flex flex-col overflow-hidden p-4">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold">Tạo Hóa đơn Hàng Tháng</h2>
             </div>
-            <form onSubmit={handleCreateBill} className="max-w-md">
-                <div className="mb-4">
-                    <label className="block text-sm font-medium mb-1">ID Hợp đồng thuê</label>
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="text"
-                            name="rentalContractId"
-                            value={formData.rentalContractId}
-                            onChange={handleInputChange}
-                            className="w-full border border-gray-300 p-2 rounded"
-                            readOnly
-                        />
-                        <button
-                            type="button"
-                            className="bg-lightGreen text-white px-6 py-2 rounded hover:bg-lightGreenHover whitespace-nowrap"
-                            onClick={() => setIsContractModalOpen(true)}
-                        >
-                            {formData.rentalContractId ? "Chọn lại hợp đồng" : "Chọn hợp đồng"}
-                        </button>
-                    </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Form tạo hóa đơn */}
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h3 className="text-lg font-semibold mb-4">Thông tin hóa đơn</h3>
+                    <form onSubmit={handleCreateBill}>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium mb-1">ID Hợp đồng thuê</label>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="text"
+                                    name="rentalContractId"
+                                    value={formData.rentalContractId}
+                                    onChange={handleInputChange}
+                                    className="w-full border border-gray-300 p-2 rounded"
+                                    readOnly
+                                    placeholder="Chưa chọn hợp đồng"
+                                />
+                                <button
+                                    type="button"
+                                    className="bg-lightGreen text-white px-6 py-2 rounded hover:bg-lightGreenHover whitespace-nowrap"
+                                    onClick={() => setIsContractModalOpen(true)}
+                                >
+                                    {formData.rentalContractId ? "Chọn lại" : "Chọn hợp đồng"}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Tổng tiền */}
+                        {selectedServices.length > 0 && (
+                            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                                <div className="flex justify-between items-center text-lg font-semibold">
+                                    <span>Tổng tiền:</span>
+                                    <span className="text-green-600">{getTotalAmount().toLocaleString()} VNĐ</span>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="flex justify-end gap-2">
+                            <button
+                                type="button"
+                                className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
+                                onClick={() => {
+                                    setFormData({ rentalContractId: "" });
+                                    setSelectedServices([]);
+                                }}
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                type="submit"
+                                className="bg-lightGreen text-white px-4 py-2 rounded hover:bg-lightGreenHover"
+                                disabled={!formData.rentalContractId || selectedServices.length === 0}
+                            >
+                                Tạo Hóa đơn
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                {selectedServices.length > 0 && (
-                    <div className="mb-4">
-                        <h3 className="text-sm font-medium mb-2">Dịch vụ đã chọn</h3>
-                        <ul className="list-disc pl-5">
-                            {selectedServices.map((s) => {
-                                const service = services.find((srv) => srv.id === s.id);
-                                return service ? (
-                                    <li key={s.id}>
-                                        {service.name}: {s.quantity} {service.unit} (Tổng: {(s.quantity * service.price).toLocaleString()} VNĐ)
-                                    </li>
-                                ) : null;
-                            })}
-                        </ul>
+
+                {/* Bảng dịch vụ đã chọn */}
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold">Dịch vụ đã chọn</h3>
                         <button
                             type="button"
-                            className="bg-lightGreen text-white px-4 py-2 rounded hover:bg-lightGreenHover mt-2"
+                            className="bg-lightGreen text-white px-4 py-2 rounded hover:bg-lightGreenHover"
                             onClick={() => setIsServiceModalOpen(true)}
+                            disabled={!formData.rentalContractId}
                         >
-                            Cập nhật chỉ số dịch vụ
+                            {selectedServices.length > 0 ? "Cập nhật dịch vụ" : "Chọn dịch vụ"}
                         </button>
                     </div>
-                )}
-                <div className="flex justify-end gap-2">
-                    <button
-                        type="button"
-                        className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
-                        onClick={() => {
-                            setFormData({ rentalContractId: "" });
-                            setSelectedServices([]);
-                        }}
-                    >
-                        Hủy
-                    </button>
-                    <button
-                        type="submit"
-                        className="bg-lightGreen text-white px-4 py-2 rounded hover:bg-lightGreenHover"
-                        disabled={!formData.rentalContractId || selectedServices.length === 0}
-                    >
-                        Tạo Hóa đơn
-                    </button>
+
+                    {selectedServices.length > 0 ? (
+                        <div className="overflow-x-auto">
+                            <DynamicTable
+                                headers={selectedServiceTableHeaders}
+                                data={getSelectedServicesForTable()}
+                                hasActionColumn={true}
+                                onDelete={(id) => handleRemoveService(parseInt(id))}
+                                hasEdit={false}
+                                customAction={(row) => (
+                                    <button
+                                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-sm"
+                                        onClick={() => handleRemoveService(row.id)}
+                                    >
+                                        Xóa
+                                    </button>
+                                )}
+                            />
+                        </div>
+                    ) : (
+                        <div className="text-center py-8 text-gray-500">
+                            <p>Chưa có dịch vụ nào được chọn</p>
+                            {!formData.rentalContractId && (
+                                <p className="text-sm mt-2">Vui lòng chọn hợp đồng trước</p>
+                            )}
+                        </div>
+                    )}
                 </div>
-            </form>
+            </div>
+
+            {/* Modal chọn hợp đồng */}
             {isContractModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-md w-full max-w-6xl max-h-[90vh] overflow-y-auto">
@@ -305,6 +419,8 @@ export default function BillCreate() {
                     </div>
                 </div>
             )}
+
+            {/* Modal chọn dịch vụ */}
             {isServiceModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-md w-full max-w-6xl max-h-[90vh] overflow-y-auto">
