@@ -85,6 +85,37 @@ export default function UserBillManagement() {
         }
     };
 
+    const handlePayment = async () => {
+        console.log(selectedBill?.serviceDetails.reduce((sum, service) => sum + service.totalPrice, 0))
+        setApiLoading(true);
+        try {
+            const response = await axios.post(`${envVar.API_URL}/dashboard-user/me/payment`,
+                {
+                    amount: selectedBill?.totalAmount,
+                    order: selectedBill?.id
+                },
+                {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (response.status === 200 && response.data.status === "success") {
+                window.location.href = response.data.data;
+            } else {
+                setMessage("Có lỗi xảy ra");
+                setType(NoticeType.ERROR);
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setMessage(error.response?.data?.message ?? "Không rõ lỗi");
+            } else {
+                setMessage("Đã có lỗi xảy ra không xác định");
+            }
+            console.log(error);
+            setType(NoticeType.ERROR);
+        } finally {
+            setApiLoading(false);
+        }
+    };
+
     // Xử lý khi click vào tên hóa đơn
     const handleBillClick = (bill: BillResponseDTO) => {
         setSelectedBill(bill);
@@ -178,15 +209,15 @@ export default function UserBillManagement() {
                                 </div>
                             </div>
 
-                            {/* Footer modal */}
-                            <div className="mt-6 flex justify-end">
-                                <button
-                                    onClick={() => setShowModal(false)}
-                                    className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
-                                >
-                                    Đóng
-                                </button>
-                            </div>
+                            {selectedBill.status === 'PAID' ? "" : (
+                                <div className="mt-6 flex justify-end">
+                                    <div className="ml-auto bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
+                                         onClick={() => handlePayment()}>
+                                        Thanh toán
+                                    </div>
+                                </div>
+                            )}
+
                         </div>
                     </div>
                 </div>
