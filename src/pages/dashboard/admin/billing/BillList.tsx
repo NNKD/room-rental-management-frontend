@@ -27,23 +27,24 @@ export default function BillList() {
                 headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` },
             });
             console.log("API Response:", response.data);
-            if (response.status === 200) {
-                const data = response.data;
-                console.log("Data to set in bills:", data);
-                setBills(data);
-                if (data.length === 0) {
+            if (response.status === 200 && response.data.status === "success") {
+                setBills(response.data.data || []);
+                if ((response.data.data || []).length === 0) {
                     setMessage("Không có hóa đơn nào");
                     setType(NoticeType.INFO);
                 }
             } else {
-                setMessage("Không thể lấy danh sách hóa đơn");
+                const errorMessage = getErrorMessage(response.data.code) || response.data.message || "Không thể lấy danh sách hóa đơn";
+                setMessage(errorMessage);
                 setType(NoticeType.ERROR);
                 setBills([]);
             }
         } catch (error) {
-            const axiosError = error as AxiosError<{ message?: string }>;
+            const axiosError = error as AxiosError<{ status: string; code?: string; message?: string }>;
             console.error("API Error:", axiosError);
-            setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
+            const errorData = axiosError.response?.data;
+            const errorMessage = getErrorMessage(errorData?.code) || errorData?.message || "Đã có lỗi xảy ra";
+            setMessage(errorMessage);
             setType(NoticeType.ERROR);
             setBills([]);
         } finally {
@@ -70,19 +71,22 @@ export default function BillList() {
                 editingBill,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` } }
             );
-            if (response.status === 200) {
+            if (response.status === 200 && response.data.status === "success") {
                 setMessage("Cập nhật hóa đơn thành công");
                 setType(NoticeType.SUCCESS);
                 setBills(bills.map((bill) => (bill.id === editingBill.id ? editingBill : bill)));
                 setIsEditModalOpen(false);
                 setEditingBill(null);
             } else {
-                setMessage("Cập nhật hóa đơn thất bại");
+                const errorMessage = getErrorMessage(response.data.code) || response.data.message || "Cập nhật hóa đơn thất bại";
+                setMessage(errorMessage);
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
-            const axiosError = error as AxiosError<{ message?: string }>;
-            setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
+            const axiosError = error as AxiosError<{ status: string; code?: string; message?: string }>;
+            const errorData = axiosError.response?.data;
+            const errorMessage = getErrorMessage(errorData?.code) || errorData?.message || "Đã có lỗi xảy ra";
+            setMessage(errorMessage);
             setType(NoticeType.ERROR);
         } finally {
             setApiLoading(false);
@@ -131,17 +135,20 @@ export default function BillList() {
             const response = await axios.delete(`${envVar.API_URL}/dashboard/billing/${deletingBillId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` },
             });
-            if (response.status === 200) {
+            if (response.status === 200 && response.data.status === "success") {
                 setMessage("Xóa hóa đơn thành công");
                 setType(NoticeType.SUCCESS);
                 handleGetBills();
             } else {
-                setMessage("Xóa hóa đơn thất bại");
+                const errorMessage = getErrorMessage(response.data.code) || response.data.message || "Xóa hóa đơn thất bại";
+                setMessage(errorMessage);
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
-            const axiosError = error as AxiosError<{ message?: string }>;
-            setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
+            const axiosError = error as AxiosError<{ status: string; code?: string; message?: string }>;
+            const errorData = axiosError.response?.data;
+            const errorMessage = getErrorMessage(errorData?.code) || errorData?.message || "Đã có lỗi xảy ra";
+            setMessage(errorMessage);
             setType(NoticeType.ERROR);
         } finally {
             setApiLoading(false);
@@ -153,6 +160,22 @@ export default function BillList() {
     const handleCancelDelete = () => {
         setIsConfirmDeleteModalOpen(false);
         setDeletingBillId(null);
+    };
+
+    // Hàm ánh xạ mã lỗi sang thông báo chuẩn hóa
+    const getErrorMessage = (code?: string): string | undefined => {
+        switch (code) {
+            case "invalidInput":
+                return "Dữ liệu đầu vào không hợp lệ";
+            case "invalidContract":
+                return "Hợp đồng không tồn tại";
+            case "paymentNotFound":
+                return "Hóa đơn không tồn tại";
+            case "serverError":
+                return "Lỗi server, vui lòng thử lại sau";
+            default:
+                return undefined;
+        }
     };
 
     const tableHeaders: TableHeader<BillResponseDTO>[] = [

@@ -52,8 +52,8 @@ export default function ChangePass() {
             <p className="font-bold text-2xl mb-6">Đổi mật khẩu</p>
             <div className="flex flex-col gap-4">
                 <input type="password" value={pass} placeholder="Mật khẩu hiện tại" className="w-full outline-none border-none px-2 py-1" onChange={(e) => setPass(e.target.value)} />
-                <input type="password" value={confirmPass} placeholder="Mật khẩu mới" className="w-full outline-none border-none px-2 py-1" onChange={(e) => setNewPass(e.target.value)} />
-                <input type="password" value={newPass} placeholder="Nhập lại mật khẩu mới" className="w-full outline-none border-none px-2 py-1" onChange={(e) => setConfirmPass(e.target.value)} />
+                <input type="password" value={newPass} placeholder="Mật khẩu mới" className="w-full outline-none border-none px-2 py-1" onChange={(e) => setNewPass(e.target.value)} />
+                <input type="password" value={confirmPass} placeholder="Nhập lại mật khẩu mới" className="w-full outline-none border-none px-2 py-1" onChange={(e) => setConfirmPass(e.target.value)} />
             </div>
             <div className="mx-auto mt-8 bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
                  onClick={() => handleSave()}>

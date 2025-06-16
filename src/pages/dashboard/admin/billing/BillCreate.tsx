@@ -51,7 +51,7 @@ export default function BillCreate() {
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
-            const axiosError = error as AxiosError<{ message?: string }>;
+            const axiosError = error as AxiosError<{ status: string; code?: string; message?: string }>;
             setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
             setType(NoticeType.ERROR);
         } finally {
@@ -82,7 +82,7 @@ export default function BillCreate() {
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
-            const axiosError = error as AxiosError<{ message?: string }>;
+            const axiosError = error as AxiosError<{ status: string; code?: string; message?: string }>;
             console.error("API Services Error:", axiosError);
             setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
             setType(NoticeType.ERROR);
@@ -158,8 +158,6 @@ export default function BillCreate() {
 
         try {
             setApiLoading(true);
-
-            // Gộp hai bước thành một yêu cầu duy nhất
             const payload = {
                 rentalContractId: parseInt(formData.rentalContractId),
                 serviceDetails: selectedServices.map((s) => ({
@@ -174,21 +172,39 @@ export default function BillCreate() {
                 payload,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` } }
             );
-            if (response.status === 200) {
+            if (response.status === 200 && response.data.status === "success") {
                 setMessage("Tạo hóa đơn thành công");
                 setType(NoticeType.SUCCESS);
                 setFormData({ rentalContractId: "" });
                 setSelectedServices([]);
             } else {
-                setMessage(response.data.message || "Tạo hóa đơn thất bại");
+                // Chuẩn hóa thông báo lỗi từ backend
+                const errorMessage = getErrorMessage(response.data.code) || response.data.message || "Tạo hóa đơn thất bại";
+                setMessage(errorMessage);
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
-            const axiosError = error as AxiosError<{ message?: string }>;
-            setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra");
+            const axiosError = error as AxiosError<{ status: string; code?: string; message?: string }>;
+            const errorData = axiosError.response?.data;
+            const errorMessage = getErrorMessage(errorData?.code) || errorData?.message || "Đã có lỗi xảy ra";
+            setMessage(errorMessage);
             setType(NoticeType.ERROR);
         } finally {
             setApiLoading(false);
+        }
+    };
+
+    // Hàm ánh xạ mã lỗi sang thông báo chuẩn hóa
+    const getErrorMessage = (code?: string): string | undefined => {
+        switch (code) {
+            case "invalidInput":
+                return "Dữ liệu đầu vào không hợp lệ";
+            case "invalidContract":
+                return "Hợp đồng không tồn tại";
+            case "serverError":
+                return "Lỗi server, vui lòng thử lại sau";
+            default:
+                return undefined;
         }
     };
 
@@ -245,7 +261,6 @@ export default function BillCreate() {
         },
     ];
 
-    // Headers cho bảng dịch vụ đã chọn
     const selectedServiceTableHeaders: TableHeader<SelectedServiceDisplay>[] = [
         { name: "Tên dịch vụ", slug: "name", sortASC: true, center: true },
         { name: "Mô tả", slug: "description", sortASC: true, center: true },
@@ -262,9 +277,7 @@ export default function BillCreate() {
             slug: "quantity",
             sortASC: true,
             center: true,
-            render: (row) => (
-                <span className="font-semibold text-blue-600">{row.quantity}</span>
-            ),
+            render: (row) => <span className="font-semibold text-blue-600">{row.quantity}</span>,
         },
         {
             name: "Thành tiền",
@@ -272,9 +285,7 @@ export default function BillCreate() {
             sortASC: true,
             center: true,
             render: (row) => (
-                <span className="font-semibold text-green-600">
-                    {row.totalPrice.toLocaleString()} VNĐ
-                </span>
+                <span className="font-semibold text-green-600">{row.totalPrice.toLocaleString()} VNĐ</span>
             ),
         },
     ];
