@@ -135,7 +135,6 @@ export const router = createBrowserRouter([
                         path: "billings",
                         element: <UserBillManagement />,
                     },
-
                 ],
             },
         ],
