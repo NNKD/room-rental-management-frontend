@@ -386,7 +386,7 @@ const vi: Translation = {
         select: "Chọn",
         cancel: "Hủy",
         fullname: "Họ và tên",
-        phone: "Số diêện thoại",
+        phone: "Số điện thoại",
         role: "Vai trò",
         add: "Thêm",
         add_service: "Thêm dịch vụ",
@@ -398,7 +398,11 @@ const vi: Translation = {
         no: "không",
         confirm_delete: "Xác nhận xóa",
         update: "Cập nhật",
-        payment: "Thanh toán"
+        payment: "Thanh toán",
+        bill_name: "Tên hóa đơn",
+        service: "Dịch vụ",
+        quantity: "Số lượng",
+        total_price: "Tôổng tiền"
     },
 };
 

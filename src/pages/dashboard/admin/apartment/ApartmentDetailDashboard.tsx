@@ -287,7 +287,6 @@ export default function ApartmentDetailDashboard() {
 
     const handleSave = () => {
         if (mode === "update" || mode === "add") {
-            setLoading(true);
             handleAddOrUpdateApartment();
             handleDeleteImgOnCloudinary();
         }

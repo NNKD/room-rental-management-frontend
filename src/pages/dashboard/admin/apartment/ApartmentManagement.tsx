@@ -44,9 +44,9 @@ export default function ApartmentManagement() {
                         </Link>
                     ),
                     user: a.userEmail ? (
-                        <Link to={`/users/${a.userEmail}`} className="underline text-blue-500" data-sort={a.user}>
+                        <div data-sort={a.user}>
                             {a.user}
-                        </Link>
+                        </div>
                     ) : (
                         t("no_tenant")
                     ),
@@ -94,6 +94,7 @@ export default function ApartmentManagement() {
             >
                 {t("add_apartment")}
             </Link>
+
             <DynamicTable headers={headers} data={apartments} hasActionColumn={true} onDelete={handleDeleteApartment} />
         </div>
     );
