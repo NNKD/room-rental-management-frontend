@@ -24,6 +24,10 @@ export default function SidebarUser() {
             </div>
             <SidebarItem title={"Dịch vụ"} Icon={MdOutlineWorkspacePremium}/>
             <SidebarItem title={"Hợp đồng thuê"} Icon={FaFileContract} />
+            <div onClick={() => navigate("billings")}>
+                <SidebarItem title={"Hợp đồng thuê"} Icon={FaFileContract} path={"billings"}/>
+
+            </div>
             <SidebarItem title={"Quản lý hoá đơn"} Icon={FaFileInvoiceDollar}/>
             <SidebarItem title={"Báo cáo & Thống kê"} Icon={FaChartLine} />
             <div onClick={() => navigate("account")}>
