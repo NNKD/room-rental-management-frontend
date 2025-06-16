@@ -307,7 +307,7 @@ export default function RentalContract() {
             }
 
             if (response.status === 200 && response.data.status === "success") {
-                setMessage(response.data.message || (editingContract ? t("contract_updated_success") : t("contract_added_success")));
+                setMessage((editingContract ? t("contract_updated_success") : t("contract_added_success")));
                 setType(NoticeType.SUCCESS);
                 setIsModalOpen(false);
                 setFormData({

@@ -388,7 +388,18 @@ const en: Translation = {
         fullname: "Full Name",
         phone: "Phone",
         role: "Role",
-        add: "Add"
+        add: "Add",
+        add_service: "Add Service",
+        user: "User",
+        admin: "Admin",
+        invalidPassword: "Invalid Password",
+        payment_successful: "Payment successful",
+        change_password_success: "Change Password Successful",
+        yes: "Yes",
+        no: "No",
+        confirm_delete: "Confirm Delete",
+        update: "Update",
+        payment: "Payment",
     },
 };
 

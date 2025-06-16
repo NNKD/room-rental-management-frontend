@@ -17,7 +17,16 @@ export default function Login() {
     const { setMessage, setType } = useNotice();
     const navigate = useNavigate();
     const [role, setRole] = useState<number | null>(null);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation(); // Thêm i18n vào destructuring
+
+    // Hàm đổi ngôn ngữ
+    const toggleLanguage = () => {
+        const newLang = i18n.language === "vi" ? "en" : "vi";
+        console.log("Changing language to:", newLang);
+        i18n.changeLanguage(newLang, (err) => {
+            if (err) console.error("Error changing language:", err);
+        });
+    };
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -73,9 +82,27 @@ export default function Login() {
             console.log("Response headers:", response.headers.get("content-type"));
 
             if (!response.ok) {
-                const errorText = await response.text();
-                console.log("Error response:", errorText);
-                throw new Error(t("login_failed") + `: ${errorText}`);
+                const contentType = response.headers.get("content-type");
+                let errorMessage = t("login_failed");
+
+                if (contentType && contentType.includes("application/json")) {
+                    const data = await response.json();
+                    console.log("JSON error response:", data);
+
+                    if (data.message === "userNotFound") {
+                        errorMessage = t("user_not_found");
+                    } else if (data.message === "invalidPassword") {
+                        errorMessage = t("invalidPassword");
+                    } else {
+                        errorMessage = data.message || t("login_failed");
+                    }
+                } else {
+                    const errorText = await response.text();
+                    console.log("Error response:", errorText);
+                    errorMessage = t("login_failed") + `: ${errorText}`;
+                }
+
+                throw new Error(errorMessage);
             }
 
             const contentType = response.headers.get("content-type");
@@ -133,7 +160,14 @@ export default function Login() {
                         <p className="text-sm text-center">{t("green_home_mission")}</p>
                     </div>
                 </div>
-                <div className="md:w-1/2 w-full p-8 md:p-12">
+                <div className="md:w-1/2 w-full p-8 md:p-12 relative">
+                    {/* Nút đổi ngôn ngữ */}
+                    <button
+                        className="absolute top-4 right-4 px-6 py-3 text-lg font-semibold text-white bg-blue-600 rounded-full hover:bg-blue-700 transition duration-200 shadow-lg"
+                        onClick={toggleLanguage}
+                    >
+                        {i18n.language === "vi" ? "VN" : "EN"}
+                    </button>
                     <h2 className="text-3xl font-bold mb-2">{t("login")}</h2>
                     <p className="text-sm text-gray-500 mb-6">
                         {t("forgot_password_link")}{" "}

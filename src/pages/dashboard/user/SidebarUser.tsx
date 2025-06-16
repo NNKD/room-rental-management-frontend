@@ -12,7 +12,15 @@ import { useTranslation } from "react-i18next";
 export default function SidebarUser() {
     const { logout } = useAuth();
     const navigate = useNavigate();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+
+    const toggleLanguage = () => {
+        const newLang = i18n.language === "vi" ? "en" : "vi";
+        console.log("Changing language to:", newLang);
+        i18n.changeLanguage(newLang, (err) => {
+            if (err) console.error("Error changing language:", err);
+        });
+    };
 
     return (
         <div className="w-full lg:w-1/5 lg:h-screen p-1 select-none overflow-y-auto">
@@ -28,9 +36,16 @@ export default function SidebarUser() {
             <div onClick={() => navigate("change-pass")}>
                 <SidebarItem title={t("change_password")} Icon={FaGear} path={"change-pass"} />
             </div>
-
             <div onClick={logout}>
                 <SidebarItem title={t("logout")} Icon={FaSignOutAlt} />
+            </div>
+            <div className="mt-4">
+                <button
+                    className="w-full px-4 py-2 text-base font-semibold text-white bg-blue-600 rounded-full hover:bg-blue-700 transition duration-200 shadow-lg"
+                    onClick={toggleLanguage}
+                >
+                    {i18n.language === "vi" ? "VN" : "EN"}
+                </button>
             </div>
         </div>
     );

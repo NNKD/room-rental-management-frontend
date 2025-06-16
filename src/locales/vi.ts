@@ -388,7 +388,17 @@ const vi: Translation = {
         fullname: "Họ và tên",
         phone: "Số diêện thoại",
         role: "Vai trò",
-        add: "Thêm"
+        add: "Thêm",
+        add_service: "Thêm dịch vụ",
+        user: "Người dùng",
+        admin: "Quản trị viên",
+        invalidPassword: "Mật khẩu không chính xác",
+        payment_successful: "Thanh toán thành công",
+        yes: "Đồng ý",
+        no: "không",
+        confirm_delete: "Xác nhận xóa",
+        update: "Cập nhật",
+        payment: "Thanh toán"
     },
 };
 

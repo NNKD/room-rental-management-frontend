@@ -9,6 +9,7 @@ import { useLoading } from "../../../contexts/LoadingContext.tsx";
 import { formatDate } from "../../../utils/DateProcess.ts";
 import { NoticeType } from "../../../types/Context.ts";
 import { useTranslation } from "react-i18next";
+import {useSearchParams} from "react-router-dom";
 
 export default function UserBillManagement() {
     const token = getToken();
@@ -16,6 +17,8 @@ export default function UserBillManagement() {
     const { setMessage, setType } = useNotice();
     const { setApiLoading } = useLoading();
     const { t } = useTranslation();
+    const [searchParams] = useSearchParams();
+    const statusVNPAY = searchParams.get("statusVNPAY");
 
     // State cho modal chi tiết hóa đơn
     const [selectedBill, setSelectedBill] = useState<BillResponseDTO | null>(null);
@@ -71,7 +74,18 @@ export default function UserBillManagement() {
     useEffect(() => {
         handleGetBills();
     }, []);
+    useEffect(() => {
+        if (statusVNPAY) {
+            if (statusVNPAY == "success") {
+                setMessage(t('payment_successful:'))
+                setType(NoticeType.SUCCESS)
+            }else {
+                setMessage(t('server_error'))
+                setType(NoticeType.ERROR)
+            }
+        }
 
+    }, [statusVNPAY]);
     const handleGetBills = async () => {
         setApiLoading(true);
         try {
