@@ -1,34 +1,36 @@
-import {IoIosArrowBack, IoIosArrowForward, IoMdArrowBack} from "react-icons/io";
-import {Link, useParams} from "react-router-dom";
-import {useEffect, useMemo, useRef, useState} from "react";
+import { IoIosArrowBack, IoIosArrowForward, IoMdArrowBack } from "react-icons/io";
+import { Link, useParams } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ModalZoomImage from "../../../../components/modal/ModalZoomImage.tsx";
-import {IoCloseCircle} from "react-icons/io5";
+import { IoCloseCircle } from "react-icons/io5";
 import axios from "axios";
-import {envVar} from "../../../../utils/EnvironmentVariables.ts";
-import {ApartmentDTO, ApartmentImageDTO, ApartmentStatusDTO, ApartmentTypeDTO} from "../../../../types/Dashboard.ts";
-import {NoticeType} from "../../../../types/Context.ts";
-import {useNotice} from "../../../../hook/useNotice.ts";
-import {calPriceDiscount, formatCurrency} from "../../../../utils/NumberCalculate.ts";
-import UploadWidget from "../../../../components/UploadWidget.tsx"
+import { envVar } from "../../../../utils/EnvironmentVariables.ts";
+import { ApartmentDTO, ApartmentImageDTO, ApartmentStatusDTO, ApartmentTypeDTO } from "../../../../types/Dashboard.ts";
+import { NoticeType } from "../../../../types/Context.ts";
+import { useNotice } from "../../../../hook/useNotice.ts";
+import { calPriceDiscount, formatCurrency } from "../../../../utils/NumberCalculate.ts";
+import UploadWidget from "../../../../components/UploadWidget.tsx";
 import LoadingPage from "../../../../components/LoadingPage.tsx";
 import extractPublicId from "../../../../utils/StringProcess.ts";
-import {debounce} from "../../../../utils/Debounce.ts";
-import {getToken} from "../../../../utils/TokenUtils.ts";
+import { debounce } from "../../../../utils/Debounce.ts";
+import { getToken } from "../../../../utils/TokenUtils.ts";
+import { useTranslation } from "react-i18next";
 
 export default function ApartmentDetailDashboard() {
-    const {slug} = useParams();
-    const [indexCarousel, setIndexCarousel] = useState(0)
-    const [statuses, setStatuses] = useState<ApartmentStatusDTO[]>([])
-    const [imagesDeleteCloudinary, setImagesDeleteCloudinary] = useState<ApartmentImageDTO[]>([])
-    const [types, setTypes] = useState<ApartmentTypeDTO[]>([])
-    const [visibleAmount, setVisibleAmount] = useState(3)
-    const [mode, setMode] = useState("read")
-    const [imageZoom, setImageZoom] = useState("")
-    const inputNameRef = useRef<HTMLInputElement|null>(null);
-    const {setMessage, setType} = useNotice()
-    const [durationMonth, setDurationMonth] = useState(1)
-    const [loading, setLoading] = useState(false)
+    const { slug } = useParams();
+    const [indexCarousel, setIndexCarousel] = useState(0);
+    const [statuses, setStatuses] = useState<ApartmentStatusDTO[]>([]);
+    const [imagesDeleteCloudinary, setImagesDeleteCloudinary] = useState<ApartmentImageDTO[]>([]);
+    const [types, setTypes] = useState<ApartmentTypeDTO[]>([]);
+    const [visibleAmount, setVisibleAmount] = useState(3);
+    const [mode, setMode] = useState("read");
+    const [imageZoom, setImageZoom] = useState("");
+    const inputNameRef = useRef<HTMLInputElement | null>(null);
+    const { setMessage, setType } = useNotice();
+    const [durationMonth, setDurationMonth] = useState(1);
+    const [loading, setLoading] = useState(false);
     const token = getToken();
+    const { t } = useTranslation();
 
     const defaultApartmentDetail: ApartmentDTO = {
         name: "",
@@ -40,10 +42,10 @@ export default function ApartmentDetailDashboard() {
         type: { id: 1, name: "", description: "" },
         status: { id: 1, name: "" },
         discounts: [
-            {discount_percent: 0, duration_month: 1},
-            {discount_percent: 0, duration_month: 3},
-            {discount_percent: 0, duration_month: 6},
-            {discount_percent: 0, duration_month: 9}
+            { discount_percent: 0, duration_month: 1 },
+            { discount_percent: 0, duration_month: 3 },
+            { discount_percent: 0, duration_month: 6 },
+            { discount_percent: 0, duration_month: 9 },
         ],
         images: [],
         information: {
@@ -56,19 +58,18 @@ export default function ApartmentDetailDashboard() {
             furniture: "",
             bedrooms: 0,
             kitchens: 0,
-            bathrooms: 0
+            bathrooms: 0,
         },
     };
 
-    const [apartmentDetail, setApartmentDetail] = useState<ApartmentDTO>(defaultApartmentDetail)
-
+    const [apartmentDetail, setApartmentDetail] = useState<ApartmentDTO>(defaultApartmentDetail);
 
     useEffect(() => {
         window.addEventListener("resize", handleGetAmount);
-        handleGetAmount()
+        handleGetAmount();
         return () => {
             window.removeEventListener("resize", handleGetAmount);
-        }
+        };
     }, []);
 
     useEffect(() => {
@@ -80,254 +81,217 @@ export default function ApartmentDetailDashboard() {
     }, [mode]);
 
     useEffect(() => {
-        if (slug == "add") {
-            setMode("add")
-        }else {
-            handleGetDetail()
+        if (slug === "add") {
+            setMode("add");
+        } else {
+            handleGetDetail();
         }
-        handleGetAllType()
-        handleGetAllStatus()
+        handleGetAllType();
+        handleGetAllStatus();
     }, [slug]);
 
     const handleGetDetail = async () => {
         try {
             const response = await axios.get(`${envVar.API_URL}/dashboard/apartments/${slug}`, {
                 headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                    Authorization: `Bearer ${token}`,
+                },
             });
 
-            if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
-                console.log(response.data.data)
-                setApartmentDetail(response.data.data)
+            if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
+                setApartmentDetail(response.data.data);
             }
-
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                setMessage((error.response?.data?.message ?? "Không rõ lỗi"));
+                setMessage(error.response?.data?.message ?? t("unknown_error"));
             } else {
-                setMessage("Đã có lỗi xảy ra không xác định");
+                setMessage(t("unknown_error"));
             }
-            console.log(error)
-            setType(NoticeType.ERROR)
+            setType(NoticeType.ERROR);
         }
-    }
+    };
+
     const handleGetAllType = async () => {
         try {
             const response = await axios.get(`${envVar.API_URL}/dashboard/types`, {
                 headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                    Authorization: `Bearer ${token}`,
+                },
             });
 
-            if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
-                console.log(response.data.data)
-                setTypes(response.data.data)
+            if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
+                setTypes(response.data.data);
             }
-
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                setMessage((error.response?.data?.message ?? "Không rõ lỗi"));
+                setMessage(error.response?.data?.message ?? t("unknown_error"));
             } else {
-                setMessage("Đã có lỗi xảy ra không xác định");
+                setMessage(t("unknown_error"));
             }
-            console.log(error)
-            setType(NoticeType.ERROR)
+            setType(NoticeType.ERROR);
         }
-    }
+    };
 
     const handleGetAllStatus = async () => {
         try {
             const response = await axios.get(`${envVar.API_URL}/dashboard/statuses`, {
                 headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                    Authorization: `Bearer ${token}`,
+                },
             });
 
-            if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
-                console.log(response.data.data)
-                setStatuses(response.data.data)
+            if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
+                setStatuses(response.data.data);
             }
-
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                setMessage((error.response?.data?.message ?? "Không rõ lỗi"));
+                setMessage(error.response?.data?.message ?? t("unknown_error"));
             } else {
-                setMessage("Đã có lỗi xảy ra không xác định");
+                setMessage(t("unknown_error"));
             }
-            console.log(error)
-            setType(NoticeType.ERROR)
+            setType(NoticeType.ERROR);
         }
-    }
+    };
 
     const handleGetAmount = () => {
-        // Mobile => show 1
         if (window.innerWidth < 760) {
-            setVisibleAmount(1)
-        }else if (window.innerWidth < 1024) { // tablet => show 2
-            setVisibleAmount(2)
-        }else { // desktop => show 3
-            setVisibleAmount(3)
+            setVisibleAmount(1);
+        } else if (window.innerWidth < 1024) {
+            setVisibleAmount(2);
+        } else {
+            setVisibleAmount(3);
         }
-    }
-
-    /*
-     handle back or forward carousel
-     type = 1 ==> Forward
-     type = -1 ==> Back
-     */
+    };
 
     const handleCarousel = (type: number) => {
         if (type === 1) {
-            // Max = length - visible. nếu nó lớn hơn thì next tiếp sẽ thiếu element
-            setIndexCarousel(Math.min(indexCarousel + 1, (apartmentDetail?.images.length || 0) - visibleAmount))
-        }else if (type === -1) {
-            // Min = 0 (vị trí đầu)
-            setIndexCarousel(Math.max(0, indexCarousel - 1))
+            setIndexCarousel(Math.min(indexCarousel + 1, (apartmentDetail?.images.length || 0) - visibleAmount));
+        } else if (type === -1) {
+            setIndexCarousel(Math.max(0, indexCarousel - 1));
         }
-    }
-
-    useEffect(() => {
-        console.log(apartmentDetail)
-    }, [apartmentDetail]);
+    };
 
     const debounceCheckSlug = useMemo(() => {
-        return debounce((slugName: string) => handleCheckSlug(slugName), 500)
-    }, [])
+        return debounce((slugName: string) => handleCheckSlug(slugName), 500);
+    }, []);
 
     const handleChangeField = (field: string, value: unknown) => {
-        setApartmentDetail(prev => {
-            return {
-                ...prev,
-                [field]: value
-            }
-        });
-    }
+        setApartmentDetail((prev) => ({
+            ...prev,
+            [field]: value,
+        }));
+    };
 
     const handleChangeFieldInformation = (field: string, value: unknown) => {
-        setApartmentDetail(prev => {
-            return {
-                ...prev,
-                information: {
-                    ...prev.information,
-                    [field]: value
-                }
-            }
-        })
-    }
+        setApartmentDetail((prev) => ({
+            ...prev,
+            information: {
+                ...prev.information,
+                [field]: value,
+            },
+        }));
+    };
 
     const handleChangeFieldDiscount = (value: unknown) => {
-        setApartmentDetail(prev => {
-            return {
-                ...prev,
-                discounts: prev.discounts.map(d => {
-                    if (d.duration_month == durationMonth) {
-                        return {
-                            ...d,
-                            discount_percent: Number(value)
-                        }
-                    }else {
-                        return d;
-                    }
-                })
-            }
-        })
-    }
+        setApartmentDetail((prev) => ({
+            ...prev,
+            discounts: prev.discounts.map((d) => {
+                if (d.duration_month === durationMonth) {
+                    return {
+                        ...d,
+                        discount_percent: Number(value),
+                    };
+                }
+                return d;
+            }),
+        }));
+    };
 
     const handleUploadImg = (url: string) => {
-        setApartmentDetail(prev => {
-            return {
-                ...prev,
-                images: [...prev.images, {url: url}]
-            }
-        })
-    }
+        setApartmentDetail((prev) => ({
+            ...prev,
+            images: [...prev.images, { url }],
+        }));
+    };
 
     const handleDeleteImg = (url: string) => {
-        setApartmentDetail(prev => {
-            return {
-                ...prev,
-                images: prev.images.filter(i => i.url != url)
-            }
-        })
-        const deleteImgList = [...imagesDeleteCloudinary, {url: (extractPublicId(url) || "")}];
+        setApartmentDetail((prev) => ({
+            ...prev,
+            images: prev.images.filter((i) => i.url !== url),
+        }));
+        const deleteImgList = [...imagesDeleteCloudinary, { url: extractPublicId(url) || "" }];
         setImagesDeleteCloudinary(deleteImgList);
-    }
+    };
 
     const handleAddOrUpdateApartment = async () => {
         try {
             const response = await axios.post(`${envVar.API_URL}/dashboard/apartments`, apartmentDetail, {
                 headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                    Authorization: `Bearer ${token}`,
+                },
             });
 
-            if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
-                setLoading(false)
-                setType(NoticeType.SUCCESS)
-                setMessage(response.data.data)
-                setMode("read")
+            if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
+                setLoading(false);
+                setType(NoticeType.SUCCESS);
+                setMessage(response.data.data);
+                setMode("read");
             }
-
         } catch (error) {
-            setLoading(false)
+            setLoading(false);
             if (axios.isAxiosError(error)) {
-                setMessage((error.response?.data?.message ?? "Không rõ lỗi"));
+                setMessage(error.response?.data?.message ?? t("unknown_error"));
             } else {
-                setMessage("Đã có lỗi xảy ra không xác định");
+                setMessage(t("unknown_error"));
             }
-            console.log(error)
-            setType(NoticeType.ERROR)
+            setType(NoticeType.ERROR);
         }
-    }
+    };
 
     const handleCheckSlug = async (slugName: string) => {
         try {
             const response = await axios.get(`${envVar.API_URL}/apartments/check-slug?slug=${slugName}`);
 
-            if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
-                if (response.data.data == false) {
-                    setType(NoticeType.ERROR)
-                    setMessage("Slug đã tồn tại");
+            if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
+                if (response.data.data === false) {
+                    setType(NoticeType.ERROR);
+                    setMessage(t("slug_exists"));
                 }
             }
-
         } catch (error) {
-            setLoading(false)
+            setLoading(false);
             if (axios.isAxiosError(error)) {
-                setMessage((error.response?.data?.message ?? "Không rõ lỗi"));
+                setMessage(error.response?.data?.message ?? t("unknown_error"));
             } else {
-                setMessage("Đã có lỗi xảy ra không xác định");
+                setMessage(t("unknown_error"));
             }
-            console.log(error)
-            setType(NoticeType.ERROR)
+            setType(NoticeType.ERROR);
         }
-    }
+    };
 
     const handleDeleteImgOnCloudinary = async () => {
         try {
             const response = await axios.post(`${envVar.API_URL}/cloudinary/delete-images`, imagesDeleteCloudinary, {
                 headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                    Authorization: `Bearer ${token}`,
+                },
             });
 
-            if (response.status === 200 && response.data.status == 'success' && response.data.statusCode == 200) {
-                console.log(response.data.data)
+            if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
+                console.log(response.data.data);
             }
-
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
 
     const handleSave = () => {
-        if (mode == "update" || mode == "add") {
-            setLoading(true)
-            handleAddOrUpdateApartment()
-            handleDeleteImgOnCloudinary()
+        if (mode === "update" || mode === "add") {
+            setLoading(true);
+            handleAddOrUpdateApartment();
+            handleDeleteImgOnCloudinary();
         }
-    }
+    };
 
     return (
         <div className="overflow-auto h-fit max-h-full w-full rounded shadow-[0_0_3px_2px_#ccc]">
@@ -335,259 +299,370 @@ export default function ApartmentDetailDashboard() {
                 <div className="p-4">
                     <div className="flex items-center justify-between">
                         <Link to="/dashboard/apartment-management" className="block p-2 cursor-pointer -ml-2">
-                            <IoMdArrowBack className="text-2xl"/>
+                            <IoMdArrowBack className="text-2xl" />
                         </Link>
 
-                        {mode != "add" ? (
+                        {mode !== "add" ? (
                             <div className="flex border-2 border-zinc-300 select-none">
-                                <div className={`px-4 py-2 text-base ${mode == "read" ? "bg-lightGreen pointer-events-none" : "bg-zinc-300 hover:bg-lightGreenHover hover:cursor-pointer transition-all duration-300 ease-in-out"}`}
-                                     onClick={() => {handleSave(); setMode("read")}}>
-                                    Xem
+                                <div
+                                    className={`px-4 py-2 text-base ${
+                                        mode === "read" ? "bg-lightGreen pointer-events-none" : "bg-zinc-300 hover:bg-lightGreenHover hover:cursor-pointer transition-all duration-300 ease-in-out"
+                                    }`}
+                                    onClick={() => {
+                                        handleSave();
+                                        setMode("read");
+                                    }}
+                                >
+                                    {t("view")}
                                 </div>
-                                <div className={`px-4 py-2 text-base ${mode == "update" ? "bg-lightGreen pointer-events-none" : "bg-zinc-300 hover:bg-lightGreenHover hover:cursor-pointer transition-all duration-300 ease-in-out"}`}
-                                     onClick={() => {handleSave(); setMode("update")}}>
-                                    Sửa
+                                <div
+                                    className={`px-4 py-2 text-base ${
+                                        mode === "update" ? "bg-lightGreen pointer-events-none" : "bg-zinc-300 hover:bg-lightGreenHover hover:cursor-pointer transition-all duration-300 ease-in-out"
+                                    }`}
+                                    onClick={() => {
+                                        handleSave();
+                                        setMode("update");
+                                    }}
+                                >
+                                    {t("edit")}
                                 </div>
                             </div>
                         ) : ""}
-
                     </div>
                     <div className="flex flex-col gap-8">
-                        <h1 className="text-left text-xl font-bold underline">Thông tin cơ bản:</h1>
+                        <h1 className="text-left text-xl font-bold underline">{t("basic_information")}</h1>
                         <div className="flex flex-col lg:flex-row items-center justify-center gap-6">
                             <div className="flex items-center border p-2 rounded w-full lg:w-3/5">
-                                <label className="flex-shrink-0 text-sm font-medium">Căn hộ:</label>
-                                <input className="w-full outline-none border-none px-2 py-1" value={apartmentDetail?.name} disabled={mode === "read"} ref={inputNameRef}
-                                       onChange={(e) => handleChangeField("name", e.target.value)} required={true}/>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("apartment_name")}:</label>
+                                <input
+                                    className="w-full outline-none border-none px-2 py-1"
+                                    value={apartmentDetail?.name}
+                                    disabled={mode === "read"}
+                                    ref={inputNameRef}
+                                    onChange={(e) => handleChangeField("name", e.target.value)}
+                                    required={true}
+                                />
                             </div>
                             <div className="flex items-center border p-2 rounded w-full lg:w-2/5">
-                                <label className="flex-shrink-0 text-sm font-medium">Tên Slug:</label>
-                                <input className="w-full outline-none border-none px-2 py-1" value={apartmentDetail?.slug} disabled={mode === "read"}
-                                       onChange={(e) => {handleChangeField("slug", e.target.value); debounceCheckSlug(e.target.value)}} required={true}/>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("slug_name")}:</label>
+                                <input
+                                    className="w-full outline-none border-none px-2 py-1"
+                                    value={apartmentDetail?.slug}
+                                    disabled={mode === "read"}
+                                    onChange={(e) => {
+                                        handleChangeField("slug", e.target.value);
+                                        debounceCheckSlug(e.target.value);
+                                    }}
+                                    required={true}
+                                />
                             </div>
                         </div>
 
                         <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
-
                             <div className="flex items-center justify-between border p-2 rounded w-full">
-                                <label className="flex-shrink-0 text-sm font-medium">Trạng thái:</label>
-
-                                <select className="px-2 py-1 border-2 rounded" disabled={mode === "read"}
-                                        value={apartmentDetail?.status?.id || ""}
-                                        onChange={(e) => handleChangeField("status", {id: e.target.value})}>
-
-                                    {statuses.map(s => (
-                                        <option key={s.id} value={s.id}>{s.name}</option>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("status")}:</label>
+                                <select
+                                    className="px-2 py-1 border-2 rounded"
+                                    disabled={mode === "read"}
+                                    value={apartmentDetail?.status?.id || ""}
+                                    onChange={(e) => handleChangeField("status", { id: e.target.value })}
+                                >
+                                    {statuses.map((s) => (
+                                        <option key={s.id} value={s.id}>
+                                            {s.name}
+                                        </option>
                                     ))}
-
-                                </select>
-
-                            </div>
-                            <div className="flex items-center justify-between border p-2 rounded w-full">
-                                <label className="flex-shrink-0 text-sm font-medium">Loại căn hộ:</label>
-                                <select className="px-2 py-1 border-2 rounded" disabled={mode === "read"}
-                                        value={apartmentDetail?.type?.id || ""}
-                                        onChange={(e) => handleChangeField("type", {id: e.target.value})}>
-
-                                    {types.map(t => (
-                                        <option key={t.id} value={t.id}>{t.name}</option>
-                                    ))}
-
                                 </select>
                             </div>
-
+                            <div className="flex items-center justify-between border p-2 rounded w-full">
+                                <label className="flex-shrink-0 text-sm font-medium">{t("apartment_type")}:</label>
+                                <select
+                                    className="px-2 py-1 border-2 rounded"
+                                    disabled={mode === "read"}
+                                    value={apartmentDetail?.type?.id || ""}
+                                    onChange={(e) => handleChangeField("type", { id: e.target.value })}
+                                >
+                                    {types.map((t) => (
+                                        <option key={t.id} value={t.id}>
+                                            {t.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
 
                         <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
                             <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/3">
-                                <label className="flex-shrink-0 text-sm font-medium">Căn hộ hot:</label>
-                                <select className="px-2 py-1 border-2 rounded" disabled={mode === "read"}
-                                        value={apartmentDetail?.hot || ""}
-                                        onChange={(e) => handleChangeField("hot", e.target.value)}>
-                                    <option value="1">Hot</option>
-                                    <option value="0">Bình thường</option>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("hot_apartment")}:</label>
+                                <select
+                                    className="px-2 py-1 border-2 rounded"
+                                    disabled={mode === "read"}
+                                    value={apartmentDetail?.hot || ""}
+                                    onChange={(e) => handleChangeField("hot", e.target.value)}
+                                >
+                                    <option value="1">{t("hot")}</option>
+                                    <option value="0">{t("normal")}</option>
                                 </select>
                             </div>
-
                             <div className="flex items-center border p-2 rounded w-full lg:w-[12%]">
-                                <label className="flex-shrink-0 text-sm font-medium">Tầng:</label>
-                                <input className="w-full outline-none border-none px-2 py-1 text-right" type="number" value={apartmentDetail?.information.floor} disabled={mode === "read"}
-                                       onChange={(e) => handleChangeFieldInformation("floor", e.target.value)} min={0} max={20}/>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("floor")}:</label>
+                                <input
+                                    className="w-full outline-none border-none px-2 py-1 text-right"
+                                    type="number"
+                                    value={apartmentDetail?.information.floor}
+                                    disabled={mode === "read"}
+                                    onChange={(e) => handleChangeFieldInformation("floor", e.target.value)}
+                                    min={0}
+                                    max={20}
+                                />
                             </div>
                         </div>
 
                         <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
                             <div className="flex items-center border p-2 rounded flex-grow w-full lg:w-2/5">
-                                <label className="flex-shrink-0 text-sm font-medium">Nội thất:</label>
-                                <input className="w-full outline-none border-none px-2 py-1 text-right" value={apartmentDetail?.information.furniture} disabled={mode === "read"}
-                                       onChange={(e) => handleChangeFieldInformation("furniture", e.target.value)} required={true}/>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("furniture")}:</label>
+                                <input
+                                    className="w-full outline-none border-none px-2 py-1 text-right"
+                                    value={apartmentDetail?.information.furniture}
+                                    disabled={mode === "read"}
+                                    onChange={(e) => handleChangeFieldInformation("furniture", e.target.value)}
+                                    required={true}
+                                />
                             </div>
-
                             <div className="flex items-center border p-2 rounded w-full lg:w-3/5">
-                                <label className="flex-shrink-0 text-sm font-medium">Giá tiền thuê gốc (1 tháng):</label>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("base_rental_price")} (1 {t("month")}):</label>
                                 <div className="w-full">
-                                    <input className="w-full outline-none border-none px-2 py-1 text-right" type="number" value={apartmentDetail?.price} disabled={mode === "read"}
-                                           onChange={(e) => handleChangeField("price", e.target.value)} min={0} />
+                                    <input
+                                        className="w-full outline-none border-none px-2 py-1 text-right"
+                                        type="number"
+                                        value={apartmentDetail?.price}
+                                        disabled={mode === "read"}
+                                        onChange={(e) => handleChangeField("price", e.target.value)}
+                                        min={0}
+                                    />
                                     <p className="text-base text-right">{formatCurrency(apartmentDetail?.price || 0)}</p>
                                 </div>
                             </div>
                         </div>
 
-                        {mode == "read" ? (
+                        {mode === "read" ? (
                             <div>
-                                <h1 className="text-left text-xl font-bold underline">Người thuê: </h1>
-                                <p className="text-base text-left mt-6">Chưa có người thuê</p>
+                                <h1 className="text-left text-xl font-bold underline">{t("tenant")}:</h1>
+                                <p className="text-base text-left mt-6">{t("no_tenant")}</p>
                             </div>
                         ) : ""}
 
-
-
-                        <h1 className="text-left text-xl font-bold underline">Thông số:</h1>
+                        <h1 className="text-left text-xl font-bold underline">{t("specifications")}</h1>
                         <div className="flex flex-col lg:flex-row items-center justify-center gap-6">
                             <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/4">
-                                <label className="flex-shrink-0 text-sm font-medium">Chiều dài:</label>
-                                <input className="w-full outline-none border-none px-2 py-1 text-right" type="number"
-                                       value={apartmentDetail?.information.height} disabled={mode === "read"}
-                                       onChange={(e) => handleChangeFieldInformation("height", e.target.value)} min={0}/>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("length")}:</label>
+                                <input
+                                    className="w-full outline-none border-none px-2 py-1 text-right"
+                                    type="number"
+                                    value={apartmentDetail?.information.height}
+                                    disabled={mode === "read"}
+                                    onChange={(e) => handleChangeFieldInformation("height", e.target.value)}
+                                    min={0}
+                                />
                             </div>
                             <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/4">
-                                <label className="flex-shrink-0 text-sm font-medium">Chiều rộng:</label>
-                                <input className="w-full outline-none border-none px-2 py-1 text-right" type="number"
-                                       value={apartmentDetail?.information.width} disabled={mode === "read"}
-                                       onChange={(e) => handleChangeFieldInformation("width", e.target.value)} min={0}/>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("width")}:</label>
+                                <input
+                                    className="w-full outline-none border-none px-2 py-1 text-right"
+                                    type="number"
+                                    value={apartmentDetail?.information.width}
+                                    disabled={mode === "read"}
+                                    onChange={(e) => handleChangeFieldInformation("width", e.target.value)}
+                                    min={0}
+                                />
                             </div>
                             <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/4">
-                                <label className="flex-shrink-0 text-sm font-medium">Ban công (m<sup>2</sup>):</label>
-                                <input className="w-full outline-none border-none px-2 py-1 text-right" type="number"
-                                       value={apartmentDetail?.information.balcony} disabled={mode === "read"}
-                                       onChange={(e) => handleChangeFieldInformation("balcony", e.target.value)} min={0}/>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("balcony")} (m²):</label>
+                                <input
+                                    className="w-full outline-none border-none px-2 py-1 text-right"
+                                    type="number"
+                                    value={apartmentDetail?.information.balcony}
+                                    disabled={mode === "read"}
+                                    onChange={(e) => handleChangeFieldInformation("balcony", e.target.value)}
+                                    min={0}
+                                />
                             </div>
                             <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/4">
-                                <label className="flex-shrink-0 text-sm font-medium">Sân thượng (m<sup>2</sup>):</label>
-                                <input className="w-full outline-none border-none px-2 py-1 text-right" type="number"
-                                       value={apartmentDetail?.information.terrace} disabled={mode === "read"}
-                                       onChange={(e) => handleChangeFieldInformation("terrace", e.target.value)} min={0}/>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("terrace")} (m²):</label>
+                                <input
+                                    className="w-full outline-none border-none px-2 py-1 text-right"
+                                    type="number"
+                                    value={apartmentDetail?.information.terrace}
+                                    disabled={mode === "read"}
+                                    onChange={(e) => handleChangeFieldInformation("terrace", e.target.value)}
+                                    min={0}
+                                />
                             </div>
                         </div>
                         <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
                             <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/4">
-                                <label className="flex-shrink-0 text-sm font-medium">Phòng ngủ:</label>
-                                <input className="w-full outline-none border-none px-2 py-1 text-right" type="number"
-                                       value={apartmentDetail?.information.bedrooms} disabled={mode === "read"}
-                                       onChange={(e) => handleChangeFieldInformation("bedrooms", e.target.value)} min={0}/>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("bedrooms")}:</label>
+                                <input
+                                    className="w-full outline-none border-none px-2 py-1 text-right"
+                                    type="number"
+                                    value={apartmentDetail?.information.bedrooms}
+                                    disabled={mode === "read"}
+                                    onChange={(e) => handleChangeFieldInformation("bedrooms", e.target.value)}
+                                    min={0}
+                                />
                             </div>
                             <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/4">
-                                <label className="flex-shrink-0 text-sm font-medium">Phòng bếp:</label>
-                                <input className="w-full outline-none border-none px-2 py-1 text-right" type="number"
-                                       value={apartmentDetail?.information.kitchens} disabled={mode === "read"}
-                                       onChange={(e) => handleChangeFieldInformation("kitchens", e.target.value)} min={0}/>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("kitchens")}:</label>
+                                <input
+                                    className="w-full outline-none border-none px-2 py-1 text-right"
+                                    type="number"
+                                    value={apartmentDetail?.information.kitchens}
+                                    disabled={mode === "read"}
+                                    onChange={(e) => handleChangeFieldInformation("kitchens", e.target.value)}
+                                    min={0}
+                                />
                             </div>
                             <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/4">
-                                <label className="flex-shrink-0 text-sm font-medium">Phòng vệ sinh:</label>
-                                <input className="w-full outline-none border-none px-2 py-1 text-right" type="number"
-                                       value={apartmentDetail?.information.bathrooms} disabled={mode === "read"}
-                                       onChange={(e) => handleChangeFieldInformation("bathrooms", e.target.value)} min={0}/>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("bathrooms")}:</label>
+                                <input
+                                    className="w-full outline-none border-none px-2 py-1 text-right"
+                                    type="number"
+                                    value={apartmentDetail?.information.bathrooms}
+                                    disabled={mode === "read"}
+                                    onChange={(e) => handleChangeFieldInformation("bathrooms", e.target.value)}
+                                    min={0}
+                                />
                             </div>
                         </div>
 
-                        <h1 className="text-left text-xl font-bold underline">Giá thuê theo từng thời hạn:</h1>
+                        <h1 className="text-left text-xl font-bold underline">{t("rental_price_by_duration")}</h1>
                         <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
                             <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/4">
-                                <label className="flex-shrink-0 text-sm font-medium">Thời hạn:</label>
-                                <select className="px-2 py-1 border-2 rounded" onChange={(e) => setDurationMonth(Number(e.target.value))}>
-                                    <option value="1">1 tháng</option>
-                                    <option value="3">3 tháng</option>
-                                    <option value="6">6 tháng</option>
-                                    <option value="12">12 tháng</option>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("duration")}:</label>
+                                <select
+                                    className="px-2 py-1 border-2 rounded"
+                                    onChange={(e) => setDurationMonth(Number(e.target.value))}
+                                >
+                                    <option value="1">1 {t("month")}</option>
+                                    <option value="3">3 {t("months")}</option>
+                                    <option value="6">6 {t("months")}</option>
+                                    <option value="12">12 {t("months")}</option>
                                 </select>
                             </div>
                             <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/5">
-                                <label className="flex-shrink-0 text-sm font-medium">Giảm giá (%):</label>
-                                <input className="w-full outline-none border-none px-2 py-1 text-right" type="number" min={0}
-                                       value={Array.isArray(apartmentDetail?.discounts)
-                                           ? apartmentDetail?.discounts.find(d => d.duration_month === durationMonth)?.discount_percent ?? 0
-                                           : 0} disabled={mode === "read"}
-                                       onChange={(e) => handleChangeFieldDiscount(e.target.value)}/>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("discount")} (%):</label>
+                                <input
+                                    className="w-full outline-none border-none px-2 py-1 text-right"
+                                    type="number"
+                                    min={0}
+                                    value={
+                                        Array.isArray(apartmentDetail?.discounts)
+                                            ? apartmentDetail?.discounts.find((d) => d.duration_month === durationMonth)?.discount_percent ?? 0
+                                            : 0
+                                    }
+                                    disabled={mode === "read"}
+                                    onChange={(e) => handleChangeFieldDiscount(e.target.value)}
+                                />
                             </div>
                             <div className="flex items-center justify-between border p-2 rounded w-full lg:w-1/2">
-                                <label className="flex-shrink-0 text-sm font-medium">Giá tiền (VNĐ):</label>
-                                <input className="w-full outline-none border-none px-2 py-1 text-right" readOnly={true}
-                                       value={formatCurrency(calPriceDiscount(apartmentDetail?.price || 0, apartmentDetail?.discounts.find(d => d.duration_month == durationMonth)?.discount_percent || 0))}/>
+                                <label className="flex-shrink-0 text-sm font-medium">{t("price")} (VNĐ):</label>
+                                <input
+                                    className="w-full outline-none border-none px-2 py-1 text-right"
+                                    readOnly={true}
+                                    value={formatCurrency(
+                                        calPriceDiscount(
+                                            apartmentDetail?.price || 0,
+                                            apartmentDetail?.discounts.find((d) => d.duration_month === durationMonth)?.discount_percent || 0
+                                        )
+                                    )}
+                                />
                             </div>
                         </div>
 
-                        <h1 className="text-left text-xl font-bold underline">Mô tả ngắn:</h1>
-                        <textarea className="resize-none w-full h-full border rounded p-2" disabled={mode === "read"} value={apartmentDetail?.brief}
-                                  onChange={(e) => handleChangeField("brief", e.target.value)} required={true}></textarea>
+                        <h1 className="text-left text-xl font-bold underline">{t("brief_description")}</h1>
+                        <textarea
+                            className="resize-none w-full h-full border rounded p-2"
+                            disabled={mode === "read"}
+                            value={apartmentDetail?.brief}
+                            onChange={(e) => handleChangeField("brief", e.target.value)}
+                            required={true}
+                        ></textarea>
 
-                        <h1 className="text-left text-xl font-bold underline">Mô tả chi tiết:</h1>
-                        <textarea rows={6} className="resize-none w-full h-full border rounded p-2" disabled={mode === "read"} value={apartmentDetail?.description}
-                                  onChange={(e) => handleChangeField("description", e.target.value)} required={true}></textarea>
+                        <h1 className="text-left text-xl font-bold underline">{t("detailed_description")}</h1>
+                        <textarea
+                            rows={6}
+                            className="resize-none w-full h-full border rounded p-2"
+                            disabled={mode === "read"}
+                            value={apartmentDetail?.description}
+                            onChange={(e) => handleChangeField("description", e.target.value)}
+                            required={true}
+                        ></textarea>
 
-                        <h1 className="text-left text-xl font-bold underline">Hình ảnh:</h1>
+                        <h1 className="text-left text-xl font-bold underline">{t("images")}</h1>
 
-                        {
-                            mode != "read" ? (
-                                <UploadWidget onGetImgUrl={handleUploadImg}/>
-                            ) : ""
-                        }
+                        {mode !== "read" ? <UploadWidget onGetImgUrl={handleUploadImg} /> : ""}
 
-                        {
-                            (apartmentDetail?.images.length || 0) > 0 ? (
-                                <div className="flex items-center justify-around gap-6 select-none">
-                                    <div className={`w-[30px] h-[30px] md:w-[46px] md:h-[46px] flex items-center justify-center rounded-full flex-shrink-0 text-white
-                                            ${indexCarousel == 0 ? "bg-lightBlue pointer-events-none" : " bg-lightGreen cursor-pointer hover:bg-lightGreenHover transition-all duration-300 ease-in-out"}`}
-                                         onClick={() => handleCarousel(-1)}>
-                                        <IoIosArrowBack className="w-[24px] h-[24px]"/>
-                                    </div>
-
-                                    {apartmentDetail?.images.slice(indexCarousel, indexCarousel + visibleAmount).map((img, index) => (
-                                        <div className="w-full h-full relative" key={index}>
-                                            <div className="aspect-[16/9] flex-grow overflow-hidden rounded cursor-pointer" onClick={() => setImageZoom(img.url)}>
-                                                <img src={img.url}  className="w-full h-full object-cover rounded"/>
-                                            </div>
-
-                                            {mode != "read" ? (
-                                                <div className="absolute -top-4 -right-4 p-1 hover:cursor-pointer"
-                                                     onClick={() => handleDeleteImg(img.url)}>
-                                                    <IoCloseCircle className="text-3xl text-red-500"/>
-                                                </div>
-                                            ) : ""}
-
-                                        </div>
-                                    ))}
-
-                                    <div className={`w-[30px] h-[30px] md:w-[46px] md:h-[46px] flex items-center justify-center text-white  rounded-full flex-shrink-0
-                                            ${indexCarousel == Math.max(0, (apartmentDetail?.images.length || 0) - visibleAmount) ? "bg-lightBlue pointer-events-none" : " bg-lightGreen cursor-pointer hover:bg-lightGreenHover transition-all duration-300 ease-in-out"}`}
-                                         onClick={() => handleCarousel(1)}>
-                                        <IoIosArrowForward className="w-[24px] h-[24px]"/>
-                                    </div>
-
+                        {(apartmentDetail?.images.length || 0) > 0 ? (
+                            <div className="flex items-center justify-around gap-6 select-none">
+                                <div
+                                    className={`w-[30px] h-[30px] md:w-[46px] md:h-[46px] flex items-center justify-center rounded-full flex-shrink-0 text-white ${
+                                        indexCarousel === 0
+                                            ? "bg-lightBlue pointer-events-none"
+                                            : "bg-lightGreen cursor-pointer hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
+                                    }`}
+                                    onClick={() => handleCarousel(-1)}
+                                >
+                                    <IoIosArrowBack className="w-[24px] h-[24px]" />
                                 </div>
-                            ) : ""
-                        }
 
-                        {mode != "read" ? (
-                            <div className="mx-auto bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
-                                 onClick={() => handleSave()}>
-                                Lưu
+                                {apartmentDetail?.images.slice(indexCarousel, indexCarousel + visibleAmount).map((img, index) => (
+                                    <div className="w-full h-full relative" key={index}>
+                                        <div
+                                            className="aspect-[16/9] flex-grow overflow-hidden rounded cursor-pointer"
+                                            onClick={() => setImageZoom(img.url)}
+                                        >
+                                            <img src={img.url} className="w-full h-full object-cover rounded" />
+                                        </div>
+
+                                        {mode !== "read" ? (
+                                            <div
+                                                className="absolute -top-4 -right-4 p-1 hover:cursor-pointer"
+                                                onClick={() => handleDeleteImg(img.url)}
+                                            >
+                                                <IoCloseCircle className="text-3xl text-red-500" />
+                                            </div>
+                                        ) : ""}
+                                    </div>
+                                ))}
+
+                                <div
+                                    className={`w-[30px] h-[30px] md:w-[46px] md:h-[46px] flex items-center justify-center text-white rounded-full flex-shrink-0 ${
+                                        indexCarousel === Math.max(0, (apartmentDetail?.images.length || 0) - visibleAmount)
+                                            ? "bg-lightBlue pointer-events-none"
+                                            : "bg-lightGreen cursor-pointer hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
+                                    }`}
+                                    onClick={() => handleCarousel(1)}
+                                >
+                                    <IoIosArrowForward className="w-[24px] h-[24px]" />
+                                </div>
+                            </div>
+                        ) : ""}
+                        {mode !== "read" ? (
+                            <div
+                                className="mx-auto bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
+                                onClick={() => handleSave()}
+                            >
+                                {t("save")}
                             </div>
                         ) : ""}
 
-
                     </div>
-
                 </div>
             </div>
 
-            {imageZoom != "" ? (
-                <ModalZoomImage image={imageZoom} setImage={setImageZoom} />
-            ) : ""}
+            {imageZoom !== "" ? <ModalZoomImage image={imageZoom} setImage={setImageZoom} /> : ""}
 
-            {loading ? (
-                <LoadingPage/>
-            ) : ""}
-
+            {loading ? <LoadingPage /> : ""}
         </div>
-    )
+    );
 }

@@ -6,6 +6,7 @@ import { envVar } from "../../../../utils/EnvironmentVariables.ts";
 import { NoticeType } from "../../../../types/Context.ts";
 import { useNotice } from "../../../../hook/useNotice.ts";
 import { useLoading } from "../../../../contexts/LoadingContext.tsx";
+import { useTranslation } from "react-i18next";
 
 export default function BillList() {
     const [bills, setBills] = useState<BillResponseDTO[]>([]);
@@ -15,6 +16,7 @@ export default function BillList() {
     const { setApiLoading } = useLoading();
     const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
     const [deletingBillId, setDeletingBillId] = useState<string | null>(null);
+    const { t } = useTranslation();
 
     useEffect(() => {
         handleGetBills();
@@ -26,24 +28,22 @@ export default function BillList() {
             const response = await axios.get(`${envVar.API_URL}/dashboard/billing`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` },
             });
-            console.log("API Response:", response.data);
             if (response.status === 200 && response.data.status === "success") {
                 setBills(response.data.data || []);
                 if ((response.data.data || []).length === 0) {
-                    setMessage("Không có hóa đơn nào");
+                    setMessage(t("no_bills"));
                     setType(NoticeType.INFO);
                 }
             } else {
-                const errorMessage = getErrorMessage(response.data.code) || response.data.message || "Không thể lấy danh sách hóa đơn";
+                const errorMessage = getErrorMessage(response.data.code) || response.data.message || t("cannot_fetch_bills");
                 setMessage(errorMessage);
                 setType(NoticeType.ERROR);
                 setBills([]);
             }
         } catch (error) {
             const axiosError = error as AxiosError<{ status: string; code?: string; message?: string }>;
-            console.error("API Error:", axiosError);
             const errorData = axiosError.response?.data;
-            const errorMessage = getErrorMessage(errorData?.code) || errorData?.message || "Đã có lỗi xảy ra";
+            const errorMessage = getErrorMessage(errorData?.code) || errorData?.message || t("unknown_error");
             setMessage(errorMessage);
             setType(NoticeType.ERROR);
             setBills([]);
@@ -72,20 +72,20 @@ export default function BillList() {
                 { headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` } }
             );
             if (response.status === 200 && response.data.status === "success") {
-                setMessage("Cập nhật hóa đơn thành công");
+                setMessage(t("bill_updated_success"));
                 setType(NoticeType.SUCCESS);
                 setBills(bills.map((bill) => (bill.id === editingBill.id ? editingBill : bill)));
                 setIsEditModalOpen(false);
                 setEditingBill(null);
             } else {
-                const errorMessage = getErrorMessage(response.data.code) || response.data.message || "Cập nhật hóa đơn thất bại";
+                const errorMessage = getErrorMessage(response.data.code) || response.data.message || t("bill_update_failed");
                 setMessage(errorMessage);
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
             const axiosError = error as AxiosError<{ status: string; code?: string; message?: string }>;
             const errorData = axiosError.response?.data;
-            const errorMessage = getErrorMessage(errorData?.code) || errorData?.message || "Đã có lỗi xảy ra";
+            const errorMessage = getErrorMessage(errorData?.code) || errorData?.message || t("unknown_error");
             setMessage(errorMessage);
             setType(NoticeType.ERROR);
         } finally {
@@ -136,18 +136,18 @@ export default function BillList() {
                 headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` },
             });
             if (response.status === 200 && response.data.status === "success") {
-                setMessage("Xóa hóa đơn thành công");
+                setMessage(t("bill_deleted_success"));
                 setType(NoticeType.SUCCESS);
                 handleGetBills();
             } else {
-                const errorMessage = getErrorMessage(response.data.code) || response.data.message || "Xóa hóa đơn thất bại";
+                const errorMessage = getErrorMessage(response.data.code) || response.data.message || t("bill_delete_failed");
                 setMessage(errorMessage);
                 setType(NoticeType.ERROR);
             }
         } catch (error) {
             const axiosError = error as AxiosError<{ status: string; code?: string; message?: string }>;
             const errorData = axiosError.response?.data;
-            const errorMessage = getErrorMessage(errorData?.code) || errorData?.message || "Đã có lỗi xảy ra";
+            const errorMessage = getErrorMessage(errorData?.code) || errorData?.message || t("unknown_error");
             setMessage(errorMessage);
             setType(NoticeType.ERROR);
         } finally {
@@ -166,23 +166,23 @@ export default function BillList() {
     const getErrorMessage = (code?: string): string | undefined => {
         switch (code) {
             case "invalidInput":
-                return "Dữ liệu đầu vào không hợp lệ";
+                return t("invalid_input");
             case "invalidContract":
-                return "Hợp đồng không tồn tại";
+                return t("invalid_contract");
             case "paymentNotFound":
-                return "Hóa đơn không tồn tại";
+                return t("bill_not_found");
             case "serverError":
-                return "Lỗi server, vui lòng thử lại sau";
+                return t("server_error");
             default:
                 return undefined;
         }
     };
 
     const tableHeaders: TableHeader<BillResponseDTO>[] = [
-        { name: "ID", slug: "id", sortASC: true, center: true },
-        { name: "Tên", slug: "name", sortASC: true, center: true },
+        { name: t("id"), slug: "id", sortASC: true, center: true },
+        { name: t("name"), slug: "name", sortASC: true, center: true },
         {
-            name: "Tiền thuê",
+            name: t("rental_amount"),
             slug: "rentalAmount",
             sortASC: true,
             center: true,
@@ -190,11 +190,11 @@ export default function BillList() {
             render: (row) => `${row.rentalAmount.toLocaleString()} VNĐ`,
         },
         {
-            name: "Chi tiết dịch vụ",
+            name: t("service_details"),
             slug: "serviceDetails",
             sortASC: false,
             center: true,
-            render: (row) => (
+            render: (row) =>
                 row.serviceDetails && row.serviceDetails.length > 0 ? (
                     <ul>
                         {row.serviceDetails.map((service, index) => (
@@ -203,11 +203,10 @@ export default function BillList() {
                             </li>
                         ))}
                     </ul>
-                ) : "Không có chi tiết dịch vụ"
-            ),
+                ) : t("no_service_details"),
         },
         {
-            name: "Tổng tiền",
+            name: t("total_amount"),
             slug: "totalAmount",
             sortASC: true,
             center: true,
@@ -215,26 +214,26 @@ export default function BillList() {
             render: (row) => `${row.totalAmount.toLocaleString()} VNĐ`,
         },
         {
-            name: "Ngày tạo",
+            name: t("created_at"),
             slug: "createdAt",
             sortASC: true,
             center: true,
             render: (row) => new Date(row.createdAt).toLocaleDateString("vi-VN"),
         },
         {
-            name: "Ngày đến hạn",
+            name: t("due_date"),
             slug: "dueDate",
             sortASC: true,
             center: true,
             render: (row) => new Date(row.dueDate).toLocaleDateString("vi-VN"),
         },
-        { name: "Trạng thái", slug: "status", sortASC: true, center: true },
+        { name: t("status"), slug: "status", sortASC: true, center: true },
     ];
 
     return (
         <div className="h-full flex flex-col overflow-hidden p-4">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">Danh sách Hóa đơn</h2>
+                <h2 className="text-2xl font-bold">{t("bill_list")}</h2>
             </div>
             {bills.length > 0 ? (
                 <DynamicTable
@@ -242,31 +241,31 @@ export default function BillList() {
                     data={bills}
                     hasActionColumn={true}
                     hasEdit={true}
-                    onEdit={handleEditBill} // Sử dụng id thay vì bill
+                    onEdit={handleEditBill}
                     onDelete={handleDeleteBill}
                 />
             ) : (
-                <div className="text-center text-gray-500 py-4">Không có dữ liệu hóa đơn</div>
+                <div className="text-center text-gray-500 py-4">{t("no_bill_data")}</div>
             )}
             {isConfirmDeleteModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-md w-full max-w-md">
-                        <h3 className="text-xl font-bold mb-4">Xác nhận xóa</h3>
-                        <p className="mb-4">Bạn có chắc chắn muốn xóa hóa đơn này không?</p>
+                        <h3 className="text-xl font-bold mb-4">{t("confirm_delete")}</h3>
+                        <p className="mb-4">{t("confirm_delete_bill_message")}</p>
                         <div className="flex justify-end gap-2">
                             <button
                                 type="button"
                                 className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
                                 onClick={handleCancelDelete}
                             >
-                                Không
+                                {t("no")}
                             </button>
                             <button
                                 type="button"
                                 className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                                 onClick={confirmDeleteBill}
                             >
-                                Có
+                                {t("yes")}
                             </button>
                         </div>
                     </div>
@@ -275,11 +274,11 @@ export default function BillList() {
             {isEditModalOpen && editingBill && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-md w-full max-w-2xl">
-                        <h3 className="text-xl font-bold mb-4">Chỉnh sửa Hóa đơn</h3>
+                        <h3 className="text-xl font-bold mb-4">{t("edit_bill")}</h3>
                         <form onSubmit={handleSaveEdit}>
                             <div className="grid grid-cols-2 gap-4 mb-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Tên</label>
+                                    <label className="block text-sm font-medium mb-1">{t("name")}</label>
                                     <input
                                         type="text"
                                         name="name"
@@ -289,7 +288,7 @@ export default function BillList() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Tiền thuê</label>
+                                    <label className="block text-sm font-medium mb-1">{t("rental_amount")}</label>
                                     <input
                                         type="number"
                                         name="rentalAmount"
@@ -299,7 +298,7 @@ export default function BillList() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Tổng tiền</label>
+                                    <label className="block text-sm font-medium mb-1">{t("total_amount")}</label>
                                     <input
                                         type="number"
                                         name="totalAmount"
@@ -310,21 +309,21 @@ export default function BillList() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Trạng thái</label>
+                                    <label className="block text-sm font-medium mb-1">{t("status")}</label>
                                     <select
                                         name="status"
                                         value={editingBill.status}
                                         onChange={handleInputChange}
                                         className="w-full border border-gray-300 p-2 rounded"
                                     >
-                                        <option value="PENDING">Pending</option>
-                                        <option value="PAID">Paid</option>
-                                        <option value="OVERDUE">Overdue</option>
+                                        <option value="PENDING">{t("pending")}</option>
+                                        <option value="PAID">{t("paid")}</option>
+                                        <option value="OVERDUE">{t("overdue")}</option>
                                     </select>
                                 </div>
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Chi tiết dịch vụ</label>
+                                <label className="block text-sm font-medium mb-1">{t("service_details")}</label>
                                 {editingBill.serviceDetails && editingBill.serviceDetails.length > 0 ? (
                                     <ul className="border border-gray-300 p-2 rounded">
                                         {editingBill.serviceDetails.map((service, index) => (
@@ -348,13 +347,13 @@ export default function BillList() {
                                                     className="w-1/6 border border-gray-300 p-1 rounded mr-2"
                                                 />
                                                 <span className="ml-2">
-                                                    Tổng: {service.totalPrice.toLocaleString()} VNĐ
+                                                    {t("total")}: {service.totalPrice.toLocaleString()} VNĐ
                                                 </span>
                                             </li>
                                         ))}
                                     </ul>
                                 ) : (
-                                    <p>Không có chi tiết dịch vụ</p>
+                                    <p>{t("no_service_details")}</p>
                                 )}
                             </div>
                             <div className="flex justify-end gap-2">
@@ -366,13 +365,13 @@ export default function BillList() {
                                         setEditingBill(null);
                                     }}
                                 >
-                                    Hủy
+                                    {t("cancel")}
                                 </button>
                                 <button
                                     type="submit"
                                     className="bg-lightGreen text-white px-4 py-2 rounded hover:bg-lightGreenHover"
                                 >
-                                    Lưu
+                                    {t("save")}
                                 </button>
                             </div>
                         </form>

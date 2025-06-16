@@ -1,11 +1,17 @@
 import DynamicTable from "../../../components/DynamicTable.tsx";
-import { TableHeader, RentalContractResponse, UserResponse, ApartmentStatusDTO } from "../../../types/Dashboard.ts";
+import {
+    TableHeader,
+    RentalContractResponse,
+    UserResponse,
+    ApartmentStatusDTO,
+} from "../../../types/Dashboard.ts";
 import { useEffect, useState, useCallback } from "react";
 import axios, { AxiosError } from "axios";
 import { envVar } from "../../../utils/EnvironmentVariables.ts";
 import { NoticeType } from "../../../types/Context.ts";
 import { useNotice } from "../../../hook/useNotice.ts";
 import { useLoading } from "../../../contexts/LoadingContext.tsx";
+import { useTranslation } from "react-i18next";
 
 export default function RentalContract() {
     const [contracts, setContracts] = useState<RentalContractResponse[]>([]);
@@ -28,6 +34,7 @@ export default function RentalContract() {
     });
     const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
     const [deletingContractId, setDeletingContractId] = useState<string | null>(null);
+    const { t } = useTranslation();
 
     const fetchDropdownData = useCallback(async () => {
         try {
@@ -45,19 +52,19 @@ export default function RentalContract() {
             setUsers(usersRes.data.data || []);
             setApartments(apartmentsRes.data.data || []);
             if (!apartmentsRes.data.data || apartmentsRes.data.data.length === 0) {
-                setMessage("Không có căn hộ khả dụng");
+                setMessage(t("no_available_apartments"));
                 setType(NoticeType.WARNING);
             }
         } catch (error: unknown) {
             const axiosError = error as AxiosError<{ message?: string }>;
             console.error("Fetch error:", axiosError);
-            let errorMessage = "Không thể lấy dữ liệu người dùng hoặc căn hộ";
+            let errorMessage = t("cannot_fetch_user_or_apartment");
             if (axiosError.code === "ECONNREFUSED") {
-                errorMessage = "Không thể kết nối đến server. Vui lòng kiểm tra backend.";
+                errorMessage = t("cannot_connect_to_server");
             } else if (axiosError.response?.status === 500) {
-                errorMessage = "Lỗi server (500). Vui lòng kiểm tra log backend.";
+                errorMessage = t("server_error_500");
             } else if (axiosError.response?.status === 400) {
-                errorMessage = axiosError.response.data?.message || "Yêu cầu không hợp lệ";
+                errorMessage = axiosError.response.data?.message || t("invalid_request");
             } else if (axiosError.response?.data?.message) {
                 errorMessage = axiosError.response.data.message;
             }
@@ -68,7 +75,7 @@ export default function RentalContract() {
         } finally {
             setApiLoading(false);
         }
-    }, [setApiLoading, setMessage, setType]); // Thêm phụ thuộc nếu cần
+    }, [setApiLoading, setMessage, setType]);
 
     const handleGetContracts = useCallback(async () => {
         try {
@@ -82,23 +89,23 @@ export default function RentalContract() {
                     ...contract,
                     startDate: contract.startDate.includes("T") ? contract.startDate.split("T")[0] : contract.startDate,
                     endDate: contract.endDate.includes("T") ? contract.endDate.split("T")[0] : contract.endDate,
-                    status: contract.status === "ACTIVE" ? "Hoạt động" :
-                        contract.status === "INACTIVE" ? "Không hoạt động" :
-                            contract.status === "EXPIRED" ? "Hết hạn" : contract.status,
+                    status: contract.status === "ACTIVE" ? t("active") :
+                        contract.status === "INACTIVE" ? t("inactive") :
+                            contract.status === "EXPIRED" ? t("expired") : contract.status,
                 }));
                 setContracts(formattedContracts);
             } else {
-                setMessage(response.data.message || "Không thể lấy danh sách hợp đồng");
+                setMessage(response.data.message || t("cannot_fetch_contracts"));
                 setType(NoticeType.ERROR);
             }
         } catch (error: unknown) {
             const axiosError = error as AxiosError<{ message?: string }>;
-            setMessage(axiosError.response?.data?.message || "Đã có lỗi xảy ra khi lấy danh sách hợp đồng");
+            setMessage(axiosError.response?.data?.message || t("unknown_error_fetch_contracts"));
             setType(NoticeType.ERROR);
         } finally {
             setApiLoading(false);
         }
-    }, [setApiLoading, setMessage, setType]); // Thêm phụ thuộc nếu cần
+    }, [setApiLoading, setMessage, setType]);
 
     useEffect(() => {
         handleGetContracts();
@@ -109,14 +116,14 @@ export default function RentalContract() {
         const { name, price, status, startDate, endDate, userId, apartmentId } = formData;
 
         if (!name || !price || !status || !startDate || !endDate || !userId || !apartmentId) {
-            setMessage("Vui lòng điền đầy đủ thông tin bắt buộc");
+            setMessage(t("please_fill_all_fields"));
             setType(NoticeType.ERROR);
             return false;
         }
 
         const priceNum = parseFloat(price);
         if (isNaN(priceNum) || priceNum <= 0) {
-            setMessage("Giá phải là số dương");
+            setMessage(t("price_must_be_positive"));
             setType(NoticeType.ERROR);
             return false;
         }
@@ -124,13 +131,13 @@ export default function RentalContract() {
         const start = new Date(startDate);
         const end = new Date(endDate);
         if (start >= end) {
-            setMessage("Ngày bắt đầu phải trước ngày kết thúc");
+            setMessage(t("start_date_before_end_date"));
             setType(NoticeType.ERROR);
             return false;
         }
 
         if (!["ACTIVE", "INACTIVE", "EXPIRED"].includes(status)) {
-            setMessage("Trạng thái không hợp lệ");
+            setMessage(t("invalid_status"));
             setType(NoticeType.ERROR);
             return false;
         }
@@ -138,7 +145,7 @@ export default function RentalContract() {
         const userIdNum = parseInt(userId);
         const apartmentIdNum = parseInt(apartmentId);
         if (isNaN(userIdNum) || isNaN(apartmentIdNum)) {
-            setMessage("ID người dùng và ID căn hộ phải là số");
+            setMessage(t("invalid_user_or_apartment_id"));
             setType(NoticeType.ERROR);
             return false;
         }
@@ -171,7 +178,7 @@ export default function RentalContract() {
                 await fetchDropdownData();
             }
             if (!contract.userId) {
-                setMessage(`Hợp đồng không có thông tin người dùng, sử dụng: ${contract.fullname} (${contract.email})`);
+                setMessage(t("contract_no_user_info", { fullname: contract.fullname, email: contract.email }));
                 setType(NoticeType.WARNING);
                 setEditingContract(contract);
                 setFormData({
@@ -179,9 +186,9 @@ export default function RentalContract() {
                     name: contract.name,
                     description: contract.description || "",
                     price: contract.price.toString(),
-                    status: contract.status === "Hoạt động" ? "ACTIVE" :
-                        contract.status === "Không hoạt động" ? "INACTIVE" :
-                            contract.status === "Hết hạn" ? "EXPIRED" : contract.status,
+                    status: contract.status === t("active") ? "ACTIVE" :
+                        contract.status === t("inactive") ? "INACTIVE" :
+                            contract.status === t("expired") ? "EXPIRED" : contract.status,
                     startDate: contract.startDate,
                     endDate: contract.endDate,
                     userId: "",
@@ -192,7 +199,7 @@ export default function RentalContract() {
             }
             const userExists = users.find((user) => user.id.toString() === contract.userId.toString());
             if (!userExists) {
-                setMessage(`Người dùng không tồn tại trong danh sách, sử dụng: ${contract.fullname} (${contract.email})`);
+                setMessage(t("user_not_in_list", { fullname: contract.fullname, email: contract.email }));
                 setType(NoticeType.WARNING);
                 setEditingContract(contract);
                 setFormData({
@@ -200,9 +207,9 @@ export default function RentalContract() {
                     name: contract.name,
                     description: contract.description || "",
                     price: contract.price.toString(),
-                    status: contract.status === "Hoạt động" ? "ACTIVE" :
-                        contract.status === "Không hoạt động" ? "INACTIVE" :
-                            contract.status === "Hết hạn" ? "EXPIRED" : contract.status,
+                    status: contract.status === t("active") ? "ACTIVE" :
+                        contract.status === t("inactive") ? "INACTIVE" :
+                            contract.status === t("expired") ? "EXPIRED" : contract.status,
                     startDate: contract.startDate,
                     endDate: contract.endDate,
                     userId: "",
@@ -217,9 +224,9 @@ export default function RentalContract() {
                 name: contract.name,
                 description: contract.description || "",
                 price: contract.price.toString(),
-                status: contract.status === "Hoạt động" ? "ACTIVE" :
-                    contract.status === "Không hoạt động" ? "INACTIVE" :
-                        contract.status === "Hết hạn" ? "EXPIRED" : contract.status,
+                status: contract.status === t("active") ? "ACTIVE" :
+                    contract.status === t("inactive") ? "INACTIVE" :
+                        contract.status === t("expired") ? "EXPIRED" : contract.status,
                 startDate: contract.startDate,
                 endDate: contract.endDate,
                 userId: contract.userId.toString(),
@@ -242,11 +249,11 @@ export default function RentalContract() {
                 headers: { Authorization: `Bearer ${localStorage.getItem("jwt_token")}` },
             });
             if (response.status === 200 && response.data.status === "success") {
-                setMessage(response.data.message || "Xóa hợp đồng thành công");
+                setMessage(response.data.message || t("contract_deleted_success"));
                 setType(NoticeType.SUCCESS);
                 handleGetContracts();
             } else {
-                setMessage(response.data.message || "Xóa hợp đồng thất bại");
+                setMessage(response.data.message || t("contract_delete_failed"));
                 setType(NoticeType.ERROR);
             }
         } catch (error: unknown) {
@@ -254,8 +261,8 @@ export default function RentalContract() {
             const errorMessage = axiosError.response?.data?.message;
             setMessage(
                 errorMessage === "rentalContractNotFound"
-                    ? "Hợp đồng thuê không tìm thấy"
-                    : "Đã có lỗi xảy ra khi xóa hợp đồng",
+                    ? t("contract_not_found")
+                    : t("unknown_error_delete_contract"),
             );
             setType(NoticeType.ERROR);
         } finally {
@@ -300,7 +307,7 @@ export default function RentalContract() {
             }
 
             if (response.status === 200 && response.data.status === "success") {
-                setMessage(response.data.message || (editingContract ? "Cập nhật hợp đồng thành công" : "Thêm hợp đồng thành công"));
+                setMessage(response.data.message || (editingContract ? t("contract_updated_success") : t("contract_added_success")));
                 setType(NoticeType.SUCCESS);
                 setIsModalOpen(false);
                 setFormData({
@@ -316,26 +323,26 @@ export default function RentalContract() {
                 });
                 handleGetContracts();
             } else {
-                setMessage(response.data.message || "Thao tác thất bại");
+                setMessage(response.data.message || t("operation_failed"));
                 setType(NoticeType.ERROR);
             }
         } catch (error: unknown) {
             const axiosError = error as AxiosError<{ message?: string }>;
             const errorMessage = axiosError.response?.data?.message;
-            let displayMessage = "Đã có lỗi xảy ra";
+            let displayMessage = t("unknown_error");
             if (errorMessage) {
                 switch (errorMessage) {
                     case "greaterthan0":
-                        displayMessage = "Giá phải lớn hơn 0";
+                        displayMessage = t("price_must_be_positive");
                         break;
                     case "userNotFound":
-                        displayMessage = "Người dùng không tìm thấy";
+                        displayMessage = t("user_not_found");
                         break;
                     case "apartmentNotFound":
-                        displayMessage = "Căn hộ không tìm thấy";
+                        displayMessage = t("apartment_not_found");
                         break;
                     case "rentalContractNotFound":
-                        displayMessage = "Hợp đồng thuê không tìm thấy";
+                        displayMessage = t("contract_not_found");
                         break;
                     default:
                         displayMessage = errorMessage;
@@ -370,11 +377,11 @@ export default function RentalContract() {
     };
 
     const tableHeaders: TableHeader<RentalContractResponse>[] = [
-        { name: "Tên hợp đồng", slug: "name", sortASC: true, center: true },
-        { name: "Giá", slug: "price", sortASC: true, center: true, isCurrency: true },
-        { name: "Trạng thái", slug: "status", sortASC: true, center: true },
+        { name: t("contract_name"), slug: "name", sortASC: true, center: true },
+        { name: t("price"), slug: "price", sortASC: true, center: true, isCurrency: true },
+        { name: t("status"), slug: "status", sortASC: true, center: true },
         {
-            name: "Ngày bắt đầu",
+            name: t("start_date"),
             slug: "startDate",
             sortASC: true,
             center: true,
@@ -384,7 +391,7 @@ export default function RentalContract() {
             },
         },
         {
-            name: "Ngày kết thúc",
+            name: t("end_date"),
             slug: "endDate",
             sortASC: true,
             center: true,
@@ -393,19 +400,19 @@ export default function RentalContract() {
                 return isNaN(date.getTime()) ? row.endDate : date.toLocaleDateString("vi-VN");
             },
         },
-        { name: "Người thuê", slug: "fullname", sortASC: true, center: true },
-        { name: "Email", slug: "email", sortASC: true, center: true },
+        { name: t("tenant"), slug: "fullname", sortASC: true, center: true },
+        { name: t("email"), slug: "email", sortASC: true, center: true },
     ];
 
     return (
         <div className="h-full flex flex-col overflow-hidden p-4">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">Quản lý Hợp đồng Thuê</h2>
+                <h2 className="text-2xl font-bold">{t("rental_contract_management")}</h2>
                 <button
                     className="bg-lightGreen text-white px-4 py-2 rounded hover:bg-green-600"
                     onClick={handleAddContract}
                 >
-                    Thêm Hợp đồng
+                    {t("add_contract")}
                 </button>
             </div>
             <DynamicTable<RentalContractResponse> // Thêm kiểu generic
@@ -419,11 +426,11 @@ export default function RentalContract() {
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-md w-full max-w-md">
-                        <h3 className="text-xl font-bold mb-4">{editingContract ? "Sửa Hợp đồng" : "Thêm Hợp đồng"}</h3>
+                        <h3 className="text-xl font-bold mb-4">{editingContract ? t("edit_contract") : t("add_contract")}</h3>
                         <form onSubmit={handleFormSubmit}>
                             {editingContract && (
                                 <div className="mb-4">
-                                    <label className="block text-sm font-medium mb-1">ID Hợp đồng</label>
+                                    <label className="block text-sm font-medium mb-1">{t("contract_id")}</label>
                                     <input
                                         type="text"
                                         name="id"
@@ -434,7 +441,7 @@ export default function RentalContract() {
                                 </div>
                             )}
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Tên hợp đồng</label>
+                                <label className="block text-sm font-medium mb-1">{t("contract_name")}</label>
                                 <input
                                     type="text"
                                     name="name"
@@ -445,7 +452,7 @@ export default function RentalContract() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Mô tả</label>
+                                <label className="block text-sm font-medium mb-1">{t("description")}</label>
                                 <textarea
                                     name="description"
                                     value={formData.description}
@@ -454,7 +461,7 @@ export default function RentalContract() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Giá (VNĐ)</label>
+                                <label className="block text-sm font-medium mb-1">{t("price_vnd")}</label>
                                 <input
                                     type="number"
                                     name="price"
@@ -465,7 +472,7 @@ export default function RentalContract() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Trạng thái</label>
+                                <label className="block text-sm font-medium mb-1">{t("status")}</label>
                                 <select
                                     name="status"
                                     value={formData.status}
@@ -473,13 +480,13 @@ export default function RentalContract() {
                                     className="w-full border border-gray-300 p-2 rounded"
                                     required
                                 >
-                                    <option value="ACTIVE">Hoạt động</option>
-                                    <option value="INACTIVE">Không hoạt động</option>
-                                    <option value="EXPIRED">Hết hạn</option>
+                                    <option value="ACTIVE">{t("active")}</option>
+                                    <option value="INACTIVE">{t("inactive")}</option>
+                                    <option value="EXPIRED">{t("expired")}</option>
                                 </select>
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Ngày bắt đầu</label>
+                                <label className="block text-sm font-medium mb-1">{t("start_date")}</label>
                                 <input
                                     type="date"
                                     name="startDate"
@@ -490,7 +497,7 @@ export default function RentalContract() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Ngày kết thúc</label>
+                                <label className="block text-sm font-medium mb-1">{t("end_date")}</label>
                                 <input
                                     type="date"
                                     name="endDate"
@@ -501,7 +508,7 @@ export default function RentalContract() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Người thuê</label>
+                                <label className="block text-sm font-medium mb-1">{t("tenant")}</label>
                                 <select
                                     name="userId"
                                     value={formData.userId}
@@ -509,7 +516,7 @@ export default function RentalContract() {
                                     className="w-full border border-gray-300 p-2 rounded"
                                     required
                                 >
-                                    <option value="">Chọn người dùng</option>
+                                    <option value="">{t("select_user")}</option>
                                     {users.map((user) => (
                                         <option key={user.id} value={user.id.toString()}>
                                             {`${user.fullname} - ${user.phone}`}
@@ -518,7 +525,7 @@ export default function RentalContract() {
                                 </select>
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">Căn hộ</label>
+                                <label className="block text-sm font-medium mb-1">{t("apartment")}</label>
                                 <select
                                     name="apartmentId"
                                     value={formData.apartmentId}
@@ -526,7 +533,7 @@ export default function RentalContract() {
                                     className="w-full border border-gray-300 p-2 rounded"
                                     required
                                 >
-                                    <option value="">Chọn căn hộ</option>
+                                    <option value="">{t("select_apartment")}</option>
                                     {apartments.map((apartment) => (
                                         <option key={apartment.id} value={apartment.id}>
                                             {`${apartment.name}`}
@@ -540,13 +547,13 @@ export default function RentalContract() {
                                     className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
                                     onClick={handleCloseModal}
                                 >
-                                    Hủy
+                                    {t("cancel")}
                                 </button>
                                 <button
                                     type="submit"
                                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                                 >
-                                    {editingContract ? "Cập nhật" : "Thêm"}
+                                    {editingContract ? t("update") : t("add")}
                                 </button>
                             </div>
                         </form>
@@ -556,22 +563,22 @@ export default function RentalContract() {
             {isConfirmDeleteModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-md w-full max-w-md">
-                        <h3 className="text-xl font-bold mb-4">Xác nhận xóa</h3>
-                        <p className="mb-4">Bạn có chắc chắn muốn xóa hợp đồng này không?</p>
+                        <h3 className="text-xl font-bold mb-4">{t("confirm_delete")}</h3>
+                        <p className="mb-4">{t("confirm_delete_contract_message")}</p>
                         <div className="flex justify-end gap-2">
                             <button
                                 type="button"
                                 className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
                                 onClick={handleCancelDelete}
                             >
-                                Không
+                                {t("no")}
                             </button>
                             <button
                                 type="button"
                                 className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                                 onClick={confirmDeleteContract}
                             >
-                                Có
+                                {t("yes")}
                             </button>
                         </div>
                     </div>

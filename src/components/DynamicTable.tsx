@@ -9,22 +9,13 @@ import {
     BillResponseDTO,
     RentalContractResponse,
     ServiceType,
-    TableHeader, UserApartmentDTO,
+    TableHeader,
+    UserApartmentDTO,
     UserManagementDTO,
 } from "../types/Dashboard.ts";
 import { formatCurrency } from "../utils/NumberCalculate.ts";
 import { FaEdit } from "react-icons/fa";
-
-/*
-    headers: header of the table
-    T: type of data. Ex: ApartmentManagementType, ApartmentTypeManagementType
-    data: data of the table. A lot of types of data. Ex: ApartmentManagementType, ApartmentTypeManagementType
-    hasActionColumn: true => show column "Hành động". False => hide this column
-    hasEdit: true => edit icon
-    onEdit: function, use when click on edit icon
-    onDelete: function, use when click on delete icon
-    customAction: function, use to render custom action button (e.g., "Chọn")
- */
+import { useTranslation } from "react-i18next";
 
 export default function DynamicTable<T extends BillResponseDTO | ApartmentManagementType | ApartmentTypeDTO | ApartmentPriceServiceType | ServiceType | UserManagementDTO | RentalContractResponse | UserApartmentDTO>(
     {
@@ -34,7 +25,7 @@ export default function DynamicTable<T extends BillResponseDTO | ApartmentManage
         hasEdit,
         onEdit,
         onDelete,
-        customAction, // Thêm prop customAction
+        customAction,
     }: {
         headers: TableHeader<T>[];
         data: T[];
@@ -42,11 +33,12 @@ export default function DynamicTable<T extends BillResponseDTO | ApartmentManage
         hasEdit?: boolean;
         onEdit?: (id: string) => void;
         onDelete?: (id: string) => void;
-        customAction?: (row: T) => React.ReactNode; // Hàm render tùy chỉnh cho hành động
+        customAction?: (row: T) => React.ReactNode;
     }
 ) {
     const [headersTable, setHeadersTable] = useState<TableHeader<T>[]>(headers);
     const [dataTable, setDataTable] = useState<T[]>(data);
+    const { t } = useTranslation();
 
     useEffect(() => {
         setHeadersTable(headers);
@@ -56,9 +48,7 @@ export default function DynamicTable<T extends BillResponseDTO | ApartmentManage
         setDataTable(data);
     }, [data]);
 
-    // get column sort and type and call function handleSortData
     const handleChangeSortType = (column: string, isASC: boolean) => {
-        // change sortASC of the column which was clicked. And reset other columns
         const sortedHeaders = headersTable.map((header) => {
             if (!("sortASC" in header)) return header;
             return header.slug === column ? { ...header, sortASC: !header.sortASC } : { ...header, sortASC: true };
@@ -68,12 +58,6 @@ export default function DynamicTable<T extends BillResponseDTO | ApartmentManage
         handleSortData(column, isASC);
     };
 
-    /*
-        Sort Data
-        Column sort
-        isASC: check asc or desc. Desc = -asc
-        check 3 type data value. Number, String, Date
-     */
     const handleSortData = (column: string, isASC: boolean) => {
         if (!column) return;
 
@@ -85,7 +69,6 @@ export default function DynamicTable<T extends BillResponseDTO | ApartmentManage
 
             let result = 0;
 
-            // Check if is a React Element get data-sort from props to compare. Ex: <div data-sort="123"> Text </div>
             if (React.isValidElement(valueA) && React.isValidElement(valueB)) {
                 const valueAElement = valueA as ReactElement<{ "data-sort": string }>;
                 const valueBElement = valueB as ReactElement<{ "data-sort": string }>;
@@ -108,7 +91,6 @@ export default function DynamicTable<T extends BillResponseDTO | ApartmentManage
         setDataTable(sortedData);
     };
 
-    // render different type of data. JSX, Date, object, string, number,...
     const handleRenderTableValue = (value: unknown): React.ReactNode => {
         if (React.isValidElement(value)) return value;
         if (value instanceof Date) return value.toLocaleDateString();
@@ -121,16 +103,14 @@ export default function DynamicTable<T extends BillResponseDTO | ApartmentManage
                 <thead>
                 <tr>
                     <th className="sticky top-0 border border-zinc-300 bg-lightGreen p-4 z-50 w-[10%]">
-                        <div>STT</div>
+                        <div>{t("stt")}</div>
                     </th>
 
                     {headersTable.map((header, index) => (
-                        // Make header stick on top of the table.
                         <th key={index} className="sticky top-0 border border-zinc-300 bg-lightGreen p-4 z-50">
                             <div>
                                 {header.name}
 
-                                {/* Show column sort icon */}
                                 {!("sortASC" in header) ? null : (
                                     <div className="absolute top-1/2 right-[2%] -translate-y-1/2 h-full flex flex-col items-center justify-between">
                                         <div
@@ -151,10 +131,9 @@ export default function DynamicTable<T extends BillResponseDTO | ApartmentManage
                         </th>
                     ))}
 
-                    {/* Stick column on the right of the table */}
                     {hasActionColumn ? (
                         <th className="sticky top-0 right-0 border border-zinc-300 bg-lightGreen p-4 z-50 w-[10%]">
-                            Hành động
+                            {t("actions")}
                         </th>
                     ) : ""}
                 </tr>
@@ -179,7 +158,6 @@ export default function DynamicTable<T extends BillResponseDTO | ApartmentManage
                             </td>
                         ))}
 
-                        {/* Stick column on the right of the table */}
                         {hasActionColumn ? (
                             <td className={`border border-zinc-300 p-4 bg-white sticky right-0 ${(headers.length % 2 === 0 ? "bg-zinc-100" : "bg-white")}`}>
                                 <div className="flex items-center justify-evenly">
