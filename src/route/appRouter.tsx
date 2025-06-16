@@ -22,6 +22,7 @@ import ProtectedRoute from "../components/ProtectedRoute.tsx";
 import DashBoardUserLayout from "../pages/dashboard/user/DashBoardUserLayout.tsx";
 import UserApartmentManagement from "../pages/dashboard/user/UserApartmentManagement.tsx";
 import UserApartmentDetail from "../pages/dashboard/user/UserApartmentDetail.tsx";
+import UserBillManagement from "../pages/dashboard/user/UserBillManagement.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -130,6 +131,11 @@ export const router = createBrowserRouter([
                         path: "apartments/:slug",
                         element: <UserApartmentDetail />,
                     },
+                    {
+                        path: "billings",
+                        element: <UserBillManagement />,
+                    },
+
                 ],
             },
         ],
