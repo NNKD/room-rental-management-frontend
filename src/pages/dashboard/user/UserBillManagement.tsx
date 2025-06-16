@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import {useEffect, useState} from 'react';
+import axios from 'axios';
 import DynamicTable from "../../../components/DynamicTable.tsx";
 import { TableHeader, BillResponseDTO } from "../../../types/Dashboard.ts";
 import { envVar } from "../../../utils/EnvironmentVariables.ts";
@@ -59,14 +59,12 @@ export default function UserBillManagement() {
             slug: "status",
             center: true,
             render: (row) => (
-                <span
-                    className={`px-2 py-1 rounded text-sm ${
-                        row.status === "PAID" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
-                    }`}
-                >
-                    {row.status === "PAID" ? t("paid") : t("pending_payment")}
+                <span className={`px-2 py-1 rounded text-sm ${
+                    row.status === 'PAID' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                }`}>
+                    {row.status === 'PAID' ? 'Đã thanh toán' : 'Chờ thanh toán'}
                 </span>
-            ),
+            )
         },
     ];
 
@@ -96,6 +94,37 @@ export default function UserBillManagement() {
                 setMessage(error.response?.data?.message ?? t("unknown_error"));
             } else {
                 setMessage(t("unknown_error"));
+            }
+            console.log(error);
+            setType(NoticeType.ERROR);
+        } finally {
+            setApiLoading(false);
+        }
+    };
+
+    const handlePayment = async () => {
+        console.log(selectedBill?.serviceDetails.reduce((sum, service) => sum + service.totalPrice, 0))
+        setApiLoading(true);
+        try {
+            const response = await axios.post(`${envVar.API_URL}/dashboard-user/me/payment`,
+                {
+                    amount: selectedBill?.totalAmount,
+                    order: selectedBill?.id
+                },
+                {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (response.status === 200 && response.data.status === "success") {
+                window.location.href = response.data.data;
+            } else {
+                setMessage("Có lỗi xảy ra");
+                setType(NoticeType.ERROR);
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setMessage(error.response?.data?.message ?? "Không rõ lỗi");
+            } else {
+                setMessage("Đã có lỗi xảy ra không xác định");
             }
             console.log(error);
             setType(NoticeType.ERROR);
@@ -217,15 +246,15 @@ export default function UserBillManagement() {
                                 </div>
                             </div>
 
-                            {/* Footer modal */}
-                            <div className="mt-6 flex justify-end">
-                                <button
-                                    onClick={() => setShowModal(false)}
-                                    className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
-                                >
-                                    {t("close")}
-                                </button>
-                            </div>
+                            {selectedBill.status === 'PAID' ? "" : (
+                                <div className="mt-6 flex justify-end">
+                                    <div className="ml-auto bg-lightGreen w-fit px-10 py-2 rounded font-bold cursor-pointer shadow-[0_0_2px_1px_#ccc] hover:bg-lightGreenHover transition-all duration-300 ease-in-out"
+                                         onClick={() => handlePayment()}>
+                                        {t("payment")}
+                                    </div>
+                                </div>
+                            )}
+
                         </div>
                     </div>
                 </div>

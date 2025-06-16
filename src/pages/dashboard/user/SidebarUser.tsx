@@ -1,12 +1,10 @@
 import SidebarItem from "../../../components/SidebarItem.tsx";
 import {
-    FaChartLine,
     FaFileContract,
     FaFileInvoiceDollar,
     FaHome,
     FaSignOutAlt,
 } from "react-icons/fa";
-import { MdOutlineWorkspacePremium } from "react-icons/md";
 import { FaGear } from "react-icons/fa6";
 import { useAuth } from "../../../hook/useAuth.ts";
 import { useNavigate } from "react-router-dom";
@@ -22,9 +20,6 @@ export default function SidebarUser() {
             <div onClick={() => navigate("apartments")}>
                 <SidebarItem title={t("apartments")} Icon={FaHome} path={"apartments"} />
             </div>
-            <div onClick={() => navigate("services")}>
-                <SidebarItem title={t("service_management")} Icon={MdOutlineWorkspacePremium} path={"services"} />
-            </div>
             <div onClick={() => navigate("rental-contract")}>
                 <SidebarItem title={t("rental_contract")} Icon={FaFileContract} path={"rental-contract"} />
             </div>
@@ -33,9 +28,6 @@ export default function SidebarUser() {
             </div>
             <div onClick={() => navigate("bill-management")}>
                 <SidebarItem title={t("bill_management")} Icon={FaFileInvoiceDollar} path={"bill-management"} />
-            </div>
-            <div onClick={() => navigate("reports")}>
-                <SidebarItem title={t("reports_statistics")} Icon={FaChartLine} path={"reports"} />
             </div>
             <div onClick={() => navigate("account")}>
                 <SidebarItem title={t("account_management")} Icon={FaGear} path={"account"} />
